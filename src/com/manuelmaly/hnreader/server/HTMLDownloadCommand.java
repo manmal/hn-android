@@ -6,11 +6,10 @@ import org.apache.http.client.methods.HttpUriRequest;
 import android.content.Context;
 
 public class HTMLDownloadCommand extends BaseHTTPCommand<String> {
-    
 
-    public HTMLDownloadCommand(String url, String queryParams, RequestType type, String notificationBroadcastIntentID,
-        Context applicationContext) {
-        super(url, queryParams, type, notificationBroadcastIntentID, applicationContext, 60000, 60000);
+    public HTMLDownloadCommand(String url, String queryParams, RequestType type, boolean notifyFinishedBroadcast,
+        String notificationBroadcastIntentID, Context applicationContext) {
+        super(url, queryParams, type, notifyFinishedBroadcast, notificationBroadcastIntentID, applicationContext, 60000, 60000);
     }
 
     @Override

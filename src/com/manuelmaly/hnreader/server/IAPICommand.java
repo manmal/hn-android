@@ -21,6 +21,7 @@ public interface IAPICommand<T> extends Runnable {
     public static final int ERROR_DEVICE_OFFLINE = 20;
     public static final int ERROR_RESPONSE_PARSE_ERROR = 30;
     public static final int ERROR_SERVER_RETURNED_ERROR = 40;
+    public static final int ERROR_CANCELLED_BY_USER = 1000;
     
     public static final String BROADCAST_INTENT_EXTRA_ERROR = "error";
     public static final String BROADCAST_INTENT_EXTRA_RESPONSE = "response";

@@ -17,18 +17,19 @@ import org.apache.http.params.HttpParams;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 
 /**
- * Generic base for HTTP calls via {@link HttpClient}, ideally to be started in a background thread.
- * When the call has finished, listeners are notified via an intent sent to {@link LocalBroadcastManager}, 
- * i.e. they must first register (intent name is configurable via notificationBroadcastIntentID). 
- * Response and errors are also sent via the intent. 
+ * Generic base for HTTP calls via {@link HttpClient}, ideally to be started in
+ * a background thread. When the call has finished, listeners are notified via
+ * an intent sent to {@link LocalBroadcastManager}, i.e. they must first
+ * register (intent name is configurable via notificationBroadcastIntentID).
+ * Response and errors are also sent via the intent.
  * 
  * @author manuelmaly
- *
- * @param <T> class of response
+ * 
+ * @param <T>
+ *            class of response
  */
 public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICommand<T> {
 
@@ -43,9 +44,12 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
     private Object mTag;
     private int mSocketTimeoutMS;
     private int mHttpTimeoutMS;
+    private boolean mNotifyFinishedBroadcast;
+    HttpRequestBase mRequest;
 
     public BaseHTTPCommand(final String url, final String queryParams, RequestType type,
-        String notificationBroadcastIntentID, Context applicationContext, int socketTimeoutMS, int httpTimeoutMS) {
+        boolean notifyFinishedBroadcast, String notificationBroadcastIntentID, Context applicationContext, int socketTimeoutMS,
+        int httpTimeoutMS) {
         mUrl = url;
         mURLQueryParams = queryParams;
         mType = type;
@@ -54,6 +58,7 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
         mApplicationContext = applicationContext;
         mSocketTimeoutMS = socketTimeoutMS;
         mHttpTimeoutMS = httpTimeoutMS;
+        mNotifyFinishedBroadcast = notifyFinishedBroadcast;
     }
 
     public void setTag(Object tag) {
@@ -69,23 +74,27 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
         try {
             // Check if Device is currently offline:
             if (cancelBecauseDeviceOffline()) {
-                notifyFinished();
+                onFinished();
                 return;
             }
 
             // Start request, handle response in separate handler:
             HttpClient httpclient = new DefaultHttpClient(getHttpParams());
-            httpclient.execute(setRequestData(createRequest()), getResponseHandler());
+            mRequest = createRequest();
+            httpclient.execute(setRequestData(mRequest), getResponseHandler());
         } catch (Exception e) {
             setErrorCode(ERROR_GENERIC_COMMUNICATION_ERROR);
-            notifyFinished();
+            onFinished();
         }
     }
 
     /**
      * Notify all registered observers
      */
-    protected void notifyFinished() {
+    protected void onFinished() {
+        if (!mNotifyFinishedBroadcast)
+            return;
+        
         Intent broadcastIntent = new Intent(mNotificationBroadcastIntentID);
         broadcastIntent.putExtra(BROADCAST_INTENT_EXTRA_ERROR, mErrorCode);
         broadcastIntent.putExtra(BROADCAST_INTENT_EXTRA_RESPONSE, mResponse);
@@ -103,6 +112,11 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
             return true;
         }
         return false;
+    }
+    
+    public void cancel() {
+        if (mRequest != null)
+            mRequest.abort();
     }
 
     /**
@@ -136,7 +150,7 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
             setErrorCode(ERROR_RESPONSE_PARSE_ERROR);
         else
             setErrorCode(ERROR_NONE);
-        notifyFinished();
+        onFinished();
     }
 
     @Override
@@ -163,6 +177,7 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
         HttpConnectionParams.setSoTimeout(httpParameters, mSocketTimeoutMS);
         return httpParameters;
     }
+
     /**
      * Update the given request before it is sent over the wire.
      * 

@@ -1,20 +1,28 @@
 package com.manuelmaly.hnreader.model;
 
-public class HNComment {
-    
+import java.io.Serializable;
+
+import android.text.Spanned;
+
+public class HNComment implements Serializable {
+
+    private static final long serialVersionUID = 1286983917054008714L;
     private String mTimeAgo; // do not want to parse this :P
     private String mAuthor;
     private String mCommentLink;
     private String mText;
+    private int mCommentLevel;
     private boolean mDownvoted;
-    
-    public HNComment(String timeAgo, String author, String commentLink, String text, boolean downvoted) {
+    private Spanned mTextHTMLSpanCache;
+
+    public HNComment(String timeAgo, String author, String commentLink, String text, int commentLevel, boolean downvoted) {
         super();
-        this.mTimeAgo = timeAgo;
-        this.mAuthor = author;
-        this.mCommentLink = commentLink;
-        this.mText = text;
-        this.mDownvoted = downvoted;
+        mTimeAgo = timeAgo;
+        mAuthor = author;
+        mCommentLink = commentLink;
+        mText = text;
+        mCommentLevel = commentLevel;
+        mDownvoted = downvoted;
     }
 
     public String getTimeAgo() {
@@ -37,4 +45,15 @@ public class HNComment {
         return mDownvoted;
     }
 
+    public int getCommentLevel() {
+        return mCommentLevel;
+    }
+    
+    public Spanned getTextHTMLSpanCache() {
+        return mTextHTMLSpanCache;
+    }
+    
+    public void setTextHTMLSpanCache(Spanned HTMLSpanCache) {
+        mTextHTMLSpanCache = HTMLSpanCache;
+    }
 }

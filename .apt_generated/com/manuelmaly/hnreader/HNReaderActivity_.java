@@ -12,7 +12,10 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import com.googlecode.androidannotations.api.SdkVersionHelper;
 import com.manuelmaly.hnreader.R.id;
 import com.manuelmaly.hnreader.R.layout;
@@ -35,6 +38,9 @@ public final class HNReaderActivity_
 
     private void afterSetContentView_() {
         mPostsList = ((ListView) findViewById(id.main_list));
+        mRefreshImageView = ((ImageView) findViewById(id.main_refresh));
+        mBannerTitleView = ((TextView) findViewById(id.main_banner_title));
+        mBannerLayout = ((FrameLayout) findViewById(id.main_banner));
         init();
     }
 

@@ -4,22 +4,45 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/main_banner"
         android:layout_width="fill_parent"
         android:layout_height="48dp"
-        android:gravity="left|center_vertical"
-        android:orientation="horizontal" >
+        android:background="@drawable/actionbar_bg"
+        android:gravity="center"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" >
 
         <TextView
+            android:id="@+id/main_banner_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_name" />
-    </LinearLayout>
+            android:layout_gravity="center"
+            android:shadowColor="@android:color/black"
+            android:shadowDx="0"
+            android:shadowDy="-1"
+            android:shadowRadius="1"
+            android:text="HN"
+            android:textColor="@android:color/white"
+            android:textSize="24sp" />
+
+        <ImageView
+            android:id="@+id/main_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:src="@drawable/refresh"
+            android:padding="8dp" />
+    </FrameLayout>
 
     <ListView
         android:id="@+id/main_list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-         />
+        android:background="@color/peach"
+        android:cacheColorHint="@color/peach"
+        android:divider="#f0dfce"
+        android:dividerHeight="1dp"
+        android:fadingEdge="none" />
 
 </LinearLayout>

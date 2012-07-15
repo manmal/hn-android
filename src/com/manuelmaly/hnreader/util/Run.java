@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 
 public class Run {
 
@@ -14,8 +15,13 @@ public class Run {
         a.runOnUiThread(r);
     }
 
-    public static void inBackground(Runnable r, Context context) {
+    public static void inBackground(Runnable r) {
         backgroundExecutor.execute(r);
+    }
+    
+    public static void delayed(Runnable r, long delayMillis) {
+        Handler h = new Handler();
+        h.postDelayed(r, delayMillis);
     }
 
 }

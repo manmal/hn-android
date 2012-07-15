@@ -1,20 +1,27 @@
 package com.manuelmaly.hnreader.model;
 
-public class HNPost {
+import java.io.Serializable;
+
+public class HNPost implements Serializable {
     
+    private static final long serialVersionUID = -6764758363164898276L;
     private String mURL;
     private String mTitle;
     private String mAuthor;
     private int mCommentsCount;
     private int mPoints;
+    private String mURLDomain;
+    private String mPostID; // as found in link to comments
     
-    public HNPost(String url, String title, String author, int commentsCount, int points) {
+    public HNPost(String url, String title, String urlDomain, String author, String postID, int commentsCount, int points) {
         super();
-        this.mURL = url;
-        this.mTitle = title;
-        this.mAuthor = author;
-        this.mCommentsCount = commentsCount;
-        this.mPoints = points;
+        mURL = url;
+        mTitle = title;
+        mURLDomain = urlDomain;
+        mAuthor = author;
+        mPostID = postID;
+        mCommentsCount = commentsCount;
+        mPoints = points;
     }
 
     public String getURL() {
@@ -32,9 +39,17 @@ public class HNPost {
     public int getCommentsCount() {
         return mCommentsCount;
     }
+    
+    public String getPostID() {
+        return mPostID;
+    }
 
     public int getPoints() {
         return mPoints;
+    }
+    
+    public String getURLDomain() {
+        return mURLDomain;
     }
     
 }
