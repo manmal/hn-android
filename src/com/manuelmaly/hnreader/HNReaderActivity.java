@@ -29,6 +29,7 @@ import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
 import com.manuelmaly.hnreader.model.HNFeed;
 import com.manuelmaly.hnreader.model.HNPost;
+import com.manuelmaly.hnreader.parser.BaseHTMLParser;
 import com.manuelmaly.hnreader.reuse.ImageViewFader;
 import com.manuelmaly.hnreader.reuse.ViewRotator;
 import com.manuelmaly.hnreader.server.IAPICommand;
@@ -178,8 +179,15 @@ public class HNReaderActivity extends Activity implements ITaskFinishedHandler<H
             PostViewHolder holder = (PostViewHolder) convertView.getTag();
             holder.titleView.setText(item.getTitle());
             holder.urlView.setText(item.getURLDomain());
-            holder.pointsView.setText(item.getPoints() + "");
-            holder.commentsButton.setText(item.getCommentsCount() + "");
+            if (item.getPoints() != BaseHTMLParser.UNDEFINED)
+                holder.pointsView.setText(item.getPoints() + "");
+            else
+                holder.pointsView.setText("-");
+            if (item.getCommentsCount() != BaseHTMLParser.UNDEFINED) {
+                holder.commentsButton.setVisibility(View.VISIBLE);
+                holder.commentsButton.setText(item.getCommentsCount() + "");
+            } else
+                holder.commentsButton.setVisibility(View.INVISIBLE);
             holder.commentsButton.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
                     Intent i = new Intent(HNReaderActivity.this, CommentsActivity_.class);

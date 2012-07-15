@@ -11,6 +11,8 @@ import org.jsoup.nodes.Document;
 import org.w3c.dom.Node;
 
 public abstract class BaseHTMLParser<T> {
+    
+    public static final int UNDEFINED = -1;
 
     public T parse(String input) throws Exception {
       return parseDocument(Jsoup.parse(input));
@@ -55,10 +57,10 @@ public abstract class BaseHTMLParser<T> {
             try {
                 return Integer.parseInt(extractedValue);
             } catch (NumberFormatException e) {
-                return 0;
+                return UNDEFINED;
             }
         }
-        return 0;
+        return UNDEFINED;
     }
 
     public static String getStringValuePrefixedByString(String value, String prefix) {
