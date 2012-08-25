@@ -10,6 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="1"
+        android:background="@drawable/main_list_selector"
         android:gravity="left|center_vertical"
         android:orientation="vertical"
         android:paddingBottom="8dp"
