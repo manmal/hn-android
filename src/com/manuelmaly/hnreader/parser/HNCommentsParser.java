@@ -20,7 +20,6 @@ import com.manuelmaly.hnreader.model.HNPost;
 
 public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
 
-    
     @Override
     public HNPostComments parseDocument(Document doc) throws Exception {
         if (doc == null)
@@ -45,19 +44,20 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
                 break;
 
             text = mainRowElement.select("span.comment > *:not(*:contains(reply))").html();
-            
+
             Element comHeadElement = mainRowElement.select("span.comhead").first();
             author = comHeadElement.select("a[href*=user]").text();
             String timeAgoRaw = getFirstTextValueInElementChildren(comHeadElement);
-            timeAgo = timeAgoRaw.substring(0, timeAgoRaw.indexOf("|"));
+            if (timeAgoRaw.length() > 0)
+                timeAgo = timeAgoRaw.substring(0, timeAgoRaw.indexOf("|"));
             Element urlElement = comHeadElement.select("a[href*=item]").first();
             if (urlElement != null)
                 url = urlElement.attr("href");
-            
+
             String levelSpacerWidth = rowLevelElement.select("img").first().attr("width");
             if (levelSpacerWidth != null)
                 level = Integer.parseInt(levelSpacerWidth) / 40;
-            
+
             comments.add(new HNComment(timeAgo, author, url, text, level, isDownvoted));
 
             if (endParsing)
@@ -66,5 +66,5 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
 
         return new HNPostComments(comments);
     }
-    
+
 }

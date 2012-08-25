@@ -1,2 +1,12 @@
 bin
 gen
+.apt_generated
+.project
+.classpath
+.checkstyle
+.settings/
+default.properties
+assets/server.properties
+res/values/maps-key.xml
+tmp/
+.DS_Store
