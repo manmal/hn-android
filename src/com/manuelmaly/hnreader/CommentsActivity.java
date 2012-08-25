@@ -184,6 +184,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                 holder.textView = (TextView) convertView.findViewById(R.id.comments_list_item_text);
                 holder.spacersContainer = (LinearLayout) convertView
                     .findViewById(R.id.comments_list_item_spacerscontainer);
+                holder.authorView = (TextView) convertView.findViewById(R.id.comments_list_item_author);
+                holder.timeAgoView = (TextView) convertView.findViewById(R.id.comments_list_item_timeago);
                 convertView.setTag(holder);
             }
             HNComment comment = getItem(position);
@@ -196,6 +198,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
     static class CommentViewHolder {
         TextView textView;
+        TextView authorView;
+        TextView timeAgoView;
         LinearLayout spacersContainer;
 
         public void setComment(HNComment comment, int commentLevelIndentPx, Context c) {
@@ -206,6 +210,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                 textView.setText(comment.getTextHTMLSpanCache());
             }
             textView.setMovementMethod(LinkMovementMethod.getInstance());
+            authorView.setText(comment.getAuthor());
+            timeAgoView.setText(", " + comment.getTimeAgo());
             spacersContainer.removeAllViews();
             for (int i = 0; i < comment.getCommentLevel(); i++) {
                 View spacer = new View(c);

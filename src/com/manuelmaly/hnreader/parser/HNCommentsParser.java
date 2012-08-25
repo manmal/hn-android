@@ -39,12 +39,20 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
 
         boolean endParsing = false;
         for (int row = 0; row < tableRows.size(); row++) {
-            Element rowElement = tableRows.get(row).select("td:eq(2)").first();
+            Element mainRowElement = tableRows.get(row).select("td:eq(2)").first();
             Element rowLevelElement = tableRows.get(row).select("td:eq(0)").first();
-            if (rowElement == null)
+            if (mainRowElement == null)
                 break;
 
-            text = rowElement.select("span.comment > *:not(*:contains(reply))").html();
+            text = mainRowElement.select("span.comment > *:not(*:contains(reply))").html();
+            
+            Element comHeadElement = mainRowElement.select("span.comhead").first();
+            author = comHeadElement.select("a[href*=user]").text();
+            String timeAgoRaw = getFirstTextValueInElementChildren(comHeadElement);
+            timeAgo = timeAgoRaw.substring(0, timeAgoRaw.indexOf("|"));
+            Element urlElement = comHeadElement.select("a[href*=item]").first();
+            if (urlElement != null)
+                url = urlElement.attr("href");
             
             String levelSpacerWidth = rowLevelElement.select("img").first().attr("width");
             if (levelSpacerWidth != null)

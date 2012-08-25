@@ -8,6 +8,8 @@ import javax.xml.xpath.XPathConstants;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
 import org.w3c.dom.Node;
 
 public abstract class BaseHTMLParser<T> {
@@ -36,6 +38,16 @@ public abstract class BaseHTMLParser<T> {
             return list.get(index);
         else
             return null;
+    }
+    
+    public static String getFirstTextValueInElementChildren(Element element) {
+        if (element == null)
+            return "";
+        
+        for (org.jsoup.nodes.Node node : element.childNodes())
+            if (node instanceof TextNode)
+                return ((TextNode) node).text();
+        return "";
     }
     
     public static String getStringValue(String query, Node source, XPath xpath) {

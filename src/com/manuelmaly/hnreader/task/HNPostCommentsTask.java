@@ -92,7 +92,7 @@ public class HNPostCommentsTask extends BaseTask<HNPostComments> {
                     });
                 } catch (Exception e) {
                     ExceptionUtil.sendToGoogleAnalytics(e, Const.GAN_ACTION_PARSING);
-                    Log.e("HNFeedTask", e.getMessage());
+                    Log.e("HNFeedTask", "Parse error!", e);
                 }
             }
 
