@@ -4,8 +4,8 @@ HN (Android)
 This is the official repo for **HN**, an unofficial Hacker News client for Android, built for reliability and usability.  
 The introductory blog post can be found at [blog address].
 
-If you find any issues, please post them into the [Issues section](https://github.com/manmal/hn-android/issues) or send
-me a [Pull request](https://github.com/manmal/hn-android/pulls) for the change.
+If you find any issues, please post them into the [Issues section](https://github.com/manmal/hn-android/issues), send a
+[Pull request](https://github.com/manmal/hn-android/pulls), or tweet me at [@manuelmaly](https://twitter.com/manuelmaly/).
 
 This project is early beta, please set your expectations accordingly.
 
@@ -27,7 +27,7 @@ Third party libraries
 License
 -------
 
-This project is licensed under the [MIT License] (http://opensource.org/licenses/mit-license.php).
+[MIT License] (http://opensource.org/licenses/mit-license.php):
 
 Copyright (c) 2012 Manuel Maly
 
