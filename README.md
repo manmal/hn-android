@@ -16,13 +16,15 @@ Setup
 2. Make sure you have an SDK version of >= Android 2.2 (API Level 8) installed
 3. Import the project to Eclipse, and select an available Android SDK target if it complains that "Android 2.2" is not available on your system
 
-Third party libraries
----------------------
+Third party software
+--------------------
 
-* Android Support Library v4 (http://developer.android.com/tools/extras/support-library.html) - Apache License 2.0
-* Android Annotations (https://github.com/excilys/androidannotations) - Apache License 2.0
-* Jsoup (http://jsoup.org) - MIT License
-* Google Analytics (http://www.google.com/analytics/) - license: http://www.google.com/intl/en/analytics/tos_content.html
+* [Android Support Library v4](http://developer.android.com/tools/extras/support-library.html) - Apache License 2.0
+* [Android Annotations](https://github.com/excilys/androidannotations) - Apache License 2.0
+* [Google Analytics](http://www.google.com/analytics/) - [custom license](http://www.google.com/intl/en/analytics/tos_content.html)
+* [Jsoup](http://jsoup.org) - MIT License
+
+* [Comfortaa Font](http://www.google.com/webfonts/specimen/Comfortaa) - SIL Open Font License
 
 License
 -------
