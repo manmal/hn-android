@@ -59,7 +59,7 @@ public abstract class BaseHTMLParser<T> {
         return "";
     }
     
-    public static Integer getIntValueFollowedByString(String value, String suffix) {
+    public static Integer getIntValueFollowedBySuffix(String value, String suffix) {
         if (value == null || suffix == null)
             return 0;
 
@@ -75,7 +75,7 @@ public abstract class BaseHTMLParser<T> {
         return UNDEFINED;
     }
 
-    public static String getStringValuePrefixedByString(String value, String prefix) {
+    public static String getStringValuePrefixedByPrefix(String value, String prefix) {
         int prefixWordIdx = value.indexOf(prefix);
         if (prefixWordIdx >= 0) {
             return value.substring(prefixWordIdx + prefix.length());

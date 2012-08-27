@@ -51,14 +51,14 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                     urlDomain = getDomainName(url);
                     break;
                 case 1:
-                    points = getIntValueFollowedByString(rowElement.select("tr > td:eq(1) > span").text(), " p");
+                    points = getIntValueFollowedBySuffix(rowElement.select("tr > td:eq(1) > span").text(), " p");
                     author = rowElement.select("tr > td:eq(1) > a[href*=user]").text();
                     Element e2 = rowElement.select("tr > td:eq(1) > a[href*=item]").first();
                     if (e2 != null) {
-                        commentsCount = getIntValueFollowedByString(e2.text(), " c");
+                        commentsCount = getIntValueFollowedBySuffix(e2.text(), " c");
                         if (commentsCount == BaseHTMLParser.UNDEFINED && e2.text().contains("discuss"))
                             commentsCount = 0;
-                        postID = getStringValuePrefixedByString(e2.attr("href"), "id=");
+                        postID = getStringValuePrefixedByPrefix(e2.attr("href"), "id=");
                     }
                     else
                         commentsCount = BaseHTMLParser.UNDEFINED;
