@@ -24,7 +24,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="ArticleReaderActivity_" >
+        <activity
+            android:name="ArticleReaderActivity_"
+            android:configChanges="keyboardHidden|orientation" >
         </activity>
         <activity
             android:name="CommentsActivity_"
