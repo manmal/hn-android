@@ -38,7 +38,7 @@ public class HNFeedTask extends BaseTask<HNFeed> {
 
     public static void startOrReattach(Activity activity, ITaskFinishedHandler<HNFeed> finishedHandler) {
         HNFeedTask task = getInstance();
-        task.setOnFinishBehaviour(activity, finishedHandler, HNFeed.class);
+        task.setOnFinishedHandler(activity, finishedHandler, HNFeed.class);
         if (!task.isRunning())
             task.startInBackground();
     }

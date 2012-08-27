@@ -48,7 +48,7 @@ public class HNPostCommentsTask extends BaseTask<HNPostComments> {
     public static void startOrReattach(Activity activity, ITaskFinishedHandler<HNPostComments> finishedHandler,
         String postID) {
         HNPostCommentsTask task = getInstance(postID);
-        task.setOnFinishBehaviour(activity, finishedHandler, HNPostComments.class);
+        task.setOnFinishedHandler(activity, finishedHandler, HNPostComments.class);
         if (!task.isRunning())
             task.startInBackground();
     }

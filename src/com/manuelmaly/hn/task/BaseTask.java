@@ -79,11 +79,10 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
      * given Activity.
      * 
      * @param activity
-     * @param task
-     * @param success
-     * @param failure
+     * @param finishedHandler
+     * @param resultClazz
      */
-    public void setOnFinishBehaviour(Activity activity, ITaskFinishedHandler<T> finishedHandler, final Class<T> resultClazz) {
+    public void setOnFinishedHandler(Activity activity, ITaskFinishedHandler<T> finishedHandler, final Class<T> resultClazz) {
         final SoftReference<Activity> activityRef = new SoftReference<Activity>(activity);
         final SoftReference<ITaskFinishedHandler<T>> finishedHandlerRef = new SoftReference<ITaskFinishedHandler<T>>(finishedHandler);
         BroadcastReceiver finishedListener = new BroadcastReceiver() {
