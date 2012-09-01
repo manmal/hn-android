@@ -2,5 +2,7 @@
 <resources>
     <string name="app_name">HN</string>
     <string name="comments">Comments</string>
+    <string name="article">Article</string>
+    <string name="share_article_url">Share Article URL</string>
 
 </resources>

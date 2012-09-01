@@ -2,6 +2,7 @@ package com.manuelmaly.hn;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -14,6 +15,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
@@ -51,21 +53,24 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     @ViewById(R.id.comments_list)
     ListView mCommentsList;
 
-    @ViewById(R.id.main_banner)
-    FrameLayout mBannerLayout;
+    @ViewById(R.id.actionbar)
+    FrameLayout mActionbarLayout;
 
-    @ViewById(R.id.main_banner_title)
-    TextView mBannerTitleView;
+    @ViewById(R.id.actionbar_title_button)
+    Button mActionbarTitleButton;
 
-    @ViewById(R.id.main_refresh)
+    @ViewById(R.id.actionbar_refresh)
     ImageView mRefreshImageView;
+
+    @ViewById(R.id.actionbar_share)
+    ImageView mShareImageView;
+
+    @ViewById(R.id.actionbar_back)
+    ImageView mBackImageView;
 
     HNPost mPost;
     HNPostComments mComments;
     CommentsAdapter mCommentsListAdapter;
-
-    Animation mRefreshButtonInAnimation;
-    Animation mRefreshButtonOutAnimation;
 
     int mCommentLevelIndentPx;
 
@@ -83,18 +88,39 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         mCommentsListAdapter = new CommentsAdapter();
         mCommentsList.setAdapter(mCommentsListAdapter);
 
-        mRefreshButtonInAnimation = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
-        mRefreshButtonOutAnimation = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
-
-        mRefreshImageView = (ImageView) findViewById(R.id.main_refresh);
         mRefreshImageView.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
 
-        mBannerTitleView.setTypeface(FontHelper.getComfortaa(this, true));
-        mBannerTitleView.setText(getString(R.string.comments));
+        mActionbarTitleButton.setTypeface(FontHelper.getComfortaa(this, true));
+        mActionbarTitleButton.setText(getString(R.string.comments));
+        mActionbarTitleButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                Intent i = new Intent(CommentsActivity.this, ArticleReaderActivity_.class);
+                i.putExtra(CommentsActivity.EXTRA_HNPOST, mPost);
+                startActivity(i);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                finish();
+            }
+        });
 
-        mBannerLayout.setOnClickListener(new OnClickListener() {
+        mActionbarLayout.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 mCommentsList.smoothScrollToPosition(0);
+            }
+        });
+
+        mBackImageView.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        mShareImageView.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_article_url));
+                i.putExtra(Intent.EXTRA_TEXT, mPost.getURL());
+                startActivity(Intent.createChooser(i, getString(R.string.share_article_url)));
             }
         });
 
@@ -160,7 +186,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     class CommentsAdapter extends BaseAdapter {
-        
+
         @Override
         public int getCount() {
             return mComments.getComments().size();

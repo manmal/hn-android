@@ -49,20 +49,17 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     @ViewById(R.id.main_list)
     ListView mPostsList;
 
-    @ViewById(R.id.main_banner)
-    FrameLayout mBannerLayout;
+    @ViewById(R.id.actionbar)
+    FrameLayout mActionbarLayout;
 
-    @ViewById(R.id.main_banner_title)
-    TextView mBannerTitleView;
+    @ViewById(R.id.actionbar_title)
+    TextView mActionbarTitleView;
 
-    @ViewById(R.id.main_refresh)
+    @ViewById(R.id.actionbar_refresh)
     ImageView mRefreshImageView;
 
     HNFeed mFeed;
     PostsAdapter mPostsListAdapter;
-
-    Animation mRefreshButtonInAnimation;
-    Animation mRefreshButtonOutAnimation;
 
     @AfterViews
     public void init() {
@@ -70,15 +67,11 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         mPostsListAdapter = new PostsAdapter();
         mPostsList.setAdapter(mPostsListAdapter);
 
-        mRefreshButtonInAnimation = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
-        mRefreshButtonOutAnimation = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
-
-        mRefreshImageView = (ImageView) findViewById(R.id.main_refresh);
         mRefreshImageView.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
 
-        mBannerTitleView.setTypeface(FontHelper.getComfortaa(this, true));
+        mActionbarTitleView.setTypeface(FontHelper.getComfortaa(this, true));
 
-        mBannerLayout.setOnClickListener(new OnClickListener() {
+        mActionbarLayout.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 mPostsList.smoothScrollToPosition(0);
             }

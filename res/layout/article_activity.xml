@@ -4,9 +4,71 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <WebView
-        android:id="@+id/article_webview"
+    <FrameLayout
+        android:id="@+id/actionbar"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="48dp"
+        android:background="@drawable/actionbar_bg_bright"
+        android:gravity="center"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" >
+
+        <ImageView
+            android:id="@+id/actionbar_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            android:src="@drawable/back" />
+
+        <Button
+            android:id="@+id/actionbar_title_button"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_button"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:shadowColor="@android:color/white"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:text="Article"
+            android:textColor="#797979"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/actionbar_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="48dp"
+            android:padding="8dp"
+            android:src="@drawable/share" />
+
+        <ImageView
+            android:id="@+id/actionbar_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:padding="8dp"
+            android:src="@drawable/refresh" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <WebView
+            android:id="@+id/article_webview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="@drawable/shadow" />
+    </FrameLayout>
 
 </LinearLayout>

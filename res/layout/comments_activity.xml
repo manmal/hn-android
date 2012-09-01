@@ -5,44 +5,75 @@
     android:orientation="vertical" >
 
     <FrameLayout
-        android:id="@+id/main_banner"
+        android:id="@+id/actionbar"
         android:layout_width="fill_parent"
         android:layout_height="48dp"
-        android:background="@drawable/actionbar_bg"
+        android:background="@drawable/actionbar_bg_orange"
         android:gravity="center"
         android:paddingLeft="8dp"
         android:paddingRight="8dp" >
 
-        <TextView
-            android:id="@+id/main_banner_title"
+        <ImageView
+            android:id="@+id/actionbar_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            android:src="@drawable/back" />
+
+        <Button
+            android:id="@+id/actionbar_title_button"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
             android:layout_gravity="center"
+            android:background="@drawable/rounded_button"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
             android:shadowColor="@android:color/black"
             android:shadowDx="0"
             android:shadowDy="-1"
             android:shadowRadius="1"
             android:text="HN"
             android:textColor="@android:color/white"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
         <ImageView
-            android:id="@+id/main_refresh"
+            android:id="@+id/actionbar_share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:src="@drawable/refresh"
-            android:padding="8dp" />
+            android:layout_marginRight="48dp"
+            android:padding="8dp"
+            android:src="@drawable/share" />
+
+        <ImageView
+            android:id="@+id/actionbar_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:padding="8dp"
+            android:src="@drawable/refresh" />
     </FrameLayout>
 
-    <ListView
-        android:id="@+id/comments_list"
+    <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@color/peach"
-        android:cacheColorHint="@color/peach"
-        android:divider="#b8ab9e"
-        android:dividerHeight="1dp"
-        android:fadingEdge="none" />
+        android:layout_height="fill_parent" >
+
+        <ListView
+            android:id="@+id/comments_list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@color/peach"
+            android:cacheColorHint="@color/peach"
+            android:divider="#b8ab9e"
+            android:dividerHeight="1dp"
+            android:fadingEdge="none" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="@drawable/shadow" />
+    </FrameLayout>
 
 </LinearLayout>
