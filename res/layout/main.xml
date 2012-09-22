@@ -35,24 +35,14 @@
             android:src="@drawable/refresh" />
     </FrameLayout>
 
-    <FrameLayout
+    <ListView
+        android:id="@+id/main_list"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-
-        <ListView
-            android:id="@+id/main_list"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:background="@color/peach"
-            android:cacheColorHint="@color/peach"
-            android:divider="#f0dfce"
-            android:dividerHeight="1dp"
-            android:fadingEdge="none" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/shadow" />
-    </FrameLayout>
+        android:layout_height="fill_parent"
+        android:background="@color/peach"
+        android:cacheColorHint="@color/peach"
+        android:divider="#f0dfce"
+        android:dividerHeight="1dp"
+        android:fadingEdge="none" />
 
 </LinearLayout>

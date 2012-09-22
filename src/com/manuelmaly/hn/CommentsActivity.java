@@ -12,8 +12,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -33,14 +31,12 @@ import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.model.HNPostComments;
 import com.manuelmaly.hn.reuse.ImageViewFader;
 import com.manuelmaly.hn.reuse.ViewRotator;
-import com.manuelmaly.hn.task.HNFeedTask;
 import com.manuelmaly.hn.task.HNPostCommentsTask;
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
 import com.manuelmaly.hn.util.DisplayHelper;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.Run;
-import com.manuelmaly.hn.R;
 
 @EActivity(R.layout.comments_activity)
 public class CommentsActivity extends Activity implements ITaskFinishedHandler<HNPostComments> {
@@ -126,8 +122,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
         mRefreshImageView.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                if (HNFeedTask.isRunning(getApplicationContext()))
-                    HNFeedTask.stopCurrent(getApplicationContext());
+                if (HNPostCommentsTask.isRunning(mPost.getPostID()))
+                    HNPostCommentsTask.stopCurrent(mPost.getPostID());
                 else
                     startFeedLoading();
             }
@@ -138,7 +134,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     @Override
-    public void onTaskFinished(TaskResultCode code, HNPostComments result) {
+    public void onTaskFinished(int taskCode, TaskResultCode code, HNPostComments result) {
         if (code.equals(TaskResultCode.Success) && mCommentsListAdapter != null)
             showComments(result);
         updateStatusIndicatorOnLoadingFinished(code);
@@ -181,7 +177,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     private void startFeedLoading() {
-        HNPostCommentsTask.startOrReattach(this, this, mPost.getPostID());
+        HNPostCommentsTask.startOrReattach(this, this, mPost.getPostID(), 0);
         updateStatusIndicatorOnLoadingStarted();
     }
 

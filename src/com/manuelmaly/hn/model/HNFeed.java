@@ -9,13 +9,15 @@ public class HNFeed implements Serializable {
 
     private static final long serialVersionUID = -7957577448455303642L;
     private List<HNPost> mPosts;
+    private String mNextPageURL;
     
     public HNFeed() {
         mPosts = new ArrayList<HNPost>();
     }
     
-    public HNFeed(List<HNPost> posts) {
-        this.mPosts = posts;
+    public HNFeed(List<HNPost> posts, String nextPageURL) {
+        mPosts = posts;
+        mNextPageURL = nextPageURL;
     }
 
     public void addPost(HNPost post) {
@@ -28,6 +30,22 @@ public class HNFeed implements Serializable {
     
     public void addPosts(Collection<HNPost> posts) {
         mPosts.addAll(posts);
+    }
+    
+    public String getNextPageURL() {
+        return mNextPageURL;
+    }
+    
+    public void setNextPageURL(String mNextPageURL) {
+        this.mNextPageURL = mNextPageURL;
+    }
+    
+    public void appendLoadMoreFeed(HNFeed feed) {
+        if (feed == null || feed.getPosts() == null)
+            return;
+        
+        mPosts.addAll(feed.getPosts());
+        mNextPageURL = feed.getNextPageURL();
     }
     
 }

@@ -43,9 +43,11 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
     protected int mErrorCode;
     protected boolean mIsRunning;
     protected CancelableRunnable mTaskRunnable;
+    protected int mTaskCode;
 
-    public BaseTask(String notificationBroadcastIntentID) {
+    public BaseTask(String notificationBroadcastIntentID, int taskCode) {
         mNotificationBroadcastIntentID = notificationBroadcastIntentID;
+        mTaskCode = taskCode;
     }
 
     protected void startInBackground() {
@@ -88,6 +90,8 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
         BroadcastReceiver finishedListener = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                LocalBroadcastManager.getInstance(App.getInstance()).unregisterReceiver(this);
+                
                 if (activityRef == null || activityRef.get() == null || finishedHandlerRef == null || finishedHandlerRef.get() == null)
                     return;
 
@@ -116,7 +120,7 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
                
                 Runnable r = new Runnable() {
                     public void run() {
-                        finishedHandler.onTaskFinished(TaskResultCode.fromErrorCode(errorCode), result);
+                        finishedHandler.onTaskFinished(mTaskCode, TaskResultCode.fromErrorCode(errorCode), result);
                     }
                 };
                 Run.onUiThread(r, activity);

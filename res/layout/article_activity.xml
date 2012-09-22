@@ -56,19 +56,9 @@
             android:src="@drawable/refresh" />
     </FrameLayout>
 
-    <FrameLayout
+    <WebView
+        android:id="@+id/article_webview"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-
-        <WebView
-            android:id="@+id/article_webview"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/shadow" />
-    </FrameLayout>
+        android:layout_height="fill_parent" />
 
 </LinearLayout>

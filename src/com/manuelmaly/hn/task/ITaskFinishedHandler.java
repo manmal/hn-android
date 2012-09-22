@@ -4,7 +4,7 @@ import com.manuelmaly.hn.server.IAPICommand;
 
 public interface ITaskFinishedHandler<T> {
 
-    public void onTaskFinished(TaskResultCode code, T result);
+    public void onTaskFinished(int taskCode, TaskResultCode code, T result);
     
     public enum TaskResultCode {
         Success, CancelledByUser, NoNetworkConnection, UnknownError;

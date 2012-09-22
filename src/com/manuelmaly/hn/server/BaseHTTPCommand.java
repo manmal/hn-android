@@ -79,7 +79,8 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
             }
 
             // Start request, handle response in separate handler:
-            HttpClient httpclient = new DefaultHttpClient(getHttpParams());
+            DefaultHttpClient httpclient = new DefaultHttpClient(getHttpParams());
+            httpclient.setCookieStore(null);
             mRequest = createRequest();
             httpclient.execute(setRequestData(mRequest), getResponseHandler());
         } catch (Exception e) {

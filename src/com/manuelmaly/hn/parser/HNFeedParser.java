@@ -24,6 +24,11 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
         // top table, we have to skip that:
         Elements tableRows = doc.select("table tr table tr");
         tableRows.remove(0);
+        
+        Elements nextPageURLElements = tableRows.select("a:matches(More)");
+        String nextPageURL = null;
+        if (nextPageURLElements.size() > 0)
+            nextPageURL = resolveRelativeHNURL(nextPageURLElements.attr("href"));
 
         String url = null;
         String title = null;
@@ -47,7 +52,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                     }
                     
                     title = e1.text();
-                    url = e1.attr("href");
+                    url = resolveRelativeHNURL(e1.attr("href"));
                     urlDomain = getDomainName(url);
                     break;
                 case 1:
@@ -73,7 +78,21 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                 break;
         }
 
-        return new HNFeed(posts);
+        return new HNFeed(posts, nextPageURL);
+    }
+    
+    public static String resolveRelativeHNURL(String url) {
+        if (url == null)
+            return null;
+        
+        String hnurl = "http://news.ycombinator.com/";
+        
+        if (url.startsWith("http") || url.startsWith("ftp")) {
+            return url;
+        } else if (url.startsWith("/"))
+            return hnurl + url.substring(1);
+        else
+            return hnurl + url;
     }
 
 }

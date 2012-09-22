@@ -3,9 +3,12 @@
 
     <item>
         <shape>
-            <solid android:color="#ffffff" />
+            <gradient
+                android:angle="270"
+                android:endColor="#aaaaaa"
+                android:startColor="#ffffff" />
 
-            <padding android:top="1dp" />
+            <padding android:top="1dp" android:bottom="1dp"/>
         </shape>
     </item>
     <item>

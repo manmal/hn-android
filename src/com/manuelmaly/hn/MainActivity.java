@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher.ViewFactory;
 
 import com.googlecode.androidannotations.annotations.AfterViews;
@@ -33,7 +34,9 @@ import com.manuelmaly.hn.parser.BaseHTMLParser;
 import com.manuelmaly.hn.reuse.ImageViewFader;
 import com.manuelmaly.hn.reuse.ViewRotator;
 import com.manuelmaly.hn.server.IAPICommand;
-import com.manuelmaly.hn.task.HNFeedTask;
+import com.manuelmaly.hn.task.HNFeedTaskBase;
+import com.manuelmaly.hn.task.HNFeedTaskLoadMore;
+import com.manuelmaly.hn.task.HNFeedTaskMainFeed;
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
@@ -60,10 +63,13 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
 
     HNFeed mFeed;
     PostsAdapter mPostsListAdapter;
+    
+    private static final int TASKCODE_LOAD_FEED = 10;
+    private static final int TASKCODE_LOAD_MORE_POSTS = 20;
 
     @AfterViews
     public void init() {
-        mFeed = new HNFeed(new ArrayList<HNPost>());
+        mFeed = new HNFeed(new ArrayList<HNPost>(), null);
         mPostsListAdapter = new PostsAdapter();
         mPostsList.setAdapter(mPostsListAdapter);
 
@@ -79,8 +85,8 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
 
         mRefreshImageView.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                if (HNFeedTask.isRunning(getApplicationContext()))
-                    HNFeedTask.stopCurrent(getApplicationContext());
+                if (HNFeedTaskMainFeed.isRunning(getApplicationContext()))
+                    HNFeedTaskMainFeed.stopCurrent(getApplicationContext());
                 else
                     startFeedLoading();
             }
@@ -91,10 +97,16 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     }
 
     @Override
-    public void onTaskFinished(TaskResultCode code, HNFeed result) {
-        if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
-            showFeed(result);
-        updateStatusIndicatorOnLoadingFinished(code);
+    public void onTaskFinished(int taskCode, TaskResultCode code, HNFeed result) {
+        if (taskCode == TASKCODE_LOAD_FEED) {
+            if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
+                showFeed(result);
+            updateStatusIndicatorOnLoadingFinished(code);
+        } else if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
+            mFeed.appendLoadMoreFeed(result);
+            mPostsListAdapter.notifyDataSetChanged();
+        }
+        
     }
 
     private void showFeed(HNFeed feed) {
@@ -124,8 +136,7 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
             ImageViewFader.startFadeOverToImage(mRefreshImageView, R.drawable.refresh_ok, 100, this);
             Run.delayed(new Runnable() {
                 public void run() {
-                    ImageViewFader.startFadeOverToImage(mRefreshImageView, R.drawable.refresh, 300,
-                        MainActivity.this);
+                    ImageViewFader.startFadeOverToImage(mRefreshImageView, R.drawable.refresh, 300, MainActivity.this);
                 }
             }, 2000);
         }
@@ -133,20 +144,32 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     }
 
     private void startFeedLoading() {
-        HNFeedTask.startOrReattach(this, this);
+        HNFeedTaskMainFeed.startOrReattach(this, this, TASKCODE_LOAD_FEED);
         updateStatusIndicatorOnLoadingStarted();
+    }
+    
+    private void startMorePostsLoading() {
+        HNFeedTaskLoadMore.start(this, this, mFeed, TASKCODE_LOAD_MORE_POSTS);
     }
 
     class PostsAdapter extends BaseAdapter {
 
+        private static final int VIEWTYPE_POST = 0;
+        private static final int VIEWTYPE_LOADMORE = 1;
+
         @Override
         public int getCount() {
-            return mFeed.getPosts().size();
+            return mFeed.getPosts().size() + 1; // +1 for the "Load more" cell
+                                                // at the
+                                                // bottom
         }
 
         @Override
         public HNPost getItem(int position) {
-            return mFeed.getPosts().get(position);
+            if (getItemViewType(position) == VIEWTYPE_POST)
+                return mFeed.getPosts().get(position);
+            else
+                return null;
         }
 
         @Override
@@ -156,46 +179,91 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         }
 
         @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = (LinearLayout) mInflater.inflate(R.layout.main_list_item, null);
-                PostViewHolder holder = new PostViewHolder();
-                holder.titleView = (TextView) convertView.findViewById(R.id.main_list_item_title);
-                holder.urlView = (TextView) convertView.findViewById(R.id.main_list_item_url);
-                holder.textContainer = (LinearLayout) convertView.findViewById(R.id.main_list_item_textcontainer);
-                holder.commentsButton = (Button) convertView.findViewById(R.id.main_list_item_comments_button);
-                holder.commentsButton.setTypeface(FontHelper.getComfortaa(MainActivity.this, false));
-                holder.pointsView = (TextView) convertView.findViewById(R.id.main_list_item_points);
-                holder.pointsView.setTypeface(FontHelper.getComfortaa(MainActivity.this, true));
-                convertView.setTag(holder);
-            }
-            HNPost item = getItem(position);
-            PostViewHolder holder = (PostViewHolder) convertView.getTag();
-            holder.titleView.setText(item.getTitle());
-            holder.urlView.setText(item.getURLDomain());
-            if (item.getPoints() != BaseHTMLParser.UNDEFINED)
-                holder.pointsView.setText(item.getPoints() + "");
+        public int getItemViewType(int position) {
+            if (position < mFeed.getPosts().size())
+                return VIEWTYPE_POST;
             else
-                holder.pointsView.setText("-");
-            if (item.getCommentsCount() != BaseHTMLParser.UNDEFINED) {
-                holder.commentsButton.setVisibility(View.VISIBLE);
-                holder.commentsButton.setText(item.getCommentsCount() + "");
-            } else
-                holder.commentsButton.setVisibility(View.INVISIBLE);
-            holder.commentsButton.setOnClickListener(new OnClickListener() {
-                public void onClick(View v) {
-                    Intent i = new Intent(MainActivity.this, CommentsActivity_.class);
-                    i.putExtra(CommentsActivity.EXTRA_HNPOST, getItem(position));
-                    startActivity(i);
-                }
-            });
-            holder.textContainer.setOnClickListener(new OnClickListener() {
-                public void onClick(View v) {
-                    Intent i = new Intent(MainActivity.this, ArticleReaderActivity_.class);
-                    i.putExtra(ArticleReaderActivity.EXTRA_HNPOST, getItem(position));
-                    startActivity(i);
-                }
-            });
+                return VIEWTYPE_LOADMORE;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            switch (getItemViewType(position)) {
+                case VIEWTYPE_POST:
+                    if (convertView == null) {
+                        convertView = (LinearLayout) mInflater.inflate(R.layout.main_list_item, null);
+                        PostViewHolder holder = new PostViewHolder();
+                        holder.titleView = (TextView) convertView.findViewById(R.id.main_list_item_title);
+                        holder.urlView = (TextView) convertView.findViewById(R.id.main_list_item_url);
+                        holder.textContainer = (LinearLayout) convertView
+                            .findViewById(R.id.main_list_item_textcontainer);
+                        holder.commentsButton = (Button) convertView.findViewById(R.id.main_list_item_comments_button);
+                        holder.commentsButton.setTypeface(FontHelper.getComfortaa(MainActivity.this, false));
+                        holder.pointsView = (TextView) convertView.findViewById(R.id.main_list_item_points);
+                        holder.pointsView.setTypeface(FontHelper.getComfortaa(MainActivity.this, true));
+                        convertView.setTag(holder);
+                    }
+
+                    HNPost item = getItem(position);
+                    PostViewHolder holder = (PostViewHolder) convertView.getTag();
+                    holder.titleView.setText(item.getTitle());
+                    holder.urlView.setText(item.getURLDomain());
+                    if (item.getPoints() != BaseHTMLParser.UNDEFINED)
+                        holder.pointsView.setText(item.getPoints() + "");
+                    else
+                        holder.pointsView.setText("-");
+                    if (item.getCommentsCount() != BaseHTMLParser.UNDEFINED) {
+                        holder.commentsButton.setVisibility(View.VISIBLE);
+                        holder.commentsButton.setText(item.getCommentsCount() + "");
+                    } else
+                        holder.commentsButton.setVisibility(View.INVISIBLE);
+                    holder.commentsButton.setOnClickListener(new OnClickListener() {
+                        public void onClick(View v) {
+                            Intent i = new Intent(MainActivity.this, CommentsActivity_.class);
+                            i.putExtra(CommentsActivity.EXTRA_HNPOST, getItem(position));
+                            startActivity(i);
+                        }
+                    });
+                    holder.textContainer.setOnClickListener(new OnClickListener() {
+                        public void onClick(View v) {
+                            Intent i = new Intent(MainActivity.this, ArticleReaderActivity_.class);
+                            i.putExtra(ArticleReaderActivity.EXTRA_HNPOST, getItem(position));
+                            startActivity(i);
+                        }
+                    });
+                    break;
+
+                case VIEWTYPE_LOADMORE:
+                    // I don't use the preloaded convertView here because it's only one cell
+                    convertView = (FrameLayout) mInflater.inflate(R.layout.main_list_item_loadmore, null);
+                    final TextView textView = (TextView) convertView.findViewById(R.id.main_list_item_loadmore_text);
+                    textView.setTypeface(FontHelper.getComfortaa(MainActivity.this, true));
+                    final ImageView imageView = (ImageView) convertView.findViewById(R.id.main_list_item_loadmore_loadingimage);
+                    if (HNFeedTaskLoadMore.isRunning(MainActivity.this, TASKCODE_LOAD_MORE_POSTS)) {
+                        textView.setVisibility(View.INVISIBLE);
+                        imageView.setVisibility(View.VISIBLE);
+                        convertView.setClickable(false);
+                    }
+                    
+                    final View convertViewFinal = convertView;
+                    convertView.setOnClickListener(new OnClickListener() {
+                        public void onClick(View v) {
+                            textView.setVisibility(View.INVISIBLE);
+                            imageView.setVisibility(View.VISIBLE);
+                            convertViewFinal.setClickable(false);
+                            startMorePostsLoading();
+                        }
+                    });
+                    break;
+                default:
+                    break;
+            }
+
             return convertView;
         }
 

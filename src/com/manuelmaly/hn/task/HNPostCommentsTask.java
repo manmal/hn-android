@@ -24,8 +24,8 @@ public class HNPostCommentsTask extends BaseTask<HNPostComments> {
 
     private String mPostID; // for which post shall comments be loaded?
 
-    private HNPostCommentsTask(String postID) {
-        super(BROADCAST_INTENT_ID);
+    private HNPostCommentsTask(String postID, int taskCode) {
+        super(BROADCAST_INTENT_ID, taskCode);
         mPostID = postID;
     }
 
@@ -37,28 +37,28 @@ public class HNPostCommentsTask extends BaseTask<HNPostComments> {
      * 
      * @return
      */
-    private static HNPostCommentsTask getInstance(String postID) {
+    private static HNPostCommentsTask getInstance(String postID, int taskCode) {
         synchronized (HNPostCommentsTask.class) {
             if (!runningInstances.containsKey(postID))
-                runningInstances.put(postID, new HNPostCommentsTask(postID));
+                runningInstances.put(postID, new HNPostCommentsTask(postID, taskCode));
         }
         return runningInstances.get(postID);
     }
 
     public static void startOrReattach(Activity activity, ITaskFinishedHandler<HNPostComments> finishedHandler,
-        String postID) {
-        HNPostCommentsTask task = getInstance(postID);
+        String postID, int taskCode) {
+        HNPostCommentsTask task = getInstance(postID, taskCode);
         task.setOnFinishedHandler(activity, finishedHandler, HNPostComments.class);
         if (!task.isRunning())
             task.startInBackground();
     }
 
     public static void stopCurrent(String postID) {
-        getInstance(postID).cancel();
+        getInstance(postID, 0).cancel();
     }
 
     public static boolean isRunning(String postID) {
-        return getInstance(postID).isRunning();
+        return getInstance(postID, 0).isRunning();
     }
 
     @Override

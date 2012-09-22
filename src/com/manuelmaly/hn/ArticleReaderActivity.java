@@ -19,7 +19,7 @@ import com.googlecode.androidannotations.annotations.ViewById;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.reuse.ImageViewFader;
 import com.manuelmaly.hn.reuse.ViewRotator;
-import com.manuelmaly.hn.task.HNFeedTask;
+import com.manuelmaly.hn.task.HNFeedTaskBase;
 import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.Run;
 
