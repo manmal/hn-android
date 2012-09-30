@@ -19,6 +19,7 @@ import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher.ViewFactory;
 
@@ -141,8 +142,6 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     private void showComments(HNPostComments comments) {
-        for (HNComment comment : comments.getComments())
-            comment.setTextHTMLSpanCache(Html.fromHtml(comment.getText()));
         mComments = comments;
         mCommentsListAdapter.notifyDataSetChanged();
     }
@@ -202,18 +201,27 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = (LinearLayout) mInflater.inflate(R.layout.comments_list_item, null);
+                convertView = (FrameLayout) mInflater.inflate(R.layout.comments_list_item, null);
                 CommentViewHolder holder = new CommentViewHolder();
                 holder.textView = (TextView) convertView.findViewById(R.id.comments_list_item_text);
                 holder.spacersContainer = (LinearLayout) convertView
                     .findViewById(R.id.comments_list_item_spacerscontainer);
                 holder.authorView = (TextView) convertView.findViewById(R.id.comments_list_item_author);
                 holder.timeAgoView = (TextView) convertView.findViewById(R.id.comments_list_item_timeago);
+                holder.expandView = (ImageView) convertView.findViewById(R.id.comments_list_item_expand);
                 convertView.setTag(holder);
             }
             HNComment comment = getItem(position);
             CommentViewHolder holder = (CommentViewHolder) convertView.getTag();
             holder.setComment(comment, mCommentLevelIndentPx, CommentsActivity.this);
+            holder.textView.setOnClickListener(new OnClickListener() {
+                public void onClick(View v) {
+                    if (getItem(position).getTreeNode().hasChildren()) {
+                        mComments.toggleCommentExpanded(getItem(position));
+                        mCommentsListAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
             return convertView;
         }
 
@@ -223,18 +231,15 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         TextView textView;
         TextView authorView;
         TextView timeAgoView;
+        ImageView expandView;
         LinearLayout spacersContainer;
 
         public void setComment(HNComment comment, int commentLevelIndentPx, Context c) {
-            if (comment.getTextHTMLSpanCache() != null)
-                textView.setText(comment.getTextHTMLSpanCache());
-            else {
-                comment.setTextHTMLSpanCache(Html.fromHtml(comment.getText()));
-                textView.setText(comment.getTextHTMLSpanCache());
-            }
+            textView.setText(Html.fromHtml(comment.getText()));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
             authorView.setText(comment.getAuthor());
             timeAgoView.setText(", " + comment.getTimeAgo());
+            expandView.setVisibility(comment.getTreeNode().isExpanded() ? View.INVISIBLE : View.VISIBLE);
             spacersContainer.removeAllViews();
             for (int i = 0; i < comment.getCommentLevel(); i++) {
                 View spacer = new View(c);

@@ -13,7 +13,7 @@ public class HNComment implements Serializable {
     private String mText;
     private int mCommentLevel;
     private boolean mDownvoted;
-    private Spanned mTextHTMLSpanCache;
+    private HNCommentTreeNode mTreeNode;
 
     public HNComment(String timeAgo, String author, String commentLink, String text, int commentLevel, boolean downvoted) {
         super();
@@ -49,11 +49,12 @@ public class HNComment implements Serializable {
         return mCommentLevel;
     }
     
-    public Spanned getTextHTMLSpanCache() {
-        return mTextHTMLSpanCache;
+    public HNCommentTreeNode getTreeNode() {
+        return mTreeNode;
     }
     
-    public void setTextHTMLSpanCache(Spanned HTMLSpanCache) {
-        mTextHTMLSpanCache = HTMLSpanCache;
+    public void setTreeNode(HNCommentTreeNode treeNode) {
+        mTreeNode = treeNode;
     }
+    
 }

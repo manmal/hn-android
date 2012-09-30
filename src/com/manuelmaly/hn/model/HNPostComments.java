@@ -4,30 +4,69 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.util.Log;
+
 public class HNPostComments implements Serializable {
 
     private static final long serialVersionUID = -2305617988079011364L;
-private List<HNComment> mComments;
-    
+    private List<HNCommentTreeNode> mTreeNodes;
+    private transient List<HNComment> mCommentsCache;
+    private boolean mIsTreeDirty;
+
     public HNPostComments() {
-        mComments = new ArrayList<HNComment>();
-    }
-    
-    public HNPostComments(List<HNComment> comments) {
-        mComments = comments;
+        mTreeNodes = new ArrayList<HNCommentTreeNode>();
     }
 
-    public void addComment(HNComment comment) {
-        mComments.add(comment);
+    public HNPostComments(List<HNComment> comments) {
+        mTreeNodes = new ArrayList<HNCommentTreeNode>();
+        for (HNComment comment : comments) {
+            if (comment.getCommentLevel() == 0)
+                mTreeNodes.add(makeTreeNode(comment, comments));
+        }
+    }
+
+    public List<HNCommentTreeNode> getTreeNodes() {
+        return mTreeNodes;
     }
 
     public List<HNComment> getComments() {
-        return mComments;
+        if (mCommentsCache == null || mIsTreeDirty) {
+            mCommentsCache = new ArrayList<HNComment>();
+            
+            if (mTreeNodes == null)
+                mTreeNodes = new ArrayList<HNCommentTreeNode>();
+            
+            for (HNCommentTreeNode node : mTreeNodes)
+                mCommentsCache.addAll(node.getVisibleComments());
+            mIsTreeDirty = false;
+        }
+        return mCommentsCache;
     }
-    
-    public void addComments(List<HNComment> comments) {
-        mComments.addAll(comments);
+
+    private HNCommentTreeNode makeTreeNode(HNComment comment, List<HNComment> allComments) {
+        HNCommentTreeNode node = new HNCommentTreeNode(comment);
+        int nodeLevel = comment.getCommentLevel();
+        int nodeIndex = allComments.indexOf(comment);
+        comment.setTreeNode(node);
+        for (int i = nodeIndex + 1; i < allComments.size(); i++) {
+            HNComment childComment = allComments.get(i);
+            if (childComment.getCommentLevel() > nodeLevel + 1)
+                continue;
+            if (childComment.getCommentLevel() <= nodeLevel)
+                break;
+            node.addChild(makeTreeNode(childComment, allComments));
+        }
+        return node;
     }
-    
+
+    public void toggleCommentExpanded(HNComment comment) {
+        if (comment == null)
+            return;
+
+        if (comment.getTreeNode() != null) {
+            comment.getTreeNode().toggleExpanded();
+            mIsTreeDirty = true;
+        }
+    }
 
 }
