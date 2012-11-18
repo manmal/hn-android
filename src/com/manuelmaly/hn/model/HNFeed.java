@@ -10,6 +10,7 @@ public class HNFeed implements Serializable {
     private static final long serialVersionUID = -7957577448455303642L;
     private List<HNPost> mPosts;
     private String mNextPageURL;
+    private boolean mLoadedMore; // currently, we can perform only one "load-more" action reliably
     
     public HNFeed() {
         mPosts = new ArrayList<HNPost>();
@@ -44,8 +45,13 @@ public class HNFeed implements Serializable {
         if (feed == null || feed.getPosts() == null)
             return;
         
+        mLoadedMore = true;
         mPosts.addAll(feed.getPosts());
         mNextPageURL = feed.getNextPageURL();
+    }
+    
+    public boolean isLoadedMore() {
+        return mLoadedMore;
     }
     
 }

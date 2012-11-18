@@ -9,16 +9,16 @@
         android:layout_width="fill_parent"
         android:layout_height="48dp"
         android:background="@drawable/actionbar_bg_bright"
-        android:gravity="center"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp" >
+        android:gravity="center" >
 
         <ImageView
             android:id="@+id/actionbar_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:paddingRight="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="12dp"
             android:paddingTop="8dp"
             android:src="@drawable/back" />
 
@@ -44,7 +44,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:layout_marginRight="48dp"
-            android:padding="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="8dp"
             android:src="@drawable/share" />
 
         <ImageView
@@ -52,7 +55,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:padding="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="8dp"
             android:src="@drawable/refresh" />
     </FrameLayout>
 

@@ -22,54 +22,55 @@
             android:paddingTop="8dp"
             android:src="@drawable/back" />
 
-        <Button
-            android:id="@+id/actionbar_title_button"
+        <TextView
+            android:id="@+id/actionbar_title"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/rounded_button"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
             android:shadowColor="@android:color/black"
             android:shadowDx="0"
             android:shadowDy="-1"
             android:shadowRadius="1"
-            android:text="HN"
+            android:text="About"
             android:textColor="@android:color/white"
-            android:textSize="20sp" />
-
-        <ImageView
-            android:id="@+id/actionbar_share"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_marginRight="48dp"
-            android:paddingBottom="8dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingTop="8dp"
-            android:src="@drawable/share" />
-
-        <ImageView
-            android:id="@+id/actionbar_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:paddingBottom="8dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingTop="8dp"
-            android:src="@drawable/refresh" />
+            android:textSize="24sp" />
     </FrameLayout>
 
-    <ListView
-        android:id="@+id/comments_list"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@color/peach"
-        android:cacheColorHint="@color/peach"
-        android:divider="#b8ab9e"
-        android:dividerHeight="1dp"
-        android:fadingEdge="none" />
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/about_hn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HN"
+            android:textSize="80sp" />
+
+        <TextView
+            android:id="@+id/about_by"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="by Manuel Maly"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/about_url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/about_github"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:textSize="16sp" />
+    </LinearLayout>
 
 </LinearLayout>

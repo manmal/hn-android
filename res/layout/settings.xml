@@ -22,53 +22,27 @@
             android:paddingTop="8dp"
             android:src="@drawable/back" />
 
-        <Button
-            android:id="@+id/actionbar_title_button"
+        <TextView
+            android:id="@+id/actionbar_title"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/rounded_button"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
             android:shadowColor="@android:color/black"
             android:shadowDx="0"
             android:shadowDy="-1"
             android:shadowRadius="1"
-            android:text="HN"
+            android:text="Settings"
             android:textColor="@android:color/white"
-            android:textSize="20sp" />
-
-        <ImageView
-            android:id="@+id/actionbar_share"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_marginRight="48dp"
-            android:paddingBottom="8dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingTop="8dp"
-            android:src="@drawable/share" />
-
-        <ImageView
-            android:id="@+id/actionbar_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:paddingBottom="8dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingTop="8dp"
-            android:src="@drawable/refresh" />
+            android:textSize="24sp" />
     </FrameLayout>
 
     <ListView
-        android:id="@+id/comments_list"
+        android:id="@android:id/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@color/peach"
         android:cacheColorHint="@color/peach"
-        android:divider="#b8ab9e"
+        android:divider="#f0dfce"
         android:dividerHeight="1dp"
         android:fadingEdge="none" />
 

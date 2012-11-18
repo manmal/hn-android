@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,6 +28,7 @@ import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
+import com.manuelmaly.hn.SettingsActivity.FONTSIZE;
 import com.manuelmaly.hn.model.HNComment;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.model.HNPostComments;
@@ -69,6 +71,9 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     HNPostComments mComments;
     CommentsAdapter mCommentsListAdapter;
 
+    Integer mFontSizeMetadata;
+    Integer mFontSizeText;
+    
     int mCommentLevelIndentPx;
 
     @AfterViews
@@ -135,6 +140,13 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        refreshFontSizes();
+        mCommentsListAdapter.notifyDataSetChanged();
+    }
+    
+    @Override
     public void onTaskFinished(int taskCode, TaskResultCode code, HNPostComments result) {
         if (code.equals(TaskResultCode.Success) && mCommentsListAdapter != null)
             showComments(result);
@@ -179,6 +191,26 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         HNPostCommentsTask.startOrReattach(this, this, mPost.getPostID(), 0);
         updateStatusIndicatorOnLoadingStarted();
     }
+    
+    private void refreshFontSizes() {
+        FONTSIZE fontSize = SettingsActivity.getFontSize(this);
+        switch (fontSize) {
+            case FONTSIZE_SMALL:
+                mFontSizeText = 14;
+                mFontSizeMetadata = 12;
+                break;
+            case FONTSIZE_NORMAL:
+                mFontSizeText = 16;
+                mFontSizeMetadata = 14;
+                break;
+            case FONTSIZE_BIG:
+                mFontSizeText = 20;
+                mFontSizeMetadata = 18;
+                break;
+            default:
+                break;
+        }
+    }
 
     class CommentsAdapter extends BaseAdapter {
 
@@ -213,7 +245,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             }
             HNComment comment = getItem(position);
             CommentViewHolder holder = (CommentViewHolder) convertView.getTag();
-            holder.setComment(comment, mCommentLevelIndentPx, CommentsActivity.this);
+            holder.setComment(comment, mCommentLevelIndentPx, CommentsActivity.this, mFontSizeText, mFontSizeMetadata);
             holder.textView.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
                     if (getItem(position).getTreeNode().hasChildren()) {
@@ -234,10 +266,13 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         ImageView expandView;
         LinearLayout spacersContainer;
 
-        public void setComment(HNComment comment, int commentLevelIndentPx, Context c) {
+        public void setComment(HNComment comment, int commentLevelIndentPx, Context c, int commentTextSize, int metadataTextSize) {
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, commentTextSize);
             textView.setText(Html.fromHtml(comment.getText()));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
+            authorView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, metadataTextSize);
             authorView.setText(comment.getAuthor());
+            timeAgoView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, metadataTextSize);
             timeAgoView.setText(", " + comment.getTimeAgo());
             expandView.setVisibility(comment.getTreeNode().isExpanded() ? View.INVISIBLE : View.VISIBLE);
             spacersContainer.removeAllViews();

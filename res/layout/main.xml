@@ -9,9 +9,7 @@
         android:layout_width="fill_parent"
         android:layout_height="48dp"
         android:background="@drawable/actionbar_bg_orange"
-        android:gravity="center"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp" >
+        android:gravity="center" >
 
         <TextView
             android:id="@+id/actionbar_title"
@@ -27,11 +25,27 @@
             android:textSize="24sp" />
 
         <ImageView
+            android:id="@+id/actionbar_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="48dp"
+            android:background="@drawable/actionbar_button_bg"
+            android:paddingBottom="8dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="8dp"
+            android:src="@drawable/more" />
+
+        <ImageView
             android:id="@+id/actionbar_refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:padding="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="8dp"
             android:src="@drawable/refresh" />
     </FrameLayout>
 
@@ -44,5 +58,16 @@
         android:divider="#f0dfce"
         android:dividerHeight="1dp"
         android:fadingEdge="none" />
+
+    <TextView
+        android:id="@+id/main_empty_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/peach"
+        android:text="Loading..."
+        android:gravity="center"
+        android:textSize="26sp"
+        android:textColor="#c3b5a7" >
+    </TextView>
 
 </LinearLayout>

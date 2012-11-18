@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_title_fontsize">Font Size (List &amp; Comments)</string>
+    <string name="pref_default_fontsize">Normal</string>
+    <string-array name="pref_array_fontsizes">
+        <item>Small</item>
+        <item>Normal</item>
+        <item>Big</item>
+    </string-array>
+</resources>

@@ -16,14 +16,12 @@ public class App extends Application {
         super.onCreate();
         mInstance = this;
         
-        GoogleAnalyticsTracker.getInstance().startNewSession(Const.GAN_ID, this);
-        GoogleAnalyticsTracker.getInstance().dispatch();
+        GoogleAnalyticsTracker.getInstance().startNewSession(Const.GAN_ID, 30, this);
     }
     
     @Override
     public void onTerminate() {
         GoogleAnalyticsTracker.getInstance().stopSession();
-        GoogleAnalyticsTracker.getInstance().dispatch();
         
         super.onTerminate();
     }
