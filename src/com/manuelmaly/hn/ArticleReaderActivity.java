@@ -1,7 +1,10 @@
 package com.manuelmaly.hn;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -89,11 +92,34 @@ public class ArticleReaderActivity extends Activity {
         
         mShareImageView.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_article_url));
-                i.putExtra(Intent.EXTRA_TEXT, mPost.getURL());
-                startActivity(Intent.createChooser(i, getString(R.string.share_article_url)));
+                
+                String[] menu = new String[]{"Open in browser","Share"};
+
+                AlertDialog.Builder alt_bld = new AlertDialog.Builder(ArticleReaderActivity.this);
+                alt_bld.setItems(menu, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO Auto-generated method stub
+                        switch (which)
+                        {
+                        case 0:
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mPost.getURL()));
+                            startActivity(browserIntent);
+                            break;
+                        case 1:
+                            Intent i = new Intent(Intent.ACTION_SEND);
+                            i.setType("text/plain");
+                            i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_article_url));
+                            i.putExtra(Intent.EXTRA_TEXT, mPost.getURL());
+                            startActivity(Intent.createChooser(i, getString(R.string.share_article_url)));
+                        }
+
+                    }
+                });
+                AlertDialog alert = alt_bld.create();
+                alert.show();
+
             }
         });
 
@@ -139,5 +165,4 @@ public class ArticleReaderActivity extends Activity {
             return true;
         }
     }
-
 }
