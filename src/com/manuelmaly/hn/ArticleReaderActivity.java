@@ -28,26 +28,26 @@ public class ArticleReaderActivity extends Activity {
 
     public static final String EXTRA_HNPOST = "HNPOST";
 
-    @SystemService
-    LayoutInflater mInflater;
-
     @ViewById(R.id.article_webview)
     WebView mWebView;
 
     @ViewById(R.id.actionbar)
-    FrameLayout mActionbarLayout;
+    FrameLayout mActionbarContainer;
 
     @ViewById(R.id.actionbar_title_button)
-    Button mActionbarTitleButton;
+    Button mActionbarTitle;
 
     @ViewById(R.id.actionbar_share)
-    ImageView mShareImageView;
+    ImageView mActionbarShare;
 
     @ViewById(R.id.actionbar_back)
-    ImageView mBackImageView;
+    ImageView mActionbarBack;
 
     @ViewById(R.id.actionbar_refresh)
-    ImageView mRefreshImageView;
+    ImageView mActionbarRefresh;
+
+    @SystemService
+    LayoutInflater mInflater;
 
     HNPost mPost;
 
@@ -55,9 +55,9 @@ public class ArticleReaderActivity extends Activity {
 
     @AfterViews
     public void init() {
-        mActionbarTitleButton.setTypeface(FontHelper.getComfortaa(this, true));
-        mActionbarTitleButton.setText(getString(R.string.article));
-        mActionbarTitleButton.setOnClickListener(new OnClickListener() {
+        mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
+        mActionbarTitle.setText(getString(R.string.article));
+        mActionbarTitle.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Intent i = new Intent(ArticleReaderActivity.this, CommentsActivity_.class);
                 i.putExtra(CommentsActivity.EXTRA_HNPOST, mPost);
@@ -67,27 +67,27 @@ public class ArticleReaderActivity extends Activity {
             }
         });
 
-        mBackImageView.setOnClickListener(new OnClickListener() {
+        mActionbarBack.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 finish();
             }
         });
 
-        mRefreshImageView.setOnClickListener(new OnClickListener() {
+        mActionbarRefresh.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if (mWebView.getProgress() < 100 && mIsLoading) {
                     mWebView.stopLoading();
                     mIsLoading = false;
-                    ViewRotator.stopRotating(mRefreshImageView);
+                    ViewRotator.stopRotating(mActionbarRefresh);
                 } else {
                     mIsLoading = true;
-                    ViewRotator.startRotating(mRefreshImageView);
+                    ViewRotator.startRotating(mActionbarRefresh);
                     mWebView.loadUrl(mPost.getURL());
                 }
             }
         });
-        
-        mShareImageView.setOnClickListener(new OnClickListener() {
+
+        mActionbarShare.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("text/plain");
@@ -109,19 +109,18 @@ public class ArticleReaderActivity extends Activity {
             public void onProgressChanged(WebView view, int progress) {
                 if (progress == 100 && mIsLoading) {
                     mIsLoading = false;
-                    ViewRotator.stopRotating(mRefreshImageView);
+                    ViewRotator.stopRotating(mActionbarRefresh);
                 } else if (!mIsLoading) {
-                    // Most probably, user tapped on a link in the webview - 
+                    // Most probably, user tapped on a link in the webview -
                     // let's spin the refresh icon:
                     mIsLoading = true;
-                    ViewRotator.startRotating(mRefreshImageView);
+                    ViewRotator.startRotating(mActionbarRefresh);
                 }
             }
         });
 
         mIsLoading = true;
-        ViewRotator.startRotating(mRefreshImageView);
-
+        ViewRotator.startRotating(mActionbarRefresh);
     }
 
     @Override

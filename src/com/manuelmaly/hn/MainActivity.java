@@ -50,29 +50,29 @@ import com.manuelmaly.hn.util.Run;
 @EActivity(R.layout.main)
 public class MainActivity extends Activity implements ITaskFinishedHandler<HNFeed> {
 
-    @SystemService
-    LayoutInflater mInflater;
-
     @ViewById(R.id.main_list)
     ListView mPostsList;
 
     @ViewById(R.id.main_empty_view)
-    TextView mEmptyView;
-    
+    TextView mEmptyListPlaceholder;
+
     @ViewById(R.id.actionbar_title)
-    TextView mActionbarTitleView;
+    TextView mActionbarTitle;
 
     @ViewById(R.id.actionbar_refresh)
-    ImageView mRefreshImageView;
+    ImageView mActionbarRefresh;
 
     @ViewById(R.id.actionbar_more)
-    ImageView mMoreView;
+    ImageView mActionbarMore;
 
-    Integer mFontSizeTitle;
-    Integer mFontSizeDetails;
+    @SystemService
+    LayoutInflater mInflater;
 
     HNFeed mFeed;
     PostsAdapter mPostsListAdapter;
+    
+    int mFontSizeTitle;
+    int mFontSizeDetails;
 
     private static final int TASKCODE_LOAD_FEED = 10;
     private static final int TASKCODE_LOAD_MORE_POSTS = 20;
@@ -82,11 +82,10 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         mFeed = new HNFeed(new ArrayList<HNPost>(), null);
         mPostsListAdapter = new PostsAdapter();
         mPostsList.setAdapter(mPostsListAdapter);
-        mPostsList.setEmptyView(mEmptyView);
-
-        mRefreshImageView.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
-        mActionbarTitleView.setTypeface(FontHelper.getComfortaa(this, true));
-        mEmptyView.setTypeface(FontHelper.getComfortaa(this, true));
+        mPostsList.setEmptyView(mEmptyListPlaceholder);
+        mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
+        mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
+        mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
 
         loadIntermediateFeedFromStore();
         startFeedLoading();
@@ -95,6 +94,8 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     @Override
     protected void onResume() {
         super.onResume();
+        
+        // refresh because font size could have changed:
         refreshFontSizes();
         mPostsListAdapter.notifyDataSetChanged();
     }
@@ -114,20 +115,20 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
 
     @Click(R.id.actionbar_more)
     void moreClicked() {
-        mMoreView.setSelected(true);
+        mActionbarMore.setSelected(true);
         LinearLayout moreContentView = (LinearLayout) mInflater.inflate(R.layout.main_more_content, null);
 
         moreContentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         final PopupWindow popupWindow = new PopupWindow(this);
         popupWindow.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.red_dark_washedout)));
         popupWindow.setContentView(moreContentView);
-        popupWindow.showAsDropDown(mMoreView);
+        popupWindow.showAsDropDown(mActionbarMore);
         popupWindow.setTouchable(true);
         popupWindow.setFocusable(true);
         popupWindow.setOutsideTouchable(true);
         popupWindow.setOnDismissListener(new OnDismissListener() {
             public void onDismiss() {
-                mMoreView.setSelected(false);
+                mActionbarMore.setSelected(false);
             }
         });
 
@@ -157,7 +158,17 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         if (taskCode == TASKCODE_LOAD_FEED) {
             if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
                 showFeed(result);
-            updateStatusIndicatorOnLoadingFinished(code);
+            
+            ViewRotator.stopRotating(mActionbarRefresh);
+            if (code.equals(TaskResultCode.Success)) {
+                ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh_ok, 100, this);
+                Run.delayed(new Runnable() {
+                    public void run() {
+                        ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh, 300, MainActivity.this);
+                    }
+                }, 2000);
+            }
+
         } else if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
             mFeed.appendLoadMoreFeed(result);
             mPostsListAdapter.notifyDataSetChanged();
@@ -180,32 +191,11 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         Log.i("", "Loading intermediate feed took ms:" + (System.currentTimeMillis() - start));
     }
 
-    private void updateStatusIndicatorOnLoadingStarted() {
-        mRefreshImageView.setImageResource(R.drawable.refresh);
-        ViewRotator.stopRotating(mRefreshImageView);
-        ViewRotator.startRotating(mRefreshImageView);
-    }
-
-    private void updateStatusIndicatorOnLoadingFinished(TaskResultCode code) {
-        ViewRotator.stopRotating(mRefreshImageView);
-        if (code.equals(TaskResultCode.Success)) {
-            ImageViewFader.startFadeOverToImage(mRefreshImageView, R.drawable.refresh_ok, 100, this);
-            Run.delayed(new Runnable() {
-                public void run() {
-                    ImageViewFader.startFadeOverToImage(mRefreshImageView, R.drawable.refresh, 300, MainActivity.this);
-                }
-            }, 2000);
-        }
-
-    }
-
     private void startFeedLoading() {
         HNFeedTaskMainFeed.startOrReattach(this, this, TASKCODE_LOAD_FEED);
-        updateStatusIndicatorOnLoadingStarted();
-    }
-
-    private void startMorePostsLoading() {
-        HNFeedTaskLoadMore.start(this, this, mFeed, TASKCODE_LOAD_MORE_POSTS);
+        mActionbarRefresh.setImageResource(R.drawable.refresh);
+        ViewRotator.stopRotating(mActionbarRefresh);
+        ViewRotator.startRotating(mActionbarRefresh);
     }
 
     private void refreshFontSizes() {
@@ -341,7 +331,7 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
                             textView.setVisibility(View.INVISIBLE);
                             imageView.setVisibility(View.VISIBLE);
                             convertViewFinal.setClickable(false);
-                            startMorePostsLoading();
+                            HNFeedTaskLoadMore.start(MainActivity.this, MainActivity.this, mFeed, TASKCODE_LOAD_MORE_POSTS);
                         }
                     });
                     break;
@@ -361,19 +351,6 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         TextView commentsCountView;
         LinearLayout textContainer;
         Button commentsButton;
-    }
-
-    class RefreshButtonViewFactory implements ViewFactory {
-
-        @Override
-        public View makeView() {
-            ImageView iView = new ImageView(MainActivity.this);
-            iView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            iView.setLayoutParams(new ImageSwitcher.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-            iView.setBackgroundColor(Color.TRANSPARENT);
-            return iView;
-        }
-
     }
 
 }

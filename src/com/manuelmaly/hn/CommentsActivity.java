@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher.ViewFactory;
 
 import com.googlecode.androidannotations.annotations.AfterViews;
@@ -46,40 +47,40 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
     public static final String EXTRA_HNPOST = "HNPOST";
 
-    @SystemService
-    LayoutInflater mInflater;
-
     @ViewById(R.id.comments_list)
     ListView mCommentsList;
 
     @ViewById(R.id.actionbar)
-    FrameLayout mActionbarLayout;
+    FrameLayout mActionbarContainer;
 
     @ViewById(R.id.actionbar_title_button)
-    Button mActionbarTitleButton;
+    Button mActionbarTitle;
 
     @ViewById(R.id.actionbar_refresh)
-    ImageView mRefreshImageView;
+    ImageView mActionbarRefresh;
 
     @ViewById(R.id.actionbar_share)
-    ImageView mShareImageView;
+    ImageView mActionbarShare;
 
     @ViewById(R.id.actionbar_back)
-    ImageView mBackImageView;
+    ImageView mActionbarBack;
+
+    @SystemService
+    LayoutInflater mInflater;
 
     HNPost mPost;
     HNPostComments mComments;
     CommentsAdapter mCommentsListAdapter;
 
-    Integer mFontSizeMetadata;
-    Integer mFontSizeText;
-    
+    int mFontSizeText;
+    int mFontSizeMetadata;
     int mCommentLevelIndentPx;
 
     @AfterViews
     public void init() {
         mPost = (HNPost) getIntent().getSerializableExtra(EXTRA_HNPOST);
         if (mPost == null || mPost.getPostID() == null) {
+            Toast.makeText(this, "The belonging post has not been loaded", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
@@ -90,11 +91,15 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         mCommentsListAdapter = new CommentsAdapter();
         mCommentsList.setAdapter(mCommentsListAdapter);
 
-        mRefreshImageView.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
+        mActionbarContainer.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                mCommentsList.smoothScrollToPosition(0);
+            }
+        });
 
-        mActionbarTitleButton.setTypeface(FontHelper.getComfortaa(this, true));
-        mActionbarTitleButton.setText(getString(R.string.comments));
-        mActionbarTitleButton.setOnClickListener(new OnClickListener() {
+        mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
+        mActionbarTitle.setText(getString(R.string.comments));
+        mActionbarTitle.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Intent i = new Intent(CommentsActivity.this, ArticleReaderActivity_.class);
                 i.putExtra(CommentsActivity.EXTRA_HNPOST, mPost);
@@ -104,19 +109,13 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             }
         });
 
-        mActionbarLayout.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                mCommentsList.smoothScrollToPosition(0);
-            }
-        });
-
-        mBackImageView.setOnClickListener(new OnClickListener() {
+        mActionbarBack.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 finish();
             }
         });
 
-        mShareImageView.setOnClickListener(new OnClickListener() {
+        mActionbarShare.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("text/plain");
@@ -126,7 +125,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             }
         });
 
-        mRefreshImageView.setOnClickListener(new OnClickListener() {
+        mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
+        mActionbarRefresh.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if (HNPostCommentsTask.isRunning(mPost.getPostID()))
                     HNPostCommentsTask.stopCurrent(mPost.getPostID());
@@ -142,10 +142,12 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     @Override
     protected void onResume() {
         super.onResume();
+
+        // refresh because font size could have changed:
         refreshFontSizes();
         mCommentsListAdapter.notifyDataSetChanged();
     }
-    
+
     @Override
     public void onTaskFinished(int taskCode, TaskResultCode code, HNPostComments result) {
         if (code.equals(TaskResultCode.Success) && mCommentsListAdapter != null)
@@ -169,18 +171,18 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     private void updateStatusIndicatorOnLoadingStarted() {
-        mRefreshImageView.setImageResource(R.drawable.refresh);
-        ViewRotator.stopRotating(mRefreshImageView);
-        ViewRotator.startRotating(mRefreshImageView);
+        mActionbarRefresh.setImageResource(R.drawable.refresh);
+        ViewRotator.stopRotating(mActionbarRefresh);
+        ViewRotator.startRotating(mActionbarRefresh);
     }
 
     private void updateStatusIndicatorOnLoadingFinished(TaskResultCode code) {
-        ViewRotator.stopRotating(mRefreshImageView);
+        ViewRotator.stopRotating(mActionbarRefresh);
         if (code == TaskResultCode.Success) {
-            ImageViewFader.startFadeOverToImage(mRefreshImageView, R.drawable.refresh_ok, 100, this);
+            ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh_ok, 100, this);
             Run.delayed(new Runnable() {
                 public void run() {
-                    ImageViewFader.startFadeOverToImage(mRefreshImageView, R.drawable.refresh, 300,
+                    ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh, 300,
                         CommentsActivity.this);
                 }
             }, 2000);
@@ -191,7 +193,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         HNPostCommentsTask.startOrReattach(this, this, mPost.getPostID(), 0);
         updateStatusIndicatorOnLoadingStarted();
     }
-    
+
     private void refreshFontSizes() {
         FONTSIZE fontSize = SettingsActivity.getFontSize(this);
         switch (fontSize) {
@@ -266,7 +268,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         ImageView expandView;
         LinearLayout spacersContainer;
 
-        public void setComment(HNComment comment, int commentLevelIndentPx, Context c, int commentTextSize, int metadataTextSize) {
+        public void setComment(HNComment comment, int commentLevelIndentPx, Context c, int commentTextSize,
+            int metadataTextSize) {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, commentTextSize);
             textView.setText(Html.fromHtml(comment.getText()));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
@@ -285,19 +288,6 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                 spacersContainer.addView(spacer, i);
             }
         }
-    }
-
-    class RefreshButtonViewFactory implements ViewFactory {
-
-        @Override
-        public View makeView() {
-            ImageView iView = new ImageView(CommentsActivity.this);
-            iView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            iView.setLayoutParams(new ImageSwitcher.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-            iView.setBackgroundColor(Color.TRANSPARENT);
-            return iView;
-        }
-
     }
 
 }

@@ -17,7 +17,7 @@ import com.manuelmaly.hn.util.FontHelper;
 public class AboutActivity extends Activity {
 
     @ViewById(R.id.actionbar_back)
-    ImageView mBackView;
+    ImageView mActionbarBack;
     
     @ViewById(R.id.about_hn)
     TextView mHNView;
