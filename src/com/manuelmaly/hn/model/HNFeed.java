@@ -46,7 +46,9 @@ public class HNFeed implements Serializable {
             return;
         
         mLoadedMore = true;
-        mPosts.addAll(feed.getPosts());
+        for (HNPost candidate : feed.getPosts())
+            if (!mPosts.contains(candidate))
+                mPosts.add(candidate);
         mNextPageURL = feed.getNextPageURL();
     }
     

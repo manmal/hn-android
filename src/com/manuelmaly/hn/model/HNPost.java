@@ -51,5 +51,44 @@ public class HNPost implements Serializable {
     public String getURLDomain() {
         return mURLDomain;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((mAuthor == null) ? 0 : mAuthor.hashCode());
+        result = prime * result + ((mPostID == null) ? 0 : mPostID.hashCode());
+        result = prime * result + ((mURL == null) ? 0 : mURL.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        HNPost other = (HNPost) obj;
+        if (mAuthor == null) {
+            if (other.mAuthor != null)
+                return false;
+        } else if (!mAuthor.equals(other.mAuthor))
+            return false;
+        if (mPostID == null) {
+            if (other.mPostID != null)
+                return false;
+        } else if (!mPostID.equals(other.mPostID))
+            return false;
+        if (mURL == null) {
+            if (other.mURL != null)
+                return false;
+        } else if (!mURL.equals(other.mURL))
+            return false;
+        return true;
+    }
+    
+    
     
 }
