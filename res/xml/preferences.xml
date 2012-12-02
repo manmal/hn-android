@@ -7,4 +7,19 @@
         android:entries="@array/pref_array_fontsizes"
         android:entryValues="@array/pref_array_fontsizes"
         android:defaultValue="@string/pref_default_fontsize" />
+    <ListPreference
+        android:key="pref_htmlprovider"
+        android:title="@string/pref_title_htmlprovider"
+        android:dialogTitle="@string/pref_title_htmlprovider"
+        android:entries="@array/pref_array_htmlprovider"
+        android:entryValues="@array/pref_array_htmlprovider"
+        android:defaultValue="@string/pref_default_htmlprovider" />
+    
+    <ListPreference
+        android:key="pref_htmlviewer"
+        android:title="@string/pref_title_htmlviewer"
+        android:dialogTitle="@string/pref_title_htmlviewer"
+        android:entries="@array/pref_array_htmlviewer"
+        android:entryValues="@array/pref_array_htmlviewer"
+        android:defaultValue="@string/pref_default_htmlviewer" />
 </PreferenceScreen>

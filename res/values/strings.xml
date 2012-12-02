@@ -5,5 +5,6 @@
     <string name="article">Article</string>
     <string name="share_article_url">Share Article URL</string>
     <string name="load_more">More</string>
+    <string name="open_with">Open Article with...</string>
 
 </resources>

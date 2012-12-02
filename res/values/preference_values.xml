@@ -1,10 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="pref_title_fontsize">Font Size (List &amp; Comments)</string>
     <string name="pref_default_fontsize">Normal</string>
+    <string name="pref_fontsize_small">Small</string>
+    <string name="pref_fontsize_normal">Normal</string>
+    <string name="pref_fontsize_big">Big</string>
+
     <string-array name="pref_array_fontsizes">
-        <item>Small</item>
-        <item>Normal</item>
-        <item>Big</item>
+        <item>@string/pref_fontsize_small</item>
+        <item>@string/pref_fontsize_normal</item>
+        <item>@string/pref_fontsize_big</item>
     </string-array>
+
+    <string name="pref_title_htmlprovider">View Articles via...</string>
+    <string name="pref_default_htmlprovider">Original Article URL</string>
+    <string name="pref_htmlprovider_original_url">Original Article URL</string>
+    <string name="pref_htmlprovider_viewtext">ViewText.org</string>
+    <string name="pref_htmlprovider_google">Google for Mobile Devices</string>
+
+    <string-array name="pref_array_htmlprovider">
+        <item>@string/pref_htmlprovider_original_url</item>
+        <item>@string/pref_htmlprovider_viewtext</item>
+        <item>@string/pref_htmlprovider_google</item>
+    </string-array>
+
+    <string name="pref_title_htmlviewer">View Articles within...</string>
+    <string name="pref_default_htmlviewer">The App</string>
+    <string name="pref_htmlviewer_app">The App</string>
+    <string name="pref_htmlviewer_browser">The System Browser</string>
+
+    <string-array name="pref_array_htmlviewer">
+        <item>@string/pref_htmlviewer_app</item>
+        <item>@string/pref_htmlviewer_browser</item>
+    </string-array>
+
 </resources>

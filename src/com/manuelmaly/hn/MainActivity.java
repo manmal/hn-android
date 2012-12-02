@@ -3,37 +3,34 @@ package com.manuelmaly.hn;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.preference.PreferenceManager;
+import android.net.Uri;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
-import android.widget.ViewSwitcher.ViewFactory;
+import android.widget.Toast;
 
 import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.Click;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
-import com.manuelmaly.hn.SettingsActivity.FONTSIZE;
 import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.parser.BaseHTMLParser;
@@ -42,7 +39,6 @@ import com.manuelmaly.hn.reuse.ViewRotator;
 import com.manuelmaly.hn.task.HNFeedTaskLoadMore;
 import com.manuelmaly.hn.task.HNFeedTaskMainFeed;
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
-import com.manuelmaly.hn.util.DisplayHelper;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.Run;
@@ -70,7 +66,7 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
 
     HNFeed mFeed;
     PostsAdapter mPostsListAdapter;
-    
+
     int mFontSizeTitle;
     int mFontSizeDetails;
 
@@ -94,7 +90,7 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     @Override
     protected void onResume() {
         super.onResume();
-        
+
         // refresh because font size could have changed:
         refreshFontSizes();
         mPostsListAdapter.notifyDataSetChanged();
@@ -158,13 +154,14 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         if (taskCode == TASKCODE_LOAD_FEED) {
             if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
                 showFeed(result);
-            
+
             ViewRotator.stopRotating(mActionbarRefresh);
             if (code.equals(TaskResultCode.Success)) {
                 ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh_ok, 100, this);
                 Run.delayed(new Runnable() {
                     public void run() {
-                        ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh, 300, MainActivity.this);
+                        ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh, 300,
+                            MainActivity.this);
                     }
                 }, 2000);
             }
@@ -199,22 +196,16 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     }
 
     private void refreshFontSizes() {
-        FONTSIZE fontSize = SettingsActivity.getFontSize(this);
-        switch (fontSize) {
-            case FONTSIZE_SMALL:
-                mFontSizeTitle = 15;
-                mFontSizeDetails = 11;
-                break;
-            case FONTSIZE_NORMAL:
-                mFontSizeTitle = 18;
-                mFontSizeDetails = 12;
-                break;
-            case FONTSIZE_BIG:
-                mFontSizeTitle = 22;
-                mFontSizeDetails = 15;
-                break;
-            default:
-                break;
+        String fontSize = SettingsActivity.getFontSize(this);
+        if (fontSize.equals(getString(R.string.pref_fontsize_small))) {
+            mFontSizeTitle = 15;
+            mFontSizeDetails = 11;
+        } else if (fontSize.equals(getString(R.string.pref_fontsize_normal))) {
+            mFontSizeTitle = 18;
+            mFontSizeDetails = 12;
+        } else {
+            mFontSizeTitle = 22;
+            mFontSizeDetails = 15;
         }
     }
 
@@ -304,9 +295,30 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
                     });
                     holder.textContainer.setOnClickListener(new OnClickListener() {
                         public void onClick(View v) {
-                            Intent i = new Intent(MainActivity.this, ArticleReaderActivity_.class);
-                            i.putExtra(ArticleReaderActivity.EXTRA_HNPOST, getItem(position));
-                            startActivity(i);
+                            if (SettingsActivity.getHtmlViewer(MainActivity.this).equals(
+                                getString(R.string.pref_htmlviewer_browser)))
+                                openURLInBrowser(getArticleViewURL(getItem(position)));
+                            else
+                                openPostInApp(getItem(position), null);
+                        }
+                    });
+                    holder.textContainer.setOnLongClickListener(new OnLongClickListener() {
+                        public boolean onLongClick(View v) {
+                            final CharSequence[] items = {getString(R.string.pref_htmlprovider_original_url),
+                                getString(R.string.pref_htmlprovider_viewtext),
+                                getString(R.string.pref_htmlprovider_google), "External Browser"};
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setTitle(R.string.open_with);
+                            builder.setItems(items, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int item) {
+                                    if (item == 3)
+                                        openURLInBrowser(getArticleViewURL(getItem(position)));
+                                    else
+                                        openPostInApp(getItem(position), items[item].toString());
+                                }
+                            }).show();
+                            return true;
                         }
                     });
                     break;
@@ -331,7 +343,8 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
                             textView.setVisibility(View.INVISIBLE);
                             imageView.setVisibility(View.VISIBLE);
                             convertViewFinal.setClickable(false);
-                            HNFeedTaskLoadMore.start(MainActivity.this, MainActivity.this, mFeed, TASKCODE_LOAD_MORE_POSTS);
+                            HNFeedTaskLoadMore.start(MainActivity.this, MainActivity.this, mFeed,
+                                TASKCODE_LOAD_MORE_POSTS);
                         }
                     });
                     break;
@@ -341,7 +354,23 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
 
             return convertView;
         }
+    }
 
+    private String getArticleViewURL(HNPost post) {
+        return ArticleReaderActivity.getArticleViewURL(post, SettingsActivity.getHtmlProvider(this), this);
+    }
+
+    private void openURLInBrowser(String url) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(browserIntent);
+    }
+
+    private void openPostInApp(HNPost post, String overrideHtmlProvider) {
+        Intent i = new Intent(MainActivity.this, ArticleReaderActivity_.class);
+        i.putExtra(ArticleReaderActivity.EXTRA_HNPOST, post);
+        if (overrideHtmlProvider != null)
+            i.putExtra(ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE, overrideHtmlProvider);
+        startActivity(i);
     }
 
     static class PostViewHolder {

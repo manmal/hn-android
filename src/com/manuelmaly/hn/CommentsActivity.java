@@ -195,23 +195,19 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     private void refreshFontSizes() {
-        FONTSIZE fontSize = SettingsActivity.getFontSize(this);
-        switch (fontSize) {
-            case FONTSIZE_SMALL:
-                mFontSizeText = 14;
-                mFontSizeMetadata = 12;
-                break;
-            case FONTSIZE_NORMAL:
-                mFontSizeText = 16;
-                mFontSizeMetadata = 14;
-                break;
-            case FONTSIZE_BIG:
-                mFontSizeText = 20;
-                mFontSizeMetadata = 18;
-                break;
-            default:
-                break;
+        String fontSize = SettingsActivity.getFontSize(this);
+
+        if (fontSize.equals(getString(R.string.pref_fontsize_small))) {
+            mFontSizeText = 14;
+            mFontSizeMetadata = 12;
+        } else if (fontSize.equals(getString(R.string.pref_fontsize_normal))) {
+            mFontSizeText = 16;
+            mFontSizeMetadata = 14;
+        } else {
+            mFontSizeText = 20;
+            mFontSizeMetadata = 18;
         }
+
     }
 
     class CommentsAdapter extends BaseAdapter {

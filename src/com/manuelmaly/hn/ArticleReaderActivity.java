@@ -1,6 +1,9 @@
 package com.manuelmaly.hn;
 
+import java.net.URLEncoder;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,16 +20,17 @@ import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
 import com.manuelmaly.hn.model.HNPost;
-import com.manuelmaly.hn.reuse.ImageViewFader;
 import com.manuelmaly.hn.reuse.ViewRotator;
-import com.manuelmaly.hn.task.HNFeedTaskBase;
 import com.manuelmaly.hn.util.FontHelper;
-import com.manuelmaly.hn.util.Run;
 
 @EActivity(R.layout.article_activity)
 public class ArticleReaderActivity extends Activity {
 
     public static final String EXTRA_HNPOST = "HNPOST";
+    public static final String EXTRA_HTMLPROVIDER_OVERRIDE = "HTMLPROVIDER_OVERRIDE";
+
+    private static final String HTMLPROVIDER_PREFIX_VIEWTEXT = "http://viewtext.org/article?url=";
+    private static final String HTMLPROVIDER_PREFIX_GOOGLE = "http://www.google.com/gwt/x?u=";
 
     @ViewById(R.id.article_webview)
     WebView mWebView;
@@ -50,6 +54,7 @@ public class ArticleReaderActivity extends Activity {
     LayoutInflater mInflater;
 
     HNPost mPost;
+    String mHtmlProvider;
 
     boolean mIsLoading;
 
@@ -82,7 +87,7 @@ public class ArticleReaderActivity extends Activity {
                 } else {
                     mIsLoading = true;
                     ViewRotator.startRotating(mActionbarRefresh);
-                    mWebView.loadUrl(mPost.getURL());
+                    mWebView.loadUrl(getArticleViewURL(mPost, mHtmlProvider, ArticleReaderActivity.this));
                 }
             }
         });
@@ -98,8 +103,14 @@ public class ArticleReaderActivity extends Activity {
         });
 
         mPost = (HNPost) getIntent().getSerializableExtra(EXTRA_HNPOST);
-        if (mPost != null && mPost.getURL() != null)
-            mWebView.loadUrl(mPost.getURL());
+        if (mPost != null && mPost.getURL() != null) {
+            String htmlProviderOverride = getIntent().getStringExtra(EXTRA_HTMLPROVIDER_OVERRIDE);
+            if (htmlProviderOverride != null)
+                mHtmlProvider = htmlProviderOverride;
+            else
+                mHtmlProvider = SettingsActivity.getHtmlProvider(this);
+            mWebView.loadUrl(getArticleViewURL(mPost, mHtmlProvider, this));
+        }
         mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.getSettings().setLoadWithOverviewMode(true);
         mWebView.getSettings().setUseWideViewPort(true);
@@ -121,6 +132,16 @@ public class ArticleReaderActivity extends Activity {
 
         mIsLoading = true;
         ViewRotator.startRotating(mActionbarRefresh);
+    }
+
+    public static String getArticleViewURL(HNPost post, String htmlProvider, Context c) {
+        String encodedURL = URLEncoder.encode(post.getURL());
+        if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_viewtext)))
+            return HTMLPROVIDER_PREFIX_VIEWTEXT + encodedURL;
+        else if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_google)))
+            return HTMLPROVIDER_PREFIX_GOOGLE + encodedURL;
+        else
+            return post.getURL();
     }
 
     @Override
