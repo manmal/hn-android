@@ -31,7 +31,6 @@
             android:configChanges="keyboardHidden|orientation" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
@@ -40,13 +39,25 @@
             android:configChanges="keyboardHidden|orientation" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
         <activity android:name=".SettingsActivity" >
         </activity>
         <activity android:name=".AboutActivity_" >
+        </activity>
+        <activity
+            android:name=".ExternalIntentActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="news.ycombinator.com"
+                    android:scheme="http" >
+                </data>
+            </intent-filter>
         </activity>
     </application>
 

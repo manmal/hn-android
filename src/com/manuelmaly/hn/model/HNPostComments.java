@@ -12,6 +12,7 @@ public class HNPostComments implements Serializable {
     private List<HNCommentTreeNode> mTreeNodes;
     private transient List<HNComment> mCommentsCache;
     private boolean mIsTreeDirty;
+    private String mArticleURL;
 
     public HNPostComments() {
         mTreeNodes = new ArrayList<HNCommentTreeNode>();
