@@ -297,9 +297,9 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
                         public void onClick(View v) {
                             if (SettingsActivity.getHtmlViewer(MainActivity.this).equals(
                                 getString(R.string.pref_htmlviewer_browser)))
-                                openURLInBrowser(getArticleViewURL(getItem(position)));
+                                openURLInBrowser(getArticleViewURL(getItem(position)), MainActivity.this);
                             else
-                                openPostInApp(getItem(position), null);
+                                openPostInApp(getItem(position), null, MainActivity.this);
                         }
                     });
                     holder.textContainer.setOnLongClickListener(new OnLongClickListener() {
@@ -313,9 +313,9 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
                             builder.setItems(items, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int item) {
                                     if (item == 3)
-                                        openURLInBrowser(getArticleViewURL(getItem(position)));
+                                        openURLInBrowser(getArticleViewURL(getItem(position)), MainActivity.this);
                                     else
-                                        openPostInApp(getItem(position), items[item].toString());
+                                        openPostInApp(getItem(position), items[item].toString(), MainActivity.this);
                                 }
                             }).show();
                             return true;
@@ -360,17 +360,17 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         return ArticleReaderActivity.getArticleViewURL(post, SettingsActivity.getHtmlProvider(this), this);
     }
 
-    private void openURLInBrowser(String url) {
+    public static void openURLInBrowser(String url, Activity a) {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        startActivity(browserIntent);
+        a.startActivity(browserIntent);
     }
 
-    private void openPostInApp(HNPost post, String overrideHtmlProvider) {
-        Intent i = new Intent(MainActivity.this, ArticleReaderActivity_.class);
+    public static void openPostInApp(HNPost post, String overrideHtmlProvider, Activity a) {
+        Intent i = new Intent(a, ArticleReaderActivity_.class);
         i.putExtra(ArticleReaderActivity.EXTRA_HNPOST, post);
         if (overrideHtmlProvider != null)
             i.putExtra(ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE, overrideHtmlProvider);
-        startActivity(i);
+        a.startActivity(i);
     }
 
     static class PostViewHolder {
