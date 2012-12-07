@@ -34,6 +34,7 @@ import com.manuelmaly.hn.model.HNComment;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.model.HNPostComments;
 import com.manuelmaly.hn.reuse.ImageViewFader;
+import com.manuelmaly.hn.reuse.LinkifiedTextView;
 import com.manuelmaly.hn.reuse.ViewRotator;
 import com.manuelmaly.hn.task.HNPostCommentsTask;
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
@@ -243,7 +244,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             if (convertView == null) {
                 convertView = (FrameLayout) mInflater.inflate(R.layout.comments_list_item, null);
                 CommentViewHolder holder = new CommentViewHolder();
-                holder.textView = (TextView) convertView.findViewById(R.id.comments_list_item_text);
+                holder.textView = (LinkifiedTextView) convertView.findViewById(R.id.comments_list_item_text);
                 holder.spacersContainer = (LinearLayout) convertView
                     .findViewById(R.id.comments_list_item_spacerscontainer);
                 holder.authorView = (TextView) convertView.findViewById(R.id.comments_list_item_author);
@@ -253,7 +254,6 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             }
             HNComment comment = getItem(position);
             CommentViewHolder holder = (CommentViewHolder) convertView.getTag();
-            holder.setComment(comment, mCommentLevelIndentPx, CommentsActivity.this, mFontSizeText, mFontSizeMetadata);
             holder.textView.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
                     if (getItem(position).getTreeNode().hasChildren()) {
@@ -262,13 +262,14 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                     }
                 }
             });
+            holder.setComment(comment, mCommentLevelIndentPx, CommentsActivity.this, mFontSizeText, mFontSizeMetadata);
             return convertView;
         }
 
     }
 
     static class CommentViewHolder {
-        TextView textView;
+        LinkifiedTextView textView;
         TextView authorView;
         TextView timeAgoView;
         ImageView expandView;
