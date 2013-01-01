@@ -98,10 +98,10 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         mActionbarTitle.setText(getString(R.string.comments));
         mActionbarTitle.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                if (SettingsActivity.getHtmlViewer(CommentsActivity.this).equals(
+                if (Settings.getHtmlViewer(CommentsActivity.this).equals(
                     getString(R.string.pref_htmlviewer_browser))) {
                     String articleURL = ArticleReaderActivity.getArticleViewURL(mPost,
-                        SettingsActivity.getHtmlProvider(CommentsActivity.this), CommentsActivity.this);
+                        Settings.getHtmlProvider(CommentsActivity.this), CommentsActivity.this);
                     MainActivity.openURLInBrowser(articleURL, CommentsActivity.this);
                 } else {
                     Intent i = new Intent(CommentsActivity.this, ArticleReaderActivity_.class);
@@ -202,7 +202,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     private void refreshFontSizes() {
-        String fontSize = SettingsActivity.getFontSize(this);
+        String fontSize = Settings.getFontSize(this);
 
         if (fontSize.equals(getString(R.string.pref_fontsize_small))) {
             mFontSizeText = 14;

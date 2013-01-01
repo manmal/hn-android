@@ -110,7 +110,7 @@ public class ArticleReaderActivity extends Activity {
             if (htmlProviderOverride != null)
                 mHtmlProvider = htmlProviderOverride;
             else
-                mHtmlProvider = SettingsActivity.getHtmlProvider(this);
+                mHtmlProvider = Settings.getHtmlProvider(this);
             mWebView.loadUrl(getArticleViewURL(mPost, mHtmlProvider, this));
         }
         mWebView.getSettings().setBuiltInZoomControls(true);

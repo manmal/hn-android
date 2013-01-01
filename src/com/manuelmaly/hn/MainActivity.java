@@ -196,7 +196,7 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     }
 
     private void refreshFontSizes() {
-        String fontSize = SettingsActivity.getFontSize(this);
+        String fontSize = Settings.getFontSize(this);
         if (fontSize.equals(getString(R.string.pref_fontsize_small))) {
             mFontSizeTitle = 15;
             mFontSizeDetails = 11;
@@ -295,7 +295,7 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
                     });
                     holder.textContainer.setOnClickListener(new OnClickListener() {
                         public void onClick(View v) {
-                            if (SettingsActivity.getHtmlViewer(MainActivity.this).equals(
+                            if (Settings.getHtmlViewer(MainActivity.this).equals(
                                 getString(R.string.pref_htmlviewer_browser)))
                                 openURLInBrowser(getArticleViewURL(getItem(position)), MainActivity.this);
                             else
@@ -357,7 +357,7 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     }
 
     private String getArticleViewURL(HNPost post) {
-        return ArticleReaderActivity.getArticleViewURL(post, SettingsActivity.getHtmlProvider(this), this);
+        return ArticleReaderActivity.getArticleViewURL(post, Settings.getHtmlProvider(this), this);
     }
 
     public static void openURLInBrowser(String url, Activity a) {

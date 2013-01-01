@@ -8,7 +8,7 @@ import com.manuelmaly.hn.App;
 import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.parser.HNFeedParser;
 import com.manuelmaly.hn.reuse.CancelableRunnable;
-import com.manuelmaly.hn.server.HTMLDownloadCommand;
+import com.manuelmaly.hn.server.StringDownloadCommand;
 import com.manuelmaly.hn.server.IAPICommand;
 import com.manuelmaly.hn.server.IAPICommand.RequestType;
 import com.manuelmaly.hn.util.Const;
@@ -31,11 +31,11 @@ public abstract class HNFeedTaskBase extends BaseTask<HNFeed> {
 
     class HNFeedTaskRunnable extends CancelableRunnable {
 
-        HTMLDownloadCommand mFeedDownload;
+        StringDownloadCommand mFeedDownload;
 
         @Override
         public void run() {
-            mFeedDownload = new HTMLDownloadCommand(getFeedURL(), "", RequestType.GET, false, null,
+            mFeedDownload = new StringDownloadCommand(getFeedURL(), "", RequestType.GET, false, null,
                 App.getInstance());
             mFeedDownload.run();
 

@@ -2,6 +2,7 @@ package com.manuelmaly.hn.server;
 
 import java.io.Serializable;
 
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpDelete;
@@ -39,7 +40,7 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
     private RequestType mType;
     private int mActualStatusCode;
     private Context mApplicationContext;
-    private int mErrorCode = ERROR_UNKNOWN;
+    private int mErrorCode;
     private T mResponse;
     private Object mTag;
     private int mSocketTimeoutMS;
@@ -72,6 +73,7 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
     @Override
     public void run() {
         try {
+            mErrorCode = ERROR_UNKNOWN;
             // Check if Device is currently offline:
             if (cancelBecauseDeviceOffline()) {
                 onFinished();
@@ -80,13 +82,23 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
 
             // Start request, handle response in separate handler:
             DefaultHttpClient httpclient = new DefaultHttpClient(getHttpParams());
-            httpclient.setCookieStore(null);
+            httpclient.setCookieStore(getCookieStore());
+            modifyHttpClient(httpclient);
             mRequest = createRequest();
             httpclient.execute(setRequestData(mRequest), getResponseHandler());
         } catch (Exception e) {
             setErrorCode(ERROR_GENERIC_COMMUNICATION_ERROR);
             onFinished();
         }
+    }
+    
+    /**
+     * Override this to make changes to the HTTP client before
+     * it executes the request.
+     * @param client
+     */
+    protected void modifyHttpClient(DefaultHttpClient client) {
+        // Override this if you need it.
     }
 
     /**
@@ -187,5 +199,7 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
     abstract protected HttpUriRequest setRequestData(HttpUriRequest request);
 
     abstract protected ResponseHandler<T> getResponseHandler();
+    
+    abstract protected CookieStore getCookieStore();
 
 }

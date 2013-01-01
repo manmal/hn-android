@@ -22,4 +22,9 @@
         android:entries="@array/pref_array_htmlviewer"
         android:entryValues="@array/pref_array_htmlviewer"
         android:defaultValue="@string/pref_default_htmlviewer" />
+    
+    <com.manuelmaly.hn.UserPreference 
+      android:key="pref_user"
+      android:layout="@layout/user_settings" 
+      />
 </PreferenceScreen>

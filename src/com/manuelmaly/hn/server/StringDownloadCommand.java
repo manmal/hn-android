@@ -1,13 +1,14 @@
 package com.manuelmaly.hn.server;
 
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import android.content.Context;
 
-public class HTMLDownloadCommand extends BaseHTTPCommand<String> {
+public class StringDownloadCommand extends BaseHTTPCommand<String> {
 
-    public HTMLDownloadCommand(String url, String queryParams, RequestType type, boolean notifyFinishedBroadcast,
+    public StringDownloadCommand(String url, String queryParams, RequestType type, boolean notifyFinishedBroadcast,
         String notificationBroadcastIntentID, Context applicationContext) {
         super(url, queryParams, type, notifyFinishedBroadcast, notificationBroadcastIntentID, applicationContext, 60000, 60000);
     }
@@ -21,6 +22,11 @@ public class HTMLDownloadCommand extends BaseHTTPCommand<String> {
     @Override
     protected ResponseHandler<String> getResponseHandler() {
         return new HTMLResponseHandler(this);
+    }
+
+    @Override
+    protected CookieStore getCookieStore() {
+        return null;
     }
 
 }

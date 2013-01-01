@@ -13,10 +13,6 @@ import android.widget.ImageView;
 
 public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
-    public static final String PREF_FONTSIZE = "pref_fontsize";
-    public static final String PREF_HTMLPROVIDER = "pref_htmlprovider";
-    public static final String PREF_HTMLVIEWER = "pref_htmlviewer";
-
     public enum FONTSIZE {
         FONTSIZE_SMALL, FONTSIZE_NORMAL, FONTSIZE_BIG
     }
@@ -24,7 +20,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     public enum HTMLPROVIDER {
         HTMLPROVIDER_ORIGINAL_ARTICLE_URL, HTMLPROVIDER_GOOGLE, HTMLPROVIDER_VIEWTEXT
     }
-    
+
     public enum HTMLVIEWER {
         HTMLVIEWER_WITHINAPP, HTMLVIEWER_BROWSER
     }
@@ -36,14 +32,23 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         addPreferencesFromResource(R.xml.preferences);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-        Preference fontSizePref = findPreference(PREF_FONTSIZE);
-        fontSizePref.setSummary(sharedPref.getString(PREF_FONTSIZE, "Undefined"));
+        Preference fontSizePref = findPreference(Settings.PREF_FONTSIZE);
+        fontSizePref.setSummary(sharedPref.getString(Settings.PREF_FONTSIZE, "Undefined"));
 
-        Preference htmlProviderPref = findPreference(PREF_HTMLPROVIDER);
-        htmlProviderPref.setSummary(sharedPref.getString(PREF_HTMLPROVIDER, "Undefined"));
-        
-        Preference htmlViewerPref = findPreference(PREF_HTMLVIEWER);
-        htmlViewerPref.setSummary(sharedPref.getString(PREF_HTMLVIEWER, "Undefined"));
+        Preference htmlProviderPref = findPreference(Settings.PREF_HTMLPROVIDER);
+        htmlProviderPref.setSummary(sharedPref.getString(Settings.PREF_HTMLPROVIDER, "Undefined"));
+
+        Preference htmlViewerPref = findPreference(Settings.PREF_HTMLVIEWER);
+        htmlViewerPref.setSummary(sharedPref.getString(Settings.PREF_HTMLVIEWER, "Undefined"));
+
+        UserPreference userPref = (UserPreference) findPreference(Settings.PREF_USER);
+        userPref.setActivity(this);
+
+        String userName = Settings.getUserName(this);
+        if (userName != null)
+            userPref.setSummary(userName);
+        else
+            userPref.setSummary(" ");
 
         View backView = (ImageView) findViewById(R.id.actionbar_back);
         backView.setOnClickListener(new OnClickListener() {
@@ -54,7 +59,8 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(PREF_FONTSIZE) || key.equals(PREF_HTMLPROVIDER) || key.equals(PREF_HTMLVIEWER))
+        if (key.equals(Settings.PREF_FONTSIZE) || key.equals(Settings.PREF_HTMLPROVIDER)
+            || key.equals(Settings.PREF_HTMLVIEWER))
             findPreference(key).setSummary(sharedPreferences.getString(key, "Undefined"));
     }
 
@@ -68,21 +74,6 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     protected void onPause() {
         super.onPause();
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    public static String getFontSize(Context c) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(c);
-        return sharedPref.getString(PREF_FONTSIZE, c.getString(R.string.pref_default_fontsize));
-    }
-    
-    public static String getHtmlProvider(Context c) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(c);
-        return sharedPref.getString(PREF_HTMLPROVIDER, c.getString(R.string.pref_default_htmlprovider));
-    }
-    
-    public static String getHtmlViewer(Context c) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(c);
-        return sharedPref.getString(PREF_HTMLVIEWER, c.getString(R.string.pref_default_htmlviewer));
     }
 
 }
