@@ -216,7 +216,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
     private void setPost(HNPost post) {
         mPost = post;
-        mActionbarTitle.setEnabled(mPost.getURL() != null);
+        mActionbarTitle.setVisibility(mPost.getURL() == null ? View.GONE : View.VISIBLE);
     }
 
     class CommentsAdapter extends BaseAdapter {
