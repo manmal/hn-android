@@ -1,12 +1,9 @@
 package com.manuelmaly.hn.task;
 
-import java.util.HashMap;
-
 import android.app.Activity;
 import android.util.Log;
-
 import com.manuelmaly.hn.App;
-import com.manuelmaly.hn.model.HNPostComments;
+import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.parser.HNCommentsParser;
 import com.manuelmaly.hn.reuse.CancelableRunnable;
 import com.manuelmaly.hn.server.HNCredentials;
@@ -18,16 +15,18 @@ import com.manuelmaly.hn.util.ExceptionUtil;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.Run;
 
-public class HNPostCommentsTask extends BaseTask<HNPostComments> {
+import java.util.HashMap;
+
+public class HNPostCommentsTask extends BaseTask<HNPost> {
 
     public static final String BROADCAST_INTENT_ID = "HNPostComments";
     private static HashMap<String, HNPostCommentsTask> runningInstances = new HashMap<String, HNPostCommentsTask>();
 
-    private String mPostID; // for which post shall comments be loaded?
+    private HNPost mPost; // for which post shall comments be loaded?
 
-    private HNPostCommentsTask(String postID, int taskCode) {
+    private HNPostCommentsTask(HNPost post, int taskCode) {
         super(BROADCAST_INTENT_ID, taskCode);
-        mPostID = postID;
+        mPost = post;
     }
 
     /**
@@ -38,28 +37,32 @@ public class HNPostCommentsTask extends BaseTask<HNPostComments> {
      * 
      * @return
      */
-    private static HNPostCommentsTask getInstance(String postID, int taskCode) {
+    private static HNPostCommentsTask getOrCreateInstance(HNPost post, int taskCode) {
         synchronized (HNPostCommentsTask.class) {
-            if (!runningInstances.containsKey(postID))
-                runningInstances.put(postID, new HNPostCommentsTask(postID, taskCode));
+            if (!runningInstances.containsKey(post.getPostID()))
+                runningInstances.put(post.getPostID(), new HNPostCommentsTask(post, taskCode));
         }
+        return runningInstances.get(post.getPostID());
+    }
+
+    private static HNPostCommentsTask getInstance(String postID) {
         return runningInstances.get(postID);
     }
 
-    public static void startOrReattach(Activity activity, ITaskFinishedHandler<HNPostComments> finishedHandler,
-        String postID, int taskCode) {
-        HNPostCommentsTask task = getInstance(postID, taskCode);
-        task.setOnFinishedHandler(activity, finishedHandler, HNPostComments.class);
+    public static void startOrReattach(Activity activity, ITaskFinishedHandler<HNPost> finishedHandler,
+        HNPost post, int taskCode) {
+        HNPostCommentsTask task = getOrCreateInstance(post, taskCode);
+        task.setOnFinishedHandler(activity, finishedHandler, HNPost.class);
         if (!task.isRunning())
             task.startInBackground();
     }
 
     public static void stopCurrent(String postID) {
-        getInstance(postID, 0).cancel();
+        getInstance(postID).cancel();
     }
 
     public static boolean isRunning(String postID) {
-        return getInstance(postID, 0).isRunning();
+        return getInstance(postID).isRunning();
     }
 
     @Override
@@ -74,7 +77,7 @@ public class HNPostCommentsTask extends BaseTask<HNPostComments> {
         @Override
         public void run() {
             HashMap<String, String> queryParams = new HashMap<String, String>();
-            queryParams.put("id", mPostID);
+            queryParams.put("id", mPost.getPostID());
             mFeedDownload = new StringDownloadCommand("https://news.ycombinator.com/item", queryParams,
                 RequestType.GET, false, null, App.getInstance(), HNCredentials.getCookieStore(App.getInstance()));
             mFeedDownload.run();
@@ -87,10 +90,23 @@ public class HNPostCommentsTask extends BaseTask<HNPostComments> {
             if (!mCancelled && mErrorCode == IAPICommand.ERROR_NONE) {
                 HNCommentsParser commentsParser = new HNCommentsParser();
                 try {
-                    mResult = commentsParser.parse(mFeedDownload.getResponseContent());
+                    final HNCommentsParser.Result result = commentsParser.parse(mFeedDownload.getResponseContent());
+                    if(result.getComments() != null) {
+                        mResult = new HNPost(
+                                result.getArticleUrl(),
+                                mPost.getTitle(),
+                                mPost.getURLDomain(),
+                                mPost.getAuthor(),
+                                mPost.getPostID(),
+                                mPost.getCommentsCount(),
+                                mPost.getPoints(),
+                                null,
+                                result.getComments());
+                    }
+
                     Run.inBackground(new Runnable() {
                         public void run() {
-                            FileUtil.setLastHNPostComments(mResult, mPostID);
+                            FileUtil.setLastHNPostComments(result.getComments(), mPost.getPostID());
                         }
                     });
                 } catch (Exception e) {
@@ -98,9 +114,6 @@ public class HNPostCommentsTask extends BaseTask<HNPostComments> {
                     Log.e("HNFeedTask", "Parse error!", e);
                 }
             }
-
-            if (mResult == null)
-                mResult = new HNPostComments();
         }
 
         @Override

@@ -6,22 +6,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
 import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
@@ -40,7 +31,7 @@ import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.Run;
 
 @EActivity(R.layout.comments_activity)
-public class CommentsActivity extends Activity implements ITaskFinishedHandler<HNPostComments> {
+public class CommentsActivity extends Activity implements ITaskFinishedHandler<HNPost> {
 
     public static final String EXTRA_HNPOST = "HNPOST";
 
@@ -75,12 +66,13 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
     @AfterViews
     public void init() {
-        mPost = (HNPost) getIntent().getSerializableExtra(EXTRA_HNPOST);
-        if (mPost == null || mPost.getPostID() == null) {
+        HNPost post = (HNPost) getIntent().getSerializableExtra(EXTRA_HNPOST);
+        if (post == null || post.getPostID() == null) {
             Toast.makeText(this, "The belonging post has not been loaded", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
+        setPost(post);
 
         mCommentLevelIndentPx = Math.min(DisplayHelper.getScreenHeight(this), DisplayHelper.getScreenWidth(this)) / 30;
 
@@ -155,10 +147,12 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         mCommentsListAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    public void onTaskFinished(int taskCode, TaskResultCode code, HNPostComments result, Object tag) {
-        if (code.equals(TaskResultCode.Success) && mCommentsListAdapter != null)
-            showComments(result);
+    public void onTaskFinished(int taskCode, TaskResultCode code, HNPost result, Object tag) {
+        if (code.equals(TaskResultCode.Success) && mCommentsListAdapter != null) {
+            setPost(result);
+            showComments(result.getComments());
+        }
+
         updateStatusIndicatorOnLoadingFinished(code);
     }
 
@@ -200,7 +194,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     private void startFeedLoading() {
-        HNPostCommentsTask.startOrReattach(this, this, mPost.getPostID(), 0);
+        HNPostCommentsTask.startOrReattach(this, this, mPost, 0);
         updateStatusIndicatorOnLoadingStarted();
     }
 
@@ -218,6 +212,11 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             mFontSizeMetadata = 18;
         }
 
+    }
+
+    private void setPost(HNPost post) {
+        mPost = post;
+        mActionbarTitle.setEnabled(mPost.getURL() != null);
     }
 
     class CommentsAdapter extends BaseAdapter {
