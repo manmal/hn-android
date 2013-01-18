@@ -30,7 +30,7 @@
                 android:id="@+id/comments_list_item_author"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="someauthor"
+                android:text="@string/someauthor"
                 android:textColor="#9c9186"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/comments_list_item_author"
                 android:layout_marginTop="10dp"
-                android:text="No Topic defined"
+                android:text="@string/no_topic"
                 android:textColor="#262321"
                 android:textSize="16sp" />
         </RelativeLayout>

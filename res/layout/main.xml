@@ -20,7 +20,7 @@
             android:shadowDx="0"
             android:shadowDy="-1"
             android:shadowRadius="1"
-            android:text="HN"
+            android:text="@string/app_name"
             android:textColor="@android:color/white"
             android:textSize="24sp" />
 
@@ -64,7 +64,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@color/peach"
-        android:text="Loading..."
+        android:text="@string/loading"
         android:gravity="center"
         android:textSize="26sp"
         android:textColor="#c3b5a7" >
