@@ -14,7 +14,7 @@ import com.googlecode.androidannotations.annotations.ViewById;
 import com.manuelmaly.hn.util.FontHelper;
 
 @EActivity(R.layout.about)
-public class AboutActivity extends Activity {
+public abstract class AboutActivity extends Activity {
 
     @ViewById(R.id.actionbar_back)
     ImageView mActionbarBack;

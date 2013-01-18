@@ -24,7 +24,7 @@ import com.manuelmaly.hn.reuse.ViewRotator;
 import com.manuelmaly.hn.util.FontHelper;
 
 @EActivity(R.layout.article_activity)
-public class ArticleReaderActivity extends Activity {
+public abstract class ArticleReaderActivity extends Activity {
 
     public static final String EXTRA_HNPOST = "HNPOST";
     public static final String EXTRA_HTMLPROVIDER_OVERRIDE = "HTMLPROVIDER_OVERRIDE";
