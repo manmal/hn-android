@@ -4,15 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.util.Log;
-
 public class HNPostComments implements Serializable {
 
     private static final long serialVersionUID = -2305617988079011364L;
     private List<HNCommentTreeNode> mTreeNodes;
     private transient List<HNComment> mCommentsCache;
     private boolean mIsTreeDirty;
-    private String mArticleURL;
 
     public HNPostComments() {
         mTreeNodes = new ArrayList<HNCommentTreeNode>();
