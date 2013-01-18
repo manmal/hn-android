@@ -24,7 +24,6 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.Click;
@@ -44,7 +43,7 @@ import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.Run;
 
 @EActivity(R.layout.main)
-public class MainActivity extends Activity implements ITaskFinishedHandler<HNFeed> {
+public abstract class MainActivity extends Activity implements ITaskFinishedHandler<HNFeed> {
 
     @ViewById(R.id.main_list)
     ListView mPostsList;

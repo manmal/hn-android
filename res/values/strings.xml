@@ -5,6 +5,11 @@
     <string name="article">Article</string>
     <string name="share_article_url">Share Article URL</string>
     <string name="load_more">More</string>
-    <string name="open_with">Open Article with...</string>
-
+    <string name="open_with">Open Article with &#8230;</string>
+    <string name="about">About</string>
+    <string name="someauthor">someauthor</string>
+    <string name="loading">Loading &#8230;</string>
+    <string name="settings">Settings</string>
+    <string name="no_topic">No Topic Defined</string>
+    <string name="no_url">No URL Defined</string>
 </resources>
