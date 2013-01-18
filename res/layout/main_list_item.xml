@@ -22,7 +22,7 @@
             android:id="@+id/main_list_item_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No Topic defined"
+            android:text="@string/no_topic"
             android:textColor="#262321"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
-                android:text="No URL defined"
+                android:text="@string/no_url"
                 android:textColor="#787067"
                 android:textSize="12sp" />
         </LinearLayout>
