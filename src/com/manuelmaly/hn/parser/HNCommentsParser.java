@@ -1,21 +1,12 @@
 package com.manuelmaly.hn.parser;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.xpath.XPath;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import android.util.Log;
 
 import com.manuelmaly.hn.model.HNComment;
-import com.manuelmaly.hn.model.HNFeed;
-import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.model.HNPostComments;
 
 public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
