@@ -25,7 +25,7 @@ import com.manuelmaly.hn.reuse.ViewRotator;
 import com.manuelmaly.hn.util.FontHelper;
 
 @EActivity(R.layout.article_activity)
-public class ArticleReaderActivity extends Activity {
+public abstract class ArticleReaderActivity extends Activity {
 
     private static final String WEB_VIEW_SAVED_STATE_KEY = "webViewSavedState";
     public static final String EXTRA_HNPOST = "HNPOST";
