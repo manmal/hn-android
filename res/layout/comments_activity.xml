@@ -34,9 +34,10 @@
             android:shadowDx="0"
             android:shadowDy="-1"
             android:shadowRadius="1"
-            android:text="HN"
+            android:text="@string/article"
             android:textColor="@android:color/white"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/actionbar_share"

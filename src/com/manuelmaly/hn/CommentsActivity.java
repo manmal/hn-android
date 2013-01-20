@@ -95,7 +95,6 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         });
 
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
-        mActionbarTitle.setText(getString(R.string.comments));
         mActionbarTitle.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if (SettingsActivity.getHtmlViewer(CommentsActivity.this).equals(

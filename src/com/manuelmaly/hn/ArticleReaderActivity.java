@@ -61,7 +61,6 @@ public class ArticleReaderActivity extends Activity {
     @AfterViews
     public void init() {
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
-        mActionbarTitle.setText(getString(R.string.article));
         mActionbarTitle.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Intent i = new Intent(ArticleReaderActivity.this, CommentsActivity_.class);
