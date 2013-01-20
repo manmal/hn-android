@@ -16,6 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
+            android:contentDescription="@string/back_to_main"
             android:paddingBottom="8dp"
             android:paddingLeft="8dp"
             android:paddingRight="12dp"
