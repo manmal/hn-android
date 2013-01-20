@@ -29,4 +29,7 @@
     <string name="settings_user">User</string>
     <string name="settings_username">Username</string>
     <string name="settings_password">Password</string>
+    <string name="refresh">Refresh</string>
+    <string name="back_to_main">Back To Main</string>
+    <string name="more">More</string>
 </resources>

@@ -16,6 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
+            android:contentDescription="@string/back_to_main"
             android:paddingBottom="8dp"
             android:paddingLeft="8dp"
             android:paddingRight="12dp"
@@ -44,6 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:layout_marginRight="48dp"
+            android:contentDescription="@string/share_article_url"
             android:paddingBottom="8dp"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
@@ -55,11 +57,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
+            android:contentDescription="@string/refresh"
             android:paddingBottom="8dp"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
             android:paddingTop="8dp"
             android:src="@drawable/refresh" />
+
     </FrameLayout>
 
     <WebView
