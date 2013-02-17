@@ -26,7 +26,6 @@ public class HNCredentials {
         
         if (userToken != null) {
             BasicClientCookie cookie = new BasicClientCookie(COOKIE_USER, userToken);
-            cookie.setExpiryDate(new Date(2147368447000L));
             cookie.setDomain("news.ycombinator.com");
             cookie.setPath("/");
             cookieStore.addCookie(cookie);
