@@ -13,11 +13,12 @@ import com.manuelmaly.hn.Settings;
 public class HNCredentials {
     
     private static CookieStore cookieStore;
+    private static boolean invalidated;
     
     private static final String COOKIE_USER = "user";
     
     public static CookieStore getCookieStore(Context c) {
-        if (cookieStore != null)
+        if (cookieStore != null && !invalidated)
             return cookieStore;
         
         cookieStore = new BasicCookieStore();
@@ -31,7 +32,18 @@ public class HNCredentials {
             cookieStore.addCookie(cookie);
         }
         
+        invalidated = false;
+        
         return cookieStore;
+    }
+    
+    public static void invalidate() {
+        cookieStore = null;
+        invalidated = true;
+    }
+    
+    public static boolean isInvalidated() {
+        return invalidated;
     }
     
 }

@@ -1,12 +1,5 @@
 package com.manuelmaly.hn;
 
-import java.util.Date;
-
-import org.apache.http.client.CookieStore;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.cookie.BasicClientCookie;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -35,6 +28,11 @@ public class Settings {
         return sharedPref.getString(PREF_HTMLVIEWER, c.getString(R.string.pref_default_htmlviewer));
     }
 
+    public static boolean isUserLoggedIn(Context c) {
+        return !getUserName(c).equals("");
+        
+    }
+    
     public static String getUserName(Context c) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(c);
         String[] userData = sharedPref.getString(PREF_USER, "").split(USER_DATA_SEPARATOR);
@@ -56,16 +54,4 @@ public class Settings {
         sharedPref.edit().putString(PREF_USER, userName + USER_DATA_SEPARATOR + userToken).commit();
     }
 
-    public static CookieStore getCookieStoreWithCredentials(Context c) {
-        if (getUserToken(c) == null)
-            return null;
-        
-        BasicCookieStore basicStore = new BasicCookieStore();
-        BasicClientCookie cookie = new BasicClientCookie("user", getUserToken(c));
-        cookie.setDomain("news.ycombinator.com");
-        cookie.setPath("/");
-        basicStore.addCookie(cookie);
-        return basicStore;
-    }
-    
 }

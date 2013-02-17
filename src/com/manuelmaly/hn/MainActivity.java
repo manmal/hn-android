@@ -8,8 +8,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.database.DataSetObserver;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -22,6 +26,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
@@ -38,6 +43,7 @@ import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.parser.BaseHTMLParser;
 import com.manuelmaly.hn.reuse.ImageViewFader;
 import com.manuelmaly.hn.reuse.ViewRotator;
+import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.task.HNFeedTaskLoadMore;
 import com.manuelmaly.hn.task.HNFeedTaskMainFeed;
 import com.manuelmaly.hn.task.HNVoteTask;
@@ -96,12 +102,15 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     @Override
     protected void onResume() {
         super.onResume();
+        
+        if (HNCredentials.isInvalidated())
+            startFeedLoading();
 
         // refresh because font size could have changed:
         refreshFontSizes();
         mPostsListAdapter.notifyDataSetChanged();
     }
-
+    
     @Click(R.id.actionbar)
     void actionBarClicked() {
         mPostsList.smoothScrollToPosition(0);
@@ -331,35 +340,25 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
                     holder.textContainer.setOnLongClickListener(new OnLongClickListener() {
                         public boolean onLongClick(View v) {
                             final HNPost post = getItem(position);
+                            final boolean isLoggedIn = Settings.getUserName(MainActivity.this) != null;
+                            final boolean upVotingEnabled = !isLoggedIn
+                                || (post.getUpvoteURL(Settings.getUserName(MainActivity.this)) != null && !mUpvotedPosts
+                                    .contains(post)); // We display "upvote"
+                                                      // when not logged in for
+                                                      // UX reasons
 
                             final ArrayList<CharSequence> items = new ArrayList<CharSequence>(Arrays.asList(
                                 getString(R.string.pref_htmlprovider_original_url),
                                 getString(R.string.pref_htmlprovider_viewtext),
                                 getString(R.string.pref_htmlprovider_google), getString(R.string.external_browser)));
-                            if (post.getUpvoteURL(Settings.getUserName(MainActivity.this)) != null
-                                && !mUpvotedPosts.contains(post))
+                            if (upVotingEnabled)
                                 items.add(getString(R.string.upvote));
+                            else
+                                items.add(getString(R.string.already_upvoted));
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            builder.setTitle(null);
-                            builder.setItems(items.toArray(new CharSequence[0]), new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int item) {
-                                    switch (item) {
-                                        case 0:
-                                        case 1:
-                                        case 2:
-                                            openPostInApp(post, items.get(item).toString(), MainActivity.this);
-                                            break;
-                                        case 3:
-                                            openURLInBrowser(getArticleViewURL(post), MainActivity.this);
-                                            break;
-                                        case 4:
-                                            vote(post.getUpvoteURL(Settings.getUserName(MainActivity.this)), post);
-                                        default:
-                                            break;
-                                    }
-                                }
-                            }).show();
+                            LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(post);
+                            builder.setAdapter(adapter, adapter).show();
                             return true;
                         }
                     });
@@ -396,6 +395,118 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
 
             return convertView;
         }
+    }
+
+    private class LongPressMenuListAdapter implements ListAdapter, DialogInterface.OnClickListener {
+
+        HNPost mPost;
+        boolean mIsLoggedIn;
+        boolean mUpVotingEnabled;
+        ArrayList<CharSequence> mItems;
+
+        public LongPressMenuListAdapter(HNPost post) {
+            mPost = post;
+            mIsLoggedIn = Settings.isUserLoggedIn(MainActivity.this);
+            mUpVotingEnabled = !mIsLoggedIn
+                || (mPost.getUpvoteURL(Settings.getUserName(MainActivity.this)) != null && !mUpvotedPosts
+                    .contains(mPost));
+
+            mItems = new ArrayList<CharSequence>();
+            if (mUpVotingEnabled)
+                mItems.add(getString(R.string.upvote));
+            else
+                mItems.add(getString(R.string.already_upvoted));
+            mItems.addAll(Arrays.asList(getString(R.string.pref_htmlprovider_original_url),
+                getString(R.string.pref_htmlprovider_viewtext), getString(R.string.pref_htmlprovider_google),
+                getString(R.string.external_browser)));
+        }
+
+        @Override
+        public int getCount() {
+            return mItems.size();
+        }
+
+        @Override
+        public CharSequence getItem(int position) {
+            return mItems.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView view = (TextView) mInflater.inflate(android.R.layout.simple_list_item_1, null);
+            view.setText(getItem(position));
+            if (!mUpVotingEnabled && position == 0)
+                view.setTextColor(getResources().getColor(android.R.color.darker_gray));
+            return view;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 1;
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return false;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public void registerDataSetObserver(DataSetObserver observer) {
+        }
+
+        @Override
+        public void unregisterDataSetObserver(DataSetObserver observer) {
+        }
+
+        @Override
+        public boolean areAllItemsEnabled() {
+            return false;
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+            if (!mUpVotingEnabled && position == 4)
+                return false;
+            return true;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int item) {
+            switch (item) {
+                case 0:
+                    if (!mIsLoggedIn)
+                        Toast.makeText(MainActivity.this, R.string.please_log_in, Toast.LENGTH_LONG).show();
+                    else if (mUpVotingEnabled)
+                        vote(mPost.getUpvoteURL(Settings.getUserName(MainActivity.this)), mPost);
+                    break;
+                case 1:
+                case 2:
+                case 3:
+                    openPostInApp(mPost, getItem(item).toString(), MainActivity.this);
+                    break;
+                case 4:
+                    openURLInBrowser(getArticleViewURL(mPost), MainActivity.this);
+                    break;
+                default:
+                    break;
+            }
+        }
+
     }
 
     private String getArticleViewURL(HNPost post) {

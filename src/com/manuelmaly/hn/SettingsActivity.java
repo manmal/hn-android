@@ -1,6 +1,7 @@
 package com.manuelmaly.hn;
 
-import android.content.Context;
+import com.manuelmaly.hn.server.HNCredentials;
+
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
@@ -41,14 +42,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         Preference htmlViewerPref = findPreference(Settings.PREF_HTMLVIEWER);
         htmlViewerPref.setSummary(sharedPref.getString(Settings.PREF_HTMLVIEWER, "Undefined"));
 
-        UserPreference userPref = (UserPreference) findPreference(Settings.PREF_USER);
-        userPref.setActivity(this);
-
-        String userName = Settings.getUserName(this);
-        if (userName != null)
-            userPref.setSummary(userName);
-        else
-            userPref.setSummary(" ");
+        updateUserItem();
 
         View backView = (ImageView) findViewById(R.id.actionbar_back);
         backView.setOnClickListener(new OnClickListener() {
@@ -62,6 +56,21 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         if (key.equals(Settings.PREF_FONTSIZE) || key.equals(Settings.PREF_HTMLPROVIDER)
             || key.equals(Settings.PREF_HTMLVIEWER))
             findPreference(key).setSummary(sharedPreferences.getString(key, "Undefined"));
+        else if (key.equals(Settings.PREF_USER)) {
+            HNCredentials.invalidate();
+            updateUserItem();
+        }
+    }
+    
+    private void updateUserItem() {
+        UserPreference userPref = (UserPreference) findPreference(Settings.PREF_USER);
+        userPref.setActivity(this);
+        
+        String userName = Settings.getUserName(this);
+        if (!userName.equals(""))
+            userPref.setSummary(userName);
+        else
+            userPref.setSummary(" ");
     }
 
     @Override
