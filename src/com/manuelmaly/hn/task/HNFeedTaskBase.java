@@ -1,16 +1,16 @@
 package com.manuelmaly.hn.task;
 
-import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 
 import com.manuelmaly.hn.App;
+import com.manuelmaly.hn.Settings;
 import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.parser.HNFeedParser;
 import com.manuelmaly.hn.reuse.CancelableRunnable;
-import com.manuelmaly.hn.server.StringDownloadCommand;
+import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.server.IAPICommand;
 import com.manuelmaly.hn.server.IAPICommand.RequestType;
+import com.manuelmaly.hn.server.StringDownloadCommand;
 import com.manuelmaly.hn.util.Const;
 import com.manuelmaly.hn.util.ExceptionUtil;
 import com.manuelmaly.hn.util.FileUtil;
@@ -36,7 +36,8 @@ public abstract class HNFeedTaskBase extends BaseTask<HNFeed> {
         @Override
         public void run() {
             mFeedDownload = new StringDownloadCommand(getFeedURL(), "", RequestType.GET, false, null,
-                App.getInstance());
+                App.getInstance(), HNCredentials.getCookieStore(App.getInstance()));
+            
             mFeedDownload.run();
 
             if (mCancelled)

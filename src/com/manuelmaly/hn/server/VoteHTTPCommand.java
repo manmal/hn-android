@@ -8,9 +8,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Context;
 
-public class GetHNUserTokenHTTPCommand extends BaseHTTPCommand<String> {
+public class VoteHTTPCommand extends BaseHTTPCommand<String> {
 
-    public GetHNUserTokenHTTPCommand(String url, String queryParams, RequestType type, boolean notifyFinishedBroadcast,
+    public VoteHTTPCommand(String url, String queryParams, RequestType type, boolean notifyFinishedBroadcast,
         String notificationBroadcastIntentID, Context applicationContext) {
         super(url, queryParams, type, notifyFinishedBroadcast, notificationBroadcastIntentID, applicationContext, 60000, 60000);
     }

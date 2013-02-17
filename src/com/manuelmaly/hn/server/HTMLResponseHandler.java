@@ -16,9 +16,11 @@ import org.apache.http.client.ResponseHandler;
 public class HTMLResponseHandler implements ResponseHandler<String> {
 
     private IAPICommand<String> mCommand;
+    private HttpClient mClient;
     
-    public HTMLResponseHandler(IAPICommand<String> command) {
+    public HTMLResponseHandler(IAPICommand<String> command, HttpClient client) {
         mCommand = command;
+        mClient = client;
     }
     
     @Override

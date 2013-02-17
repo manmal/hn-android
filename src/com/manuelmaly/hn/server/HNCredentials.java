@@ -1,18 +1,14 @@
 package com.manuelmaly.hn.server;
 
+import java.util.Date;
+
 import org.apache.http.client.CookieStore;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
-import com.manuelmaly.hn.Settings;
-
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+import com.manuelmaly.hn.Settings;
 
 public class HNCredentials {
     
@@ -20,7 +16,7 @@ public class HNCredentials {
     
     private static final String COOKIE_USER = "user";
     
-    public static CookieStore getCookieStore(Context c, String user) {
+    public static CookieStore getCookieStore(Context c) {
         if (cookieStore != null)
             return cookieStore;
         
@@ -28,7 +24,10 @@ public class HNCredentials {
         String userToken = Settings.getUserToken(c);
         
         if (userToken != null) {
-            Cookie cookie = new BasicClientCookie(COOKIE_USER, userToken);
+            BasicClientCookie cookie = new BasicClientCookie(COOKIE_USER, userToken);
+            cookie.setExpiryDate(new Date(2147368447000L));
+            cookie.setDomain("news.ycombinator.com");
+            cookie.setPath("/");
             cookieStore.addCookie(cookie);
         }
         

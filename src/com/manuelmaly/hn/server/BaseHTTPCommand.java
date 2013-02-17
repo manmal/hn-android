@@ -11,6 +11,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -47,10 +48,11 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
     private int mHttpTimeoutMS;
     private boolean mNotifyFinishedBroadcast;
     HttpRequestBase mRequest;
+    private CookieStore mCookieStore;
 
     public BaseHTTPCommand(final String url, final String queryParams, RequestType type,
-        boolean notifyFinishedBroadcast, String notificationBroadcastIntentID, Context applicationContext, int socketTimeoutMS,
-        int httpTimeoutMS) {
+        boolean notifyFinishedBroadcast, String notificationBroadcastIntentID, Context applicationContext,
+        int socketTimeoutMS, int httpTimeoutMS) {
         mUrl = url;
         mURLQueryParams = queryParams;
         mType = type;
@@ -69,7 +71,7 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
     public Object getTag() {
         return mTag;
     }
-
+    
     @Override
     public void run() {
         try {
@@ -82,19 +84,22 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
 
             // Start request, handle response in separate handler:
             DefaultHttpClient httpclient = new DefaultHttpClient(getHttpParams());
-            httpclient.setCookieStore(getCookieStore());
+            if (mCookieStore == null)
+                mCookieStore = new BasicCookieStore();
+            httpclient.setCookieStore(mCookieStore);
             modifyHttpClient(httpclient);
             mRequest = createRequest();
-            httpclient.execute(setRequestData(mRequest), getResponseHandler());
+            httpclient.execute(setRequestData(mRequest), getResponseHandler(httpclient));
         } catch (Exception e) {
             setErrorCode(ERROR_GENERIC_COMMUNICATION_ERROR);
             onFinished();
         }
     }
-    
+
     /**
-     * Override this to make changes to the HTTP client before
-     * it executes the request.
+     * Override this to make changes to the HTTP client before it executes the
+     * request.
+     * 
      * @param client
      */
     protected void modifyHttpClient(DefaultHttpClient client) {
@@ -107,7 +112,7 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
     protected void onFinished() {
         if (!mNotifyFinishedBroadcast)
             return;
-        
+
         Intent broadcastIntent = new Intent(mNotificationBroadcastIntentID);
         broadcastIntent.putExtra(BROADCAST_INTENT_EXTRA_ERROR, mErrorCode);
         broadcastIntent.putExtra(BROADCAST_INTENT_EXTRA_RESPONSE, mResponse);
@@ -126,7 +131,7 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
         }
         return false;
     }
-    
+
     public void cancel() {
         if (mRequest != null)
             mRequest.abort();
@@ -198,8 +203,10 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
      */
     abstract protected HttpUriRequest setRequestData(HttpUriRequest request);
 
-    abstract protected ResponseHandler<T> getResponseHandler();
-    
-    abstract protected CookieStore getCookieStore();
+    abstract protected ResponseHandler<T> getResponseHandler(HttpClient client);
+
+    public void setCookieStore(CookieStore cookieStore) {
+        mCookieStore = cookieStore;
+    }
 
 }

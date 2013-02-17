@@ -6,6 +6,7 @@ import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 
 /**
@@ -15,9 +16,11 @@ import org.apache.http.client.ResponseHandler;
 public class GetHNUserTokenResponseHandler implements ResponseHandler<String> {
 
     private IAPICommand<String> mCommand;
+    private HttpClient mClient;
     
-    public GetHNUserTokenResponseHandler(IAPICommand<String> command) {
+    public GetHNUserTokenResponseHandler(IAPICommand<String> command, HttpClient client) {
         mCommand = command;
+        mClient = client;
     }
     
     @Override

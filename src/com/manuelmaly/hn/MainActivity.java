@@ -1,6 +1,8 @@
 package com.manuelmaly.hn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -38,6 +40,7 @@ import com.manuelmaly.hn.reuse.ImageViewFader;
 import com.manuelmaly.hn.reuse.ViewRotator;
 import com.manuelmaly.hn.task.HNFeedTaskLoadMore;
 import com.manuelmaly.hn.task.HNFeedTaskMainFeed;
+import com.manuelmaly.hn.task.HNVoteTask;
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
@@ -66,17 +69,20 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
 
     HNFeed mFeed;
     PostsAdapter mPostsListAdapter;
+    HashSet<HNPost> mUpvotedPosts;
 
     int mFontSizeTitle;
     int mFontSizeDetails;
 
     private static final int TASKCODE_LOAD_FEED = 10;
     private static final int TASKCODE_LOAD_MORE_POSTS = 20;
+    private static final int TASKCODE_VOTE = 100;
 
     @AfterViews
     public void init() {
         mFeed = new HNFeed(new ArrayList<HNPost>(), null);
         mPostsListAdapter = new PostsAdapter();
+        mUpvotedPosts = new HashSet<HNPost>();
         mPostsList.setAdapter(mPostsListAdapter);
         mPostsList.setEmptyView(mEmptyListPlaceholder);
         mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
@@ -150,7 +156,7 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     }
 
     @Override
-    public void onTaskFinished(int taskCode, TaskResultCode code, HNFeed result) {
+    public void onTaskFinished(int taskCode, TaskResultCode code, HNFeed result, Object tag) {
         if (taskCode == TASKCODE_LOAD_FEED) {
             if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
                 showFeed(result);
@@ -206,6 +212,26 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         } else {
             mFontSizeTitle = 22;
             mFontSizeDetails = 15;
+        }
+    }
+
+    private void vote(String voteURL, HNPost post) {
+        HNVoteTask.start(voteURL, MainActivity.this, new VoteTaskFinishedHandler(), TASKCODE_VOTE, post);
+    }
+
+    class VoteTaskFinishedHandler implements ITaskFinishedHandler<Boolean> {
+        @Override
+        public void onTaskFinished(int taskCode, com.manuelmaly.hn.task.ITaskFinishedHandler.TaskResultCode code,
+            Boolean result, Object tag) {
+            if (taskCode == TASKCODE_VOTE) {
+                if (result != null && result.booleanValue()) {
+                    Toast.makeText(MainActivity.this, R.string.vote_success, Toast.LENGTH_SHORT).show();
+                    HNPost post = (HNPost) tag;
+                    if (post != null)
+                        mUpvotedPosts.add(post);
+                } else
+                    Toast.makeText(MainActivity.this, R.string.vote_error, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -304,18 +330,34 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
                     });
                     holder.textContainer.setOnLongClickListener(new OnLongClickListener() {
                         public boolean onLongClick(View v) {
-                            final CharSequence[] items = {getString(R.string.pref_htmlprovider_original_url),
+                            final HNPost post = getItem(position);
+
+                            final ArrayList<CharSequence> items = new ArrayList<CharSequence>(Arrays.asList(
+                                getString(R.string.pref_htmlprovider_original_url),
                                 getString(R.string.pref_htmlprovider_viewtext),
-                                getString(R.string.pref_htmlprovider_google), "External Browser"};
+                                getString(R.string.pref_htmlprovider_google), getString(R.string.external_browser)));
+                            if (post.getUpvoteURL(Settings.getUserName(MainActivity.this)) != null
+                                && !mUpvotedPosts.contains(post))
+                                items.add(getString(R.string.upvote));
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            builder.setTitle(R.string.open_with);
-                            builder.setItems(items, new DialogInterface.OnClickListener() {
+                            builder.setTitle(null);
+                            builder.setItems(items.toArray(new CharSequence[0]), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int item) {
-                                    if (item == 3)
-                                        openURLInBrowser(getArticleViewURL(getItem(position)), MainActivity.this);
-                                    else
-                                        openPostInApp(getItem(position), items[item].toString(), MainActivity.this);
+                                    switch (item) {
+                                        case 0:
+                                        case 1:
+                                        case 2:
+                                            openPostInApp(post, items.get(item).toString(), MainActivity.this);
+                                            break;
+                                        case 3:
+                                            openURLInBrowser(getArticleViewURL(post), MainActivity.this);
+                                            break;
+                                        case 4:
+                                            vote(post.getUpvoteURL(Settings.getUserName(MainActivity.this)), post);
+                                        default:
+                                            break;
+                                    }
                                 }
                             }).show();
                             return true;

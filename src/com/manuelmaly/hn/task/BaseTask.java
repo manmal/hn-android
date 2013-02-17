@@ -44,6 +44,7 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
     protected boolean mIsRunning;
     protected CancelableRunnable mTaskRunnable;
     protected int mTaskCode;
+    protected Object mTag;
 
     public BaseTask(String notificationBroadcastIntentID, int taskCode) {
         mNotificationBroadcastIntentID = notificationBroadcastIntentID;
@@ -63,6 +64,14 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
         broadcastIntent.putExtra(BROADCAST_INTENT_EXTRA_ERROR, errorCode);
         broadcastIntent.putExtra(BROADCAST_INTENT_EXTRA_RESULT, result);
         LocalBroadcastManager.getInstance(App.getInstance()).sendBroadcast(broadcastIntent);
+    }
+    
+    /**
+     * 
+     * @param tag
+     */
+    public void setTag(Object tag) {
+        mTag = tag;
     }
 
     /**
@@ -120,7 +129,7 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
                
                 Runnable r = new Runnable() {
                     public void run() {
-                        finishedHandler.onTaskFinished(mTaskCode, TaskResultCode.fromErrorCode(errorCode), result);
+                        finishedHandler.onTaskFinished(mTaskCode, TaskResultCode.fromErrorCode(errorCode), result, mTag);
                     }
                 };
                 Run.onUiThread(r, activity);

@@ -8,6 +8,8 @@ import org.jsoup.select.Elements;
 
 import android.util.Log;
 
+import com.manuelmaly.hn.App;
+import com.manuelmaly.hn.Settings;
 import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.model.HNPost;
 
@@ -17,6 +19,8 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
     public HNFeed parseDocument(Document doc) throws Exception {
         if (doc == null)
             return new HNFeed();
+        
+        String currentUser = Settings.getUserName(App.getInstance());
 
         ArrayList<HNPost> posts = new ArrayList<HNPost>();
 
@@ -37,6 +41,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
         int points = 0;
         String urlDomain = null;
         String postID = null;
+        String upvoteURL = null;
 
         boolean endParsing = false;
         for (int row = 0; row < tableRows.size(); row++) {
@@ -54,6 +59,15 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                     title = e1.text();
                     url = resolveRelativeHNURL(e1.attr("href"));
                     urlDomain = getDomainName(url);
+                    
+                    Element e4 = rowElement.select("tr > td:eq(1) a").first();
+                    if (e4 != null) {
+                        upvoteURL = e4.attr("href");
+                        if (!upvoteURL.contains(currentUser))
+                            upvoteURL = null;
+                        else
+                            upvoteURL = resolveRelativeHNURL(upvoteURL);
+                    }
                     break;
                 case 1:
                     points = getIntValueFollowedBySuffix(rowElement.select("tr > td:eq(1) > span").text(), " p");
@@ -68,7 +82,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                     else
                         commentsCount = BaseHTMLParser.UNDEFINED;
 
-                    posts.add(new HNPost(url, title, urlDomain, author, postID, commentsCount, points));
+                    posts.add(new HNPost(url, title, urlDomain, author, postID, commentsCount, points, upvoteURL));
                     break;
                 default:
                     break;

@@ -8,6 +8,7 @@ import com.manuelmaly.hn.Settings;
 import com.manuelmaly.hn.parser.HNNewsLoginParser;
 import com.manuelmaly.hn.reuse.CancelableRunnable;
 import com.manuelmaly.hn.server.GetHNUserTokenHTTPCommand;
+import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.server.IAPICommand;
 import com.manuelmaly.hn.server.IAPICommand.RequestType;
 import com.manuelmaly.hn.server.StringDownloadCommand;
@@ -80,7 +81,7 @@ public class HNLoginTask extends BaseTask<Boolean> {
 
         private String getFNID() {
             newsLoginDownload = new StringDownloadCommand(NEWSLOGIN_URL, "", RequestType.GET, false, null,
-                App.getInstance());
+                App.getInstance(), null);
             newsLoginDownload.run();
 
             if (mCancelled)
@@ -118,7 +119,10 @@ public class HNLoginTask extends BaseTask<Boolean> {
 
         @Override
         public void onCancelled() {
-            newsLoginDownload.cancel();
+            if (newsLoginDownload != null)
+                newsLoginDownload.cancel();
+            if (getUserTokenCommand != null)
+                getUserTokenCommand.cancel();
         }
 
     }

@@ -9,6 +9,7 @@ import com.manuelmaly.hn.App;
 import com.manuelmaly.hn.model.HNPostComments;
 import com.manuelmaly.hn.parser.HNCommentsParser;
 import com.manuelmaly.hn.reuse.CancelableRunnable;
+import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.server.StringDownloadCommand;
 import com.manuelmaly.hn.server.IAPICommand;
 import com.manuelmaly.hn.server.IAPICommand.RequestType;
@@ -73,7 +74,7 @@ public class HNPostCommentsTask extends BaseTask<HNPostComments> {
         @Override
         public void run() {
             mFeedDownload = new StringDownloadCommand("http://news.ycombinator.com/item", "id=" + mPostID,
-                RequestType.GET, false, null, App.getInstance());
+                RequestType.GET, false, null, App.getInstance(), HNCredentials.getCookieStore(App.getInstance()));
             mFeedDownload.run();
 
             if (mCancelled)

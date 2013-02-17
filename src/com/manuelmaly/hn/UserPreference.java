@@ -117,7 +117,7 @@ public class UserPreference extends Preference implements ITaskFinishedHandler<B
     }
 
     @Override
-    public void onTaskFinished(int taskCode, TaskResultCode code, Boolean result) {
+    public void onTaskFinished(int taskCode, TaskResultCode code, Boolean result, Object tag) {
         if (result != null && result) {
             if (mAlertDialog != null)
                 mAlertDialog.dismiss();

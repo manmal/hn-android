@@ -12,8 +12,9 @@ public class HNPost implements Serializable {
     private int mPoints;
     private String mURLDomain;
     private String mPostID; // as found in link to comments
+    private String mUpvoteURL;
     
-    public HNPost(String url, String title, String urlDomain, String author, String postID, int commentsCount, int points) {
+    public HNPost(String url, String title, String urlDomain, String author, String postID, int commentsCount, int points, String upvoteURL) {
         super();
         mURL = url;
         mTitle = title;
@@ -22,6 +23,7 @@ public class HNPost implements Serializable {
         mPostID = postID;
         mCommentsCount = commentsCount;
         mPoints = points;
+        mUpvoteURL = upvoteURL;
     }
 
     public String getURL() {
@@ -50,6 +52,12 @@ public class HNPost implements Serializable {
     
     public String getURLDomain() {
         return mURLDomain;
+    }
+    
+    public String getUpvoteURL(String currentUserName) {
+        if (mUpvoteURL == null || !mUpvoteURL.contains(currentUserName))
+            return null;
+        return mUpvoteURL;
     }
 
     @Override

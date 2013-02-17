@@ -156,7 +156,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     @Override
-    public void onTaskFinished(int taskCode, TaskResultCode code, HNPostComments result) {
+    public void onTaskFinished(int taskCode, TaskResultCode code, HNPostComments result, Object tag) {
         if (code.equals(TaskResultCode.Success) && mCommentsListAdapter != null)
             showComments(result);
         updateStatusIndicatorOnLoadingFinished(code);

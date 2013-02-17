@@ -6,10 +6,14 @@
     <string name="share_article_url">Share Article URL</string>
     <string name="load_more">More</string>
     <string name="open_with">Open Article with...</string>
+    <string name="external_browser">External Browser</string>
+    <string name="upvote">Upvote</string>
     <string name="credentials">Enter your HN credentials:</string>
     <string name="check_and_save">Save</string>
     <string name="checking">Checking...</string>
     <string name="cancel">Cancel</string>
+    <string name="vote_success">Voted!</string>
+    <string name="vote_error">Voting failed - have you voted for this before?</string>
     <string name="error_login_device_offline">Your device has no network connection at the moment.</string>
     <string name="error_unknown_error">An unknown error occurred.</string>
     <string name="error_login_failed">Could not login - please check username and password.</string>
