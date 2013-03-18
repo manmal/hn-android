@@ -98,7 +98,7 @@ public class ArticleReaderActivity extends Activity {
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_article_url));
+                i.putExtra(Intent.EXTRA_SUBJECT, mPost.getTitle());
                 i.putExtra(Intent.EXTRA_TEXT, mPost.getURL());
                 startActivity(Intent.createChooser(i, getString(R.string.share_article_url)));
             }
