@@ -73,7 +73,7 @@ public class FileUtil {
 
     private static String getLastHNPostCommentsPath(String postID) {
         File dataDir = App.getInstance().getFilesDir();
-        return dataDir.getAbsolutePath() + File.pathSeparator + LAST_HNPOSTCOMMENTS_FILENAME_PREFIX + "_" + postID;
+        return dataDir.getAbsolutePath() + "/" + LAST_HNPOSTCOMMENTS_FILENAME_PREFIX + "_" + postID;
     }
 
 }
