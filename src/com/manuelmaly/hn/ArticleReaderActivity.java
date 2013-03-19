@@ -28,7 +28,7 @@ import com.manuelmaly.hn.util.FontHelper;
 public class ArticleReaderActivity extends Activity {
 
     private static final String WEB_VIEW_SAVED_STATE_KEY = "webViewSavedState";
-	public static final String EXTRA_HNPOST = "HNPOST";
+    public static final String EXTRA_HNPOST = "HNPOST";
     public static final String EXTRA_HTMLPROVIDER_OVERRIDE = "HTMLPROVIDER_OVERRIDE";
 
     private static final String HTMLPROVIDER_PREFIX_VIEWTEXT = "http://viewtext.org/article?url=";
@@ -135,8 +135,8 @@ public class ArticleReaderActivity extends Activity {
             }
         });
         if(mWebViewSavedState != null) {
-			mWebView.restoreState(mWebViewSavedState);    			
-		}
+            mWebView.restoreState(mWebViewSavedState);
+        }
 
         mIsLoading = true;
         ViewRotator.startRotating(mActionbarRefresh);
