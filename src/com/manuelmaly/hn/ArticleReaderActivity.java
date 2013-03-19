@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,6 +27,7 @@ import com.manuelmaly.hn.util.FontHelper;
 @EActivity(R.layout.article_activity)
 public class ArticleReaderActivity extends Activity {
 
+    private static final String WEB_VIEW_SAVED_STATE_KEY = "webViewSavedState";
     public static final String EXTRA_HNPOST = "HNPOST";
     public static final String EXTRA_HTMLPROVIDER_OVERRIDE = "HTMLPROVIDER_OVERRIDE";
 
@@ -57,6 +59,7 @@ public class ArticleReaderActivity extends Activity {
     String mHtmlProvider;
 
     boolean mIsLoading;
+	private Bundle mWebViewSavedState;
 
     @AfterViews
     public void init() {
@@ -131,6 +134,9 @@ public class ArticleReaderActivity extends Activity {
                 }
             }
         });
+        if(mWebViewSavedState != null) {
+            mWebView.restoreState(mWebViewSavedState);
+        }
 
         mIsLoading = true;
         ViewRotator.startRotating(mActionbarRefresh);
@@ -152,6 +158,20 @@ public class ArticleReaderActivity extends Activity {
             mWebView.goBack();
         else
             super.onBackPressed();
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    	Bundle webViewSavedState = new Bundle();
+    	mWebView.saveState(webViewSavedState);
+    	outState.putBundle(WEB_VIEW_SAVED_STATE_KEY, webViewSavedState);
+    	super.onSaveInstanceState(outState);
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+    	super.onCreate(savedInstanceState);
+    	if(savedInstanceState != null) {
+    		mWebViewSavedState = savedInstanceState.getBundle(WEB_VIEW_SAVED_STATE_KEY);
+    	}
     }
 
     private class HNReaderWebViewClient extends WebViewClient {
