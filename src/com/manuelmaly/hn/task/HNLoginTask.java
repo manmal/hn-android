@@ -17,8 +17,8 @@ import com.manuelmaly.hn.util.ExceptionUtil;
 
 public class HNLoginTask extends BaseTask<Boolean> {
 
-    private static final String NEWSLOGIN_URL = "http://news.ycombinator.com/newslogin";
-    private static final String GET_USERTOKEN_URL = "http://news.ycombinator.com/y";
+    private static final String NEWSLOGIN_URL = "https://news.ycombinator.com/newslogin";
+    private static final String GET_USERTOKEN_URL = "https://news.ycombinator.com/y";
     public static final String BROADCAST_INTENT_ID = "HNLoginTask";
 
     private static HNLoginTask instance;

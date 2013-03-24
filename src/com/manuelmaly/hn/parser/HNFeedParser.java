@@ -99,7 +99,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
         if (url == null)
             return null;
         
-        String hnurl = "http://news.ycombinator.com/";
+        String hnurl = "https://news.ycombinator.com/";
         
         if (url.startsWith("http") || url.startsWith("ftp")) {
             return url;

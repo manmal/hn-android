@@ -12,7 +12,7 @@ import com.manuelmaly.hn.server.IAPICommand.RequestType;
 
 public class HNVoteTask extends BaseTask<Boolean> {
 
-    private static final String VOTE_URL = "http://news.ycombinator.com/vote";
+    private static final String VOTE_URL = "https://news.ycombinator.com/vote";
     public static final String BROADCAST_INTENT_ID = "HNVoteTask";
 
     private static HNVoteTask instance;
