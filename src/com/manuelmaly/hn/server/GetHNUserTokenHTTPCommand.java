@@ -1,5 +1,7 @@
 package com.manuelmaly.hn.server;
 
+import java.util.HashMap;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -10,7 +12,7 @@ import android.content.Context;
 
 public class GetHNUserTokenHTTPCommand extends BaseHTTPCommand<String> {
 
-    public GetHNUserTokenHTTPCommand(String url, String queryParams, RequestType type, boolean notifyFinishedBroadcast,
+    public GetHNUserTokenHTTPCommand(String url, HashMap<String, String> queryParams, RequestType type, boolean notifyFinishedBroadcast,
         String notificationBroadcastIntentID, Context applicationContext) {
         super(url, queryParams, type, notifyFinishedBroadcast, notificationBroadcastIntentID, applicationContext, 60000, 60000);
     }

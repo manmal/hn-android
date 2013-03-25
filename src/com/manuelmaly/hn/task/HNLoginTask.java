@@ -1,5 +1,7 @@
 package com.manuelmaly.hn.task;
 
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.util.Log;
 
@@ -80,7 +82,7 @@ public class HNLoginTask extends BaseTask<Boolean> {
         }
 
         private String getFNID() {
-            newsLoginDownload = new StringDownloadCommand(NEWSLOGIN_URL, "", RequestType.GET, false, null,
+            newsLoginDownload = new StringDownloadCommand(NEWSLOGIN_URL, new HashMap<String, String>(), RequestType.GET, false, null,
                 App.getInstance(), null);
             newsLoginDownload.run();
 
@@ -102,8 +104,11 @@ public class HNLoginTask extends BaseTask<Boolean> {
         }
 
         private String getUserToken() {
-            getUserTokenCommand = new GetHNUserTokenHTTPCommand(GET_USERTOKEN_URL, "fnid=" + mFNID + "&u=" + mUsername
-                + "&p=" + mPassword, RequestType.POST, false, null, App.getInstance());
+            HashMap<String, String> queryParams = new HashMap<String, String>();
+            queryParams.put("fnid", mFNID);
+            queryParams.put("u", mUsername);
+            queryParams.put("p", mPassword);
+            getUserTokenCommand = new GetHNUserTokenHTTPCommand(GET_USERTOKEN_URL, queryParams, RequestType.POST, false, null, App.getInstance());
             getUserTokenCommand.run();
 
             if (mCancelled)

@@ -2,6 +2,7 @@ package com.manuelmaly.hn.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -14,7 +15,7 @@ import android.content.Context;
 
 public abstract class NoResponseCommand extends BaseHTTPCommand<Boolean> {
 
-    public NoResponseCommand(String url, String queryParams, RequestType type, boolean notifyFinishedBroadcast,
+    public NoResponseCommand(String url, HashMap<String, String> queryParams, RequestType type, boolean notifyFinishedBroadcast,
         String notificationBroadcastIntentID, Context applicationContext, CookieStore cookieStore) {
         super(url, queryParams, type, notifyFinishedBroadcast, notificationBroadcastIntentID, applicationContext, 60000, 60000);
         setCookieStore(cookieStore);

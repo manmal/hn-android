@@ -1,5 +1,7 @@
 package com.manuelmaly.hn.task;
 
+import java.util.HashMap;
+
 import android.util.Log;
 
 import com.manuelmaly.hn.App;
@@ -35,7 +37,7 @@ public abstract class HNFeedTaskBase extends BaseTask<HNFeed> {
 
         @Override
         public void run() {
-            mFeedDownload = new StringDownloadCommand(getFeedURL(), "", RequestType.GET, false, null,
+            mFeedDownload = new StringDownloadCommand(getFeedURL(), new HashMap<String, String>(), RequestType.GET, false, null,
                 App.getInstance(), HNCredentials.getCookieStore(App.getInstance()));
             
             mFeedDownload.run();

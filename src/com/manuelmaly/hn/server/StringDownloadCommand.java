@@ -1,5 +1,7 @@
 package com.manuelmaly.hn.server;
 
+import java.util.HashMap;
+
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -9,7 +11,7 @@ import android.content.Context;
 
 public class StringDownloadCommand extends BaseHTTPCommand<String> {
 
-    public StringDownloadCommand(String url, String queryParams, RequestType type, boolean notifyFinishedBroadcast,
+    public StringDownloadCommand(String url, HashMap<String, String> queryParams, RequestType type, boolean notifyFinishedBroadcast,
         String notificationBroadcastIntentID, Context applicationContext, CookieStore cookieStore) {
         super(url, queryParams, type, notifyFinishedBroadcast, notificationBroadcastIntentID, applicationContext, 60000, 60000);
         setCookieStore(cookieStore);

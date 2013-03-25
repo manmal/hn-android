@@ -1,6 +1,7 @@
 package com.manuelmaly.hn.server;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
@@ -19,6 +20,7 @@ import org.apache.http.params.HttpParams;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 
 /**
@@ -50,11 +52,19 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
     HttpRequestBase mRequest;
     private CookieStore mCookieStore;
 
-    public BaseHTTPCommand(final String url, final String queryParams, RequestType type,
+    public BaseHTTPCommand(final String url, final HashMap<String, String> params, RequestType type,
         boolean notifyFinishedBroadcast, String notificationBroadcastIntentID, Context applicationContext,
         int socketTimeoutMS, int httpTimeoutMS) {
         mUrl = url;
-        mURLQueryParams = queryParams;
+        
+        StringBuilder sb = new StringBuilder();
+        for (String param : params.keySet()) {
+            if (sb.length() > 0)
+                sb.append("&");
+            sb.append(Uri.encode(param)).append("=").append(Uri.encode(params.get(param)));
+        }
+        
+        mURLQueryParams = sb.toString();
         mType = type;
         mNotificationBroadcastIntentID = notificationBroadcastIntentID == null ? DEFAULT_BROADCAST_INTENT_ID
             : notificationBroadcastIntentID;
