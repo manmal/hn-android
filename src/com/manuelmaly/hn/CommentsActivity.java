@@ -127,7 +127,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("text/plain");
                 i.putExtra(Intent.EXTRA_SUBJECT, mPost.getTitle() + " | Hacker News");
-                i.putExtra(Intent.EXTRA_TEXT, "http://news.ycombinator.com/item?id=" + mPost.getPostID());
+                i.putExtra(Intent.EXTRA_TEXT, "https://news.ycombinator.com/item?id=" + mPost.getPostID());
                 startActivity(Intent.createChooser(i, getString(R.string.share_comments_url)));
             }
         });

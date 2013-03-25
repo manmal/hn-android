@@ -73,7 +73,7 @@ public class HNPostCommentsTask extends BaseTask<HNPostComments> {
 
         @Override
         public void run() {
-            mFeedDownload = new StringDownloadCommand("http://news.ycombinator.com/item", "id=" + mPostID,
+            mFeedDownload = new StringDownloadCommand("https://news.ycombinator.com/item", "id=" + mPostID,
                 RequestType.GET, false, null, App.getInstance(), HNCredentials.getCookieStore(App.getInstance()));
             mFeedDownload.run();
 
