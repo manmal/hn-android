@@ -13,7 +13,7 @@
         <item>@string/pref_fontsize_big</item>
     </string-array>
 
-    <string name="pref_title_htmlprovider">View Articles via...</string>
+    <string name="pref_title_htmlprovider">View Articles via &#8230;</string>
     <string name="pref_default_htmlprovider">Original Article URL</string>
     <string name="pref_htmlprovider_original_url">Original Article URL</string>
     <string name="pref_htmlprovider_viewtext">ViewText.org</string>
@@ -25,7 +25,7 @@
         <item>@string/pref_htmlprovider_google</item>
     </string-array>
 
-    <string name="pref_title_htmlviewer">View Articles within...</string>
+    <string name="pref_title_htmlviewer">View Articles within &#8230;</string>
     <string name="pref_default_htmlviewer">The App</string>
     <string name="pref_htmlviewer_app">The App</string>
     <string name="pref_htmlviewer_browser">The System Browser</string>
