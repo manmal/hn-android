@@ -4,7 +4,7 @@ import android.app.Activity;
 
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
 
-public class BasePostActivity extends Activity implements ITaskFinishedHandler<Boolean> {
+public abstract class BasePostActivity extends Activity implements ITaskFinishedHandler<Boolean> {
 
     @Override
     public void onTaskFinished(int taskCode, com.manuelmaly.hn.task.ITaskFinishedHandler.TaskResultCode code,

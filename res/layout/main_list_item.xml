@@ -40,7 +40,6 @@
                 android:background="@drawable/points_roundedrect"
                 android:gravity="center"
                 android:minWidth="35dp"
-                android:text="0"
                 android:textColor="#787067"
                 android:textSize="12sp" />
 

@@ -40,7 +40,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/comments_list_item_author"
-                android:text=", 20 minutes ago"
                 android:textColor="#9c9186"
                 android:textSize="14sp" />
 

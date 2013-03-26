@@ -40,7 +40,7 @@ import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.Run;
 
 @EActivity(R.layout.comments_activity)
-public abstract class CommentsActivity extends Activity implements ITaskFinishedHandler<HNPostComments> {
+public class CommentsActivity extends Activity implements ITaskFinishedHandler<HNPostComments> {
 
     public static final String EXTRA_HNPOST = "HNPOST";
 

@@ -5,7 +5,6 @@
     <string name="article">Article</string>
     <string name="share_article_url">Share Article URL</string>
     <string name="load_more">More</string>
-    <string name="open_with">Open Article with&#8230;</string>
     <string name="external_browser">External Browser</string>
     <string name="upvote">Upvote</string>
     <string name="please_log_in">Please log in first via \'Settings\' -> \'User\'.</string>
@@ -26,4 +25,8 @@
     <string name="settings">Settings</string>
     <string name="no_topic">No Topic Defined</string>
     <string name="no_url">No URL Defined</string>
+    <string name="about_by">by Creative Pragmatics</string>
+    <string name="settings_user">User</string>
+    <string name="settings_username">Username</string>
+    <string name="settings_password">Password</string>
 </resources>
