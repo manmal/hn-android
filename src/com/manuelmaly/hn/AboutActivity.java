@@ -37,10 +37,10 @@ public class AboutActivity extends Activity {
         mHNView.setTypeface(tf);
         
         mURLView.setMovementMethod(LinkMovementMethod.getInstance());
-        mURLView.setText(Html.fromHtml("<a href=\"mailto:me@manuelmaly.com\">me@manuelmaly.com</a>"));
+        mURLView.setText(Html.fromHtml("<a href=\"http://www.creativepragmatics.com\">creativepragmatics.com</a>"));
         
         mGithubView.setMovementMethod(LinkMovementMethod.getInstance());
-        mGithubView.setText(Html.fromHtml("<a href=\"https://github.com/manmal/hn-android/\">Get the Sourcecode</a>"));
+        mGithubView.setText(Html.fromHtml("<a href=\"https://github.com/manmal/hn-android/\">Fork this at Github</a>"));
     }
 
     @Click(R.id.actionbar_back)
