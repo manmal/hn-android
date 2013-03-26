@@ -10,7 +10,6 @@ import com.manuelmaly.hn.Settings;
 import com.manuelmaly.hn.parser.HNNewsLoginParser;
 import com.manuelmaly.hn.reuse.CancelableRunnable;
 import com.manuelmaly.hn.server.GetHNUserTokenHTTPCommand;
-import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.server.IAPICommand;
 import com.manuelmaly.hn.server.IAPICommand.RequestType;
 import com.manuelmaly.hn.server.StringDownloadCommand;

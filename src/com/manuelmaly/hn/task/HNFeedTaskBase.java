@@ -5,7 +5,6 @@ import java.util.HashMap;
 import android.util.Log;
 
 import com.manuelmaly.hn.App;
-import com.manuelmaly.hn.Settings;
 import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.parser.HNFeedParser;
 import com.manuelmaly.hn.reuse.CancelableRunnable;

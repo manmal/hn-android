@@ -1,7 +1,5 @@
 package com.manuelmaly.hn;
 
-import com.manuelmaly.hn.server.HNCredentials;
-
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
@@ -11,6 +9,8 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+
+import com.manuelmaly.hn.server.HNCredentials;
 
 public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 

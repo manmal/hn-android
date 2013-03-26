@@ -1,7 +1,5 @@
 package com.manuelmaly.hn.server;
 
-import java.util.Date;
-
 import org.apache.http.client.CookieStore;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.cookie.BasicClientCookie;

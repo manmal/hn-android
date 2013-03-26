@@ -16,11 +16,9 @@ import org.apache.http.client.ResponseHandler;
 public class GetHNUserTokenResponseHandler implements ResponseHandler<String> {
 
     private IAPICommand<String> mCommand;
-    private HttpClient mClient;
     
     public GetHNUserTokenResponseHandler(IAPICommand<String> command, HttpClient client) {
         mCommand = command;
-        mClient = client;
     }
     
     @Override

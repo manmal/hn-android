@@ -2,8 +2,6 @@ package com.manuelmaly.hn.model;
 
 import java.io.Serializable;
 
-import android.text.Spanned;
-
 public class HNComment implements Serializable {
 
     private static final long serialVersionUID = 1286983917054008714L;

@@ -3,7 +3,6 @@ package com.manuelmaly.hn.task;
 import android.app.Activity;
 
 import com.manuelmaly.hn.App;
-import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.reuse.CancelableRunnable;
 import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.server.HNVoteCommand;
@@ -12,7 +11,6 @@ import com.manuelmaly.hn.server.IAPICommand.RequestType;
 
 public class HNVoteTask extends BaseTask<Boolean> {
 
-    private static final String VOTE_URL = "https://news.ycombinator.com/vote";
     public static final String BROADCAST_INTENT_ID = "HNVoteTask";
 
     private static HNVoteTask instance;

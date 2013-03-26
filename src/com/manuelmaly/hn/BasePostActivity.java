@@ -1,8 +1,8 @@
 package com.manuelmaly.hn;
 
-import com.manuelmaly.hn.task.ITaskFinishedHandler;
-
 import android.app.Activity;
+
+import com.manuelmaly.hn.task.ITaskFinishedHandler;
 
 public class BasePostActivity extends Activity implements ITaskFinishedHandler<Boolean> {
 

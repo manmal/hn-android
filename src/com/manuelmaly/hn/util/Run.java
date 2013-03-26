@@ -4,7 +4,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Handler;
 
 public class Run {

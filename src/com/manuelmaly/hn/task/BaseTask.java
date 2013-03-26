@@ -2,9 +2,6 @@ package com.manuelmaly.hn.task;
 
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -15,7 +12,6 @@ import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.manuelmaly.hn.App;
-import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.reuse.CancelableRunnable;
 import com.manuelmaly.hn.server.IAPICommand;
 import com.manuelmaly.hn.task.ITaskFinishedHandler.TaskResultCode;
