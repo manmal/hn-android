@@ -7,7 +7,9 @@ This is the official repo for **HN**, an unofficial Hacker News client for Andro
 If you find any issues, please post them into the [Issues section](https://github.com/manmal/hn-android/issues), send a
 [Pull request](https://github.com/manmal/hn-android/pulls), or tweet me at [@manuelmaly](https://twitter.com/manuelmaly/).
 
-This project is early beta, please set your expectations accordingly.
+Note about Pull Requests: If you commit your additions into feature branches (http://nvie.com/posts/a-successful-git-branching-model/) instead of
+the master branch, you will have no problems later on when you pull in updates from my repo. If you do that, you always have a clean
+master branch at all times (meaning it does not contain anything other than my repo's master branch commits).
 
 Setup
 -----
