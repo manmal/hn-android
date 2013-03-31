@@ -56,15 +56,17 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
         boolean notifyFinishedBroadcast, String notificationBroadcastIntentID, Context applicationContext,
         int socketTimeoutMS, int httpTimeoutMS) {
         mUrl = url;
-        
-        StringBuilder sb = new StringBuilder();
-        for (String param : params.keySet()) {
-            if (sb.length() > 0)
-                sb.append("&");
-            sb.append(Uri.encode(param)).append("=").append(Uri.encode(params.get(param)));
+
+        if (params != null) {
+            StringBuilder sb = new StringBuilder();
+            for (String param : params.keySet()) {
+                if (sb.length() > 0)
+                    sb.append("&");
+                sb.append(Uri.encode(param)).append("=").append(Uri.encode(params.get(param)));
+            }
+            mURLQueryParams = sb.toString();
         }
-        
-        mURLQueryParams = sb.toString();
+
         mType = type;
         mNotificationBroadcastIntentID = notificationBroadcastIntentID == null ? DEFAULT_BROADCAST_INTENT_ID
             : notificationBroadcastIntentID;
@@ -81,7 +83,7 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
     public Object getTag() {
         return mTag;
     }
-    
+
     @Override
     public void run() {
         try {

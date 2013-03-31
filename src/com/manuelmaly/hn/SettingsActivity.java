@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
 import com.manuelmaly.hn.server.HNCredentials;
+import com.manuelmaly.hn.util.Run;
 
 public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
@@ -52,20 +53,25 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         });
     }
 
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(Settings.PREF_FONTSIZE) || key.equals(Settings.PREF_HTMLPROVIDER)
-            || key.equals(Settings.PREF_HTMLVIEWER))
-            findPreference(key).setSummary(sharedPreferences.getString(key, "Undefined"));
-        else if (key.equals(Settings.PREF_USER)) {
-            HNCredentials.invalidate();
-            updateUserItem();
-        }
+    public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
+        Run.onUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (key.equals(Settings.PREF_FONTSIZE) || key.equals(Settings.PREF_HTMLPROVIDER)
+                    || key.equals(Settings.PREF_HTMLVIEWER))
+                    findPreference(key).setSummary(sharedPreferences.getString(key, "Undefined"));
+                else if (key.equals(Settings.PREF_USER)) {
+                    HNCredentials.invalidate();
+                    updateUserItem();
+                }
+            }
+        }, this);
     }
-    
+
     private void updateUserItem() {
         UserPreference userPref = (UserPreference) findPreference(Settings.PREF_USER);
         userPref.setActivity(this);
-        
+
         String userName = Settings.getUserName(this);
         if (!userName.equals(""))
             userPref.setSummary(userName);
