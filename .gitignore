@@ -10,3 +10,6 @@ assets/server.properties
 res/values/maps-key.xml
 tmp/
 .DS_Store
+test_servers
+screenshot*
+*.apk
