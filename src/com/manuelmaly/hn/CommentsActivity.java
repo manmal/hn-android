@@ -168,13 +168,16 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     private void loadIntermediateCommentsFromStore() {
-        long start = System.currentTimeMillis();
-        HNPostComments commentsFromStore = FileUtil.getLastHNPostComments(mPost.getPostID());
-        if (commentsFromStore == null) {
-            // TODO: display "Loading..." instead
-        } else
-            showComments(commentsFromStore);
-        Log.i("", "Loading intermediate feed took ms:" + (System.currentTimeMillis() - start));
+        new GetLastHNPostCommentsTask().execute(mPost.getPostID());
+    }
+    
+    class GetLastHNPostCommentsTask extends FileUtil.GetLastHNPostCommentsTask {
+        protected void onPostExecute(HNPostComments result) {
+            if (result == null) {
+                // TODO: display "Loading..." instead
+            } else
+                showComments(result);
+        }
     }
 
     private void updateStatusIndicatorOnLoadingStarted() {

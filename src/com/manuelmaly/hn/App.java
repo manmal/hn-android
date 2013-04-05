@@ -19,9 +19,9 @@ public class App extends Application {
 
         GoogleAnalyticsTracker.getInstance().startNewSession(Const.GAN_ID, 30, this);
 
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDeath()
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().penaltyLog()
             .build());
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().penaltyDeath().build());
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().penaltyLog().build());
     }
 
     @Override

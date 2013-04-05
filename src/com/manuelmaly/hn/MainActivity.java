@@ -191,13 +191,19 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     }
 
     private void loadIntermediateFeedFromStore() {
+        new GetLastHNFeedTask().execute((Void)null);
         long start = System.currentTimeMillis();
-        HNFeed feedFromStore = FileUtil.getLastHNFeed();
-        if (feedFromStore == null) {
-            // TODO: display "Loading..." instead
-        } else
-            showFeed(feedFromStore);
+        
         Log.i("", "Loading intermediate feed took ms:" + (System.currentTimeMillis() - start));
+    }
+    
+    class GetLastHNFeedTask extends FileUtil.GetLastHNFeedTask {
+        protected void onPostExecute(HNFeed result) {
+            if (result == null) {
+                // TODO: display "Loading..." instead
+            } else
+                showFeed(result);
+        }
     }
 
     private void startFeedLoading() {

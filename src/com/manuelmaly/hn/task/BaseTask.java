@@ -61,7 +61,7 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
         broadcastIntent.putExtra(BROADCAST_INTENT_EXTRA_RESULT, result);
         LocalBroadcastManager.getInstance(App.getInstance()).sendBroadcast(broadcastIntent);
     }
-    
+
     /**
      * 
      * @param tag
@@ -89,22 +89,27 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
      * @param finishedHandler
      * @param resultClazz
      */
-    public void setOnFinishedHandler(Activity activity, ITaskFinishedHandler<T> finishedHandler, final Class<T> resultClazz) {
+    public void setOnFinishedHandler(Activity activity, ITaskFinishedHandler<T> finishedHandler,
+        final Class<T> resultClazz) {
         final SoftReference<Activity> activityRef = new SoftReference<Activity>(activity);
-        final SoftReference<ITaskFinishedHandler<T>> finishedHandlerRef = new SoftReference<ITaskFinishedHandler<T>>(finishedHandler);
+        final SoftReference<ITaskFinishedHandler<T>> finishedHandlerRef = new SoftReference<ITaskFinishedHandler<T>>(
+            finishedHandler);
         BroadcastReceiver finishedListener = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 LocalBroadcastManager.getInstance(App.getInstance()).unregisterReceiver(this);
-                
-                if (activityRef == null || activityRef.get() == null || finishedHandlerRef == null || finishedHandlerRef.get() == null)
+
+                if (activityRef == null || activityRef.get() == null || finishedHandlerRef == null
+                    || finishedHandlerRef.get() == null)
                     return;
 
-                // Make hard references until the end of processing, so we don't lose those objects:
+                // Make hard references until the end of processing, so we don't
+                // lose those objects:
                 Activity activity = activityRef.get();
                 final ITaskFinishedHandler<T> finishedHandler = finishedHandlerRef.get();
-                
-                int lowLevelErrorCode = intent.getIntExtra(BaseTask.BROADCAST_INTENT_EXTRA_ERROR, IAPICommand.ERROR_NONE);
+
+                int lowLevelErrorCode = intent.getIntExtra(BaseTask.BROADCAST_INTENT_EXTRA_ERROR,
+                    IAPICommand.ERROR_NONE);
                 final int errorCode;
                 final T result;
                 if (lowLevelErrorCode == IAPICommand.ERROR_NONE) {
@@ -112,20 +117,19 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
                     if (resultClazz.isInstance(rawResult)) {
                         result = resultClazz.cast(rawResult);
                         errorCode = lowLevelErrorCode;
-                    }
-                    else {
+                    } else {
                         result = null;
                         errorCode = IAPICommand.ERROR_UNKNOWN;
                     }
-                }
-                else {
+                } else {
                     result = null;
                     errorCode = lowLevelErrorCode;
                 }
-               
+
                 Runnable r = new Runnable() {
                     public void run() {
-                        finishedHandler.onTaskFinished(mTaskCode, TaskResultCode.fromErrorCode(errorCode), result, mTag);
+                        finishedHandler
+                            .onTaskFinished(mTaskCode, TaskResultCode.fromErrorCode(errorCode), result, mTag);
                     }
                 };
                 Run.onUiThread(r, activity);
@@ -156,8 +160,13 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
     }
 
     public void cancel() {
-        if (mTaskRunnable != null)
-            mTaskRunnable.cancel();
+        Run.inBackground(new Runnable() {
+            @Override
+            public void run() {
+                if (mTaskRunnable != null)
+                    mTaskRunnable.cancel();
+            }
+        });
     }
 
     public abstract CancelableRunnable getTask();

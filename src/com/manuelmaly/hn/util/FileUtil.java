@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import android.content.AsyncQueryHandler;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.manuelmaly.hn.App;
@@ -19,10 +21,17 @@ public class FileUtil {
     private static final String LAST_HNPOSTCOMMENTS_FILENAME_PREFIX = "lastHNPostComments";
     private static final String TAG = "FileUtil";
 
+    public abstract static class GetLastHNFeedTask extends AsyncTask<Void, Void, HNFeed> {
+        @Override
+        protected HNFeed doInBackground(Void... params) {
+            return getLastHNFeed();
+        }
+    }
+
     /*
      * Returns null if no last feed was found or could not be parsed.
      */
-    public static HNFeed getLastHNFeed() {
+    private static HNFeed getLastHNFeed() {
         ObjectInputStream obj = null;
         try {
             obj = new ObjectInputStream(new FileInputStream(getLastHNFeedFilePath()));
@@ -43,22 +52,26 @@ public class FileUtil {
         return null;
     }
 
-    public static void setLastHNFeed(HNFeed hnFeed) {
-        ObjectOutputStream os = null;
-        try {
-            os = new ObjectOutputStream(new FileOutputStream(getLastHNFeedFilePath()));
-            os.writeObject(hnFeed);
-        } catch (Exception e) {
-            Log.e(TAG, "Could not save last HNFeed to file :(", e);
-        } finally {
-            if (os != null) {
+    public static void setLastHNFeed(final HNFeed hnFeed) {
+        Run.inBackground(new Runnable() {
+            public void run() {
+                ObjectOutputStream os = null;
                 try {
-                    os.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "Couldn't close last NH feed file :(", e);
+                    os = new ObjectOutputStream(new FileOutputStream(getLastHNFeedFilePath()));
+                    os.writeObject(hnFeed);
+                } catch (Exception e) {
+                    Log.e(TAG, "Could not save last HNFeed to file :(", e);
+                } finally {
+                    if (os != null) {
+                        try {
+                            os.close();
+                        } catch (IOException e) {
+                            Log.e(TAG, "Couldn't close last NH feed file :(", e);
+                        }
+                    }
                 }
             }
-        }
+        });
     }
 
     private static String getLastHNFeedFilePath() {
@@ -66,10 +79,19 @@ public class FileUtil {
         return dataDir.getAbsolutePath() + File.pathSeparator + LAST_HNFEED_FILENAME;
     }
 
+    public abstract static class GetLastHNPostCommentsTask extends AsyncTask<String, Void, HNPostComments> {
+        @Override
+        protected HNPostComments doInBackground(String... postIDs) {
+            if (postIDs != null && postIDs.length > 0)
+                return getLastHNPostComments(postIDs[0]);
+            return null;
+        }
+    }
+
     /*
      * Returns null if no last comments file was found or could not be parsed.
      */
-    public static HNPostComments getLastHNPostComments(String postID) {
+    private static HNPostComments getLastHNPostComments(String postID) {
         ObjectInputStream obj = null;
         try {
             obj = new ObjectInputStream(new FileInputStream(getLastHNPostCommentsPath(postID)));
@@ -90,22 +112,26 @@ public class FileUtil {
         return null;
     }
 
-    public static void setLastHNPostComments(HNPostComments comments, String postID) {
-        ObjectOutputStream os = null;
-        try {
-            os = new ObjectOutputStream(new FileOutputStream(getLastHNPostCommentsPath(postID)));
-            os.writeObject(comments);
-        } catch (Exception e) {
-            Log.e(TAG, "Could not save last HNPostComments to file :(", e);
-        } finally {
-            if (os != null) {
+    public static void setLastHNPostComments(final HNPostComments comments, final String postID) {
+        Run.inBackground(new Runnable() {
+            public void run() {
+                ObjectOutputStream os = null;
                 try {
-                    os.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "Couldn't close last NH comments file :(", e);
+                    os = new ObjectOutputStream(new FileOutputStream(getLastHNPostCommentsPath(postID)));
+                    os.writeObject(comments);
+                } catch (Exception e) {
+                    Log.e(TAG, "Could not save last HNPostComments to file :(", e);
+                } finally {
+                    if (os != null) {
+                        try {
+                            os.close();
+                        } catch (IOException e) {
+                            Log.e(TAG, "Couldn't close last NH comments file :(", e);
+                        }
+                    }
                 }
             }
-        }
+        });
     }
 
     private static String getLastHNPostCommentsPath(String postID) {
