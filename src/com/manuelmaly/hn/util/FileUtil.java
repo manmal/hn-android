@@ -23,7 +23,7 @@ public class FileUtil {
      * Returns null if no last feed was found or could not be parsed.
      */
     public static HNFeed getLastHNFeed() {
-    	ObjectInputStream obj = null;
+        ObjectInputStream obj = null;
         try {
             obj = new ObjectInputStream(new FileInputStream(getLastHNFeedFilePath()));
             Object rawHNFeed = obj.readObject();
@@ -32,32 +32,32 @@ public class FileUtil {
         } catch (Exception e) {
             Log.e(TAG, "Could not get last HNFeed from file :(", e);
         } finally {
-        	if (obj!=null){
-        		try {
-					obj.close();
-				} catch (IOException e) {
-		            Log.e(TAG, "Couldn't close last NH feed file :(", e);
-				}
-        	}
+            if (obj != null) {
+                try {
+                    obj.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Couldn't close last NH feed file :(", e);
+                }
+            }
         }
         return null;
     }
 
     public static void setLastHNFeed(HNFeed hnFeed) {
-    	ObjectOutputStream os = null;
+        ObjectOutputStream os = null;
         try {
             os = new ObjectOutputStream(new FileOutputStream(getLastHNFeedFilePath()));
             os.writeObject(hnFeed);
         } catch (Exception e) {
             Log.e(TAG, "Could not save last HNFeed to file :(", e);
         } finally {
-        	if (os!=null){
-        		try {
-					os.close();
-				} catch (IOException e) {
-		            Log.e(TAG, "Couldn't close last NH feed file :(", e);
-		        }
-        	}
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Couldn't close last NH feed file :(", e);
+                }
+            }
         }
     }
 
@@ -65,12 +65,12 @@ public class FileUtil {
         File dataDir = App.getInstance().getFilesDir();
         return dataDir.getAbsolutePath() + File.pathSeparator + LAST_HNFEED_FILENAME;
     }
-    
+
     /*
      * Returns null if no last comments file was found or could not be parsed.
      */
     public static HNPostComments getLastHNPostComments(String postID) {
-    	ObjectInputStream obj = null;
+        ObjectInputStream obj = null;
         try {
             obj = new ObjectInputStream(new FileInputStream(getLastHNPostCommentsPath(postID)));
             Object rawHNComments = obj.readObject();
@@ -79,32 +79,32 @@ public class FileUtil {
         } catch (Exception e) {
             Log.e(TAG, "Could not get last HNPostComments from file :(", e);
         } finally {
-        	if (obj!=null){
-        		try {
-					obj.close();
-				} catch (IOException e) {
-		            Log.e(TAG, "Couldn't close last NH comments file :(", e);
-				}
-        	}
+            if (obj != null) {
+                try {
+                    obj.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Couldn't close last NH comments file :(", e);
+                }
+            }
         }
         return null;
     }
 
     public static void setLastHNPostComments(HNPostComments comments, String postID) {
-    	ObjectOutputStream os = null;
+        ObjectOutputStream os = null;
         try {
             os = new ObjectOutputStream(new FileOutputStream(getLastHNPostCommentsPath(postID)));
             os.writeObject(comments);
         } catch (Exception e) {
             Log.e(TAG, "Could not save last HNPostComments to file :(", e);
         } finally {
-        	if (os!=null){
-        		try {
-					os.close();
-				} catch (IOException e) {
-		            Log.e(TAG, "Couldn't close last NH comments file :(", e);
-		        }
-        	}
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Couldn't close last NH comments file :(", e);
+                }
+            }
         }
     }
 
