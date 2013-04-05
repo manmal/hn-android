@@ -174,6 +174,12 @@ public class ArticleReaderActivity extends Activity {
     	}
     }
 
+    @Override
+    protected void onDestroy() {
+    	super.onDestroy();
+    	mWebView.destroy(); //Destroy any players (e.g. Youtube, Soundcloud) if any
+    }
+
     private class HNReaderWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
