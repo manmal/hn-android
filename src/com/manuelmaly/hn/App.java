@@ -1,7 +1,6 @@
 package com.manuelmaly.hn;
 
 import android.app.Application;
-import android.os.StrictMode;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.googlecode.androidannotations.annotations.EApplication;
@@ -18,10 +17,6 @@ public class App extends Application {
         mInstance = this;
 
         GoogleAnalyticsTracker.getInstance().startNewSession(Const.GAN_ID, 30, this);
-
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().penaltyLog()
-            .build());
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().penaltyLog().build());
     }
 
     @Override
