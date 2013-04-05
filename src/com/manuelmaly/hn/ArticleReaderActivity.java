@@ -176,8 +176,10 @@ public class ArticleReaderActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+    	mWebView.loadData("", "text/html", "utf-8"); //Destroy any players (e.g. Youtube, Soundcloud) if any
+    	//Calling mWebView.destroy(); would not always work according to here: http://stackoverflow.com/questions/6201615/how-do-i-stop-flash-after-leaving-a-webview?rq=1
+    	
     	super.onDestroy();
-    	mWebView.destroy(); //Destroy any players (e.g. Youtube, Soundcloud) if any
     }
 
     private class HNReaderWebViewClient extends WebViewClient {
