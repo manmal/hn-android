@@ -156,8 +156,16 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
     }
 
     public void cancel() {
-        if (mTaskRunnable != null)
-            mTaskRunnable.cancel();
+        if (mTaskRunnable != null) {
+        	Run.inBackground(new Runnable() {
+				@Override
+				public void run() {
+					if (mTaskRunnable != null) {
+						mTaskRunnable.cancel();
+					}
+				}
+        	});
+        }
     }
 
     public abstract CancelableRunnable getTask();
