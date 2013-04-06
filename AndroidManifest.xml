@@ -60,6 +60,10 @@
                     android:host="news.ycombinator.com"
                     android:scheme="http" >
                 </data>
+              <data
+                  android:host="news.ycombinator.com"
+                  android:scheme="https">
+              </data>
             </intent-filter>
         </activity>
     </application>
