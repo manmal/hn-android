@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +53,9 @@ public class ArticleReaderActivity extends Activity {
     @ViewById(R.id.actionbar_refresh)
     ImageView mActionbarRefresh;
 
+    @ViewById(R.id.actionbar_open_in_browser)
+    ImageView mActionbarOpenInBrowser;
+    
     @SystemService
     LayoutInflater mInflater;
 
@@ -106,6 +110,15 @@ public class ArticleReaderActivity extends Activity {
                 startActivity(Intent.createChooser(i, getString(R.string.share_article_url)));
             }
         });
+        
+        mActionbarOpenInBrowser.setOnClickListener(new OnClickListener() {	
+			@Override
+			public void onClick(View v) {
+				final Uri uriURL = Uri.parse(mPost.getURL());
+				final Intent launchBrowserIntent = new Intent(Intent.ACTION_VIEW, uriURL);
+				startActivity(launchBrowserIntent);
+			}
+		});
 
         mPost = (HNPost) getIntent().getSerializableExtra(EXTRA_HNPOST);
         if (mPost != null && mPost.getURL() != null) {
