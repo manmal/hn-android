@@ -23,6 +23,19 @@
             android:paddingTop="8dp"
             android:src="@drawable/back" />
 
+        <ImageView
+            android:id="@+id/actionbar_open_in_browser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="48dp"
+            android:contentDescription="@string/open_in_browser"
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="12dp"
+            android:paddingTop="8dp"
+            android:src="@drawable/open_in_browser" />
+
         <Button
             android:id="@+id/actionbar_title_button"
             android:layout_width="wrap_content"
