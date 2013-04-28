@@ -1,20 +1,19 @@
 package com.manuelmaly.hn.parser;
 
-import java.util.ArrayList;
-
+import com.manuelmaly.hn.model.HNComment;
+import com.manuelmaly.hn.model.HNPostComments;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import java.io.Serializable;
+import java.util.ArrayList;
 
-import com.manuelmaly.hn.model.HNComment;
-import com.manuelmaly.hn.model.HNPostComments;
-
-public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
+public class HNCommentsParser extends BaseHTMLParser<HNCommentsParser.Result> {
 
     @Override
-    public HNPostComments parseDocument(Document doc) throws Exception {
+    public Result parseDocument(Document doc) throws Exception {
         if (doc == null)
-            return new HNPostComments();
+            return new Result(null, null);
 
         ArrayList<HNComment> comments = new ArrayList<HNComment>();
 
@@ -55,7 +54,30 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
                 break;
         }
 
-        return new HNPostComments(comments);
+        String articleUrl = null;
+        Element urlElement = doc.select("table td.title a").first();
+        if(urlElement != null) articleUrl = urlElement.attr("href");
+
+        return new Result(new HNPostComments(comments), articleUrl);
     }
 
+    public static class Result implements Serializable {
+        private static final long serialVersionUID = -6971776670433626807L;
+
+        private HNPostComments comments;
+        private String articleUrl;
+
+        public Result(HNPostComments comments, String articleUrl) {
+            this.comments = comments;
+            this.articleUrl = articleUrl;
+        }
+
+        public HNPostComments getComments() {
+            return comments;
+        }
+
+        public String getArticleUrl() {
+            return articleUrl;
+        }
+    }
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
+import com.manuelmaly.hn.model.HNPost;
 
 public class ExternalIntentActivity extends Activity {
 
@@ -19,11 +20,10 @@ public class ExternalIntentActivity extends Activity {
         if (uriString.endsWith("news.ycombinator.com")) { // Front page
             i = new Intent(this, MainActivity_.class);
         } else if (uriString.contains("item")) { // Comment
-            // TODO: Handle id parameter and SOMEHOW retrieve the article url
-            // - e.g. by parsing it with the comments and feed it back into the HNPost object
-            // after that. But then, user cannot switch to the article before comments have loaded.
-            //String postId = uri.getQueryParameter("id");
-            i = new Intent(this, MainActivity_.class);
+            String postId = uri.getQueryParameter("id");
+            HNPost post = new HNPost(null, null, null, null, postId, -1, -1, null);
+            i = new Intent(this, CommentsActivity_.class);
+            i.putExtra(CommentsActivity_.EXTRA_HNPOST, post);
         }
 
         if (i != null)

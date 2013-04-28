@@ -13,3 +13,7 @@ tmp/
 test_servers
 screenshot*
 *.apk
+
+.idea/
+*.iml
+out/
