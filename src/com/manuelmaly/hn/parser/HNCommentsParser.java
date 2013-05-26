@@ -6,8 +6,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.manuelmaly.hn.App;
+import com.manuelmaly.hn.Settings;
 import com.manuelmaly.hn.model.HNComment;
 import com.manuelmaly.hn.model.HNPostComments;
+import com.manuelmaly.hn.util.HNHelper;
 
 public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
 
@@ -20,12 +23,15 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
 
         Elements tableRows = doc.select("table tr table tr:has(table)");
 
+        String currentUser = Settings.getUserName(App.getInstance());
+        
         String text = null;
         String author = null;
         int level = 0;
         String timeAgo = null;
         String url = null;
         Boolean isDownvoted = false;
+        String upvoteUrl = null;
 
         boolean endParsing = false;
         for (int row = 0; row < tableRows.size(); row++) {
@@ -33,7 +39,7 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             Element rowLevelElement = tableRows.get(row).select("td:eq(0)").first();
             if (mainRowElement == null)
                 break;
-
+            
             text = mainRowElement.select("span.comment > *:not(*:contains(reply))").html();
 
             Element comHeadElement = mainRowElement.select("span.comhead").first();
@@ -48,8 +54,14 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             String levelSpacerWidth = rowLevelElement.select("img").first().attr("width");
             if (levelSpacerWidth != null)
                 level = Integer.parseInt(levelSpacerWidth) / 40;
+            
+            Element upVoteElement = tableRows.get(row).select("td:eq(1) a").first();
+            if (upVoteElement != null) {
+                upvoteUrl = upVoteElement.attr("href").contains(currentUser) ? 
+                    HNHelper.resolveRelativeHNURL(upVoteElement.attr("href")) : null;
+            }
 
-            comments.add(new HNComment(timeAgo, author, url, text, level, isDownvoted));
+            comments.add(new HNComment(timeAgo, author, url, text, level, isDownvoted, upvoteUrl));
 
             if (endParsing)
                 break;

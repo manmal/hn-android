@@ -10,6 +10,7 @@ import com.manuelmaly.hn.App;
 import com.manuelmaly.hn.Settings;
 import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.model.HNPost;
+import com.manuelmaly.hn.util.HNHelper;
 
 public class HNFeedParser extends BaseHTMLParser<HNFeed> {
 
@@ -31,7 +32,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
         Elements nextPageURLElements = tableRows.select("a:matches(More)").select("a[href^=/]");
         String nextPageURL = null;
         if (nextPageURLElements.size() > 0)
-            nextPageURL = resolveRelativeHNURL(nextPageURLElements.attr("href"));
+            nextPageURL = HNHelper.resolveRelativeHNURL(nextPageURLElements.attr("href"));
 
         String url = null;
         String title = null;
@@ -56,7 +57,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                     }
                     
                     title = e1.text();
-                    url = resolveRelativeHNURL(e1.attr("href"));
+                    url = HNHelper.resolveRelativeHNURL(e1.attr("href"));
                     urlDomain = getDomainName(url);
                     
                     Element e4 = rowElement.select("tr > td:eq(1) a").first();
@@ -65,7 +66,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                         if (!upvoteURL.contains(currentUser))
                             upvoteURL = null;
                         else
-                            upvoteURL = resolveRelativeHNURL(upvoteURL);
+                            upvoteURL = HNHelper.resolveRelativeHNURL(upvoteURL);
                     }
                     break;
                 case 1:
@@ -93,19 +94,6 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
 
         return new HNFeed(posts, nextPageURL);
     }
-    
-    public static String resolveRelativeHNURL(String url) {
-        if (url == null)
-            return null;
-        
-        String hnurl = "https://news.ycombinator.com/";
-        
-        if (url.startsWith("http") || url.startsWith("ftp")) {
-            return url;
-        } else if (url.startsWith("/"))
-            return hnurl + url.substring(1);
-        else
-            return hnurl + url;
-    }
+   
 
 }

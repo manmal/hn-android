@@ -1,16 +1,23 @@
 package com.manuelmaly.hn;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
@@ -18,6 +25,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +41,7 @@ import com.manuelmaly.hn.reuse.ImageViewFader;
 import com.manuelmaly.hn.reuse.LinkifiedTextView;
 import com.manuelmaly.hn.reuse.ViewRotator;
 import com.manuelmaly.hn.task.HNPostCommentsTask;
+import com.manuelmaly.hn.task.HNVoteTask;
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
 import com.manuelmaly.hn.util.DisplayHelper;
 import com.manuelmaly.hn.util.FileUtil;
@@ -43,6 +52,7 @@ import com.manuelmaly.hn.util.Run;
 public class CommentsActivity extends Activity implements ITaskFinishedHandler<HNPostComments> {
 
     public static final String EXTRA_HNPOST = "HNPOST";
+    private static final int TASKCODE_VOTE = 100;
 
     @ViewById(R.id.comments_list)
     ListView mCommentsList;
@@ -72,6 +82,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     int mFontSizeText;
     int mFontSizeMetadata;
     int mCommentLevelIndentPx;
+    
+    HashSet<HNComment> mUpvotedComments;
 
     @AfterViews
     public void init() {
@@ -85,6 +97,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         mCommentLevelIndentPx = Math.min(DisplayHelper.getScreenHeight(this), DisplayHelper.getScreenWidth(this)) / 30;
 
         mComments = new HNPostComments();
+        mUpvotedComments = new HashSet<HNComment>();
         mCommentsListAdapter = new CommentsAdapter();
         mCommentsList.setAdapter(mCommentsListAdapter);
 
@@ -219,6 +232,136 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         }
 
     }
+    
+    private void vote(String voteURL, HNComment comment) {
+        HNVoteTask.start(voteURL, this, new VoteTaskFinishedHandler(), TASKCODE_VOTE, comment);
+    }
+    
+    private class LongPressMenuListAdapter implements ListAdapter, DialogInterface.OnClickListener {
+
+        HNComment mComment;
+        boolean mIsLoggedIn;
+        boolean mUpVotingEnabled;
+        ArrayList<CharSequence> mItems;
+
+        public LongPressMenuListAdapter(HNComment comment) {
+            mComment = comment;
+            mIsLoggedIn = Settings.isUserLoggedIn(CommentsActivity.this);
+            mUpVotingEnabled = !mIsLoggedIn
+                || (mComment.getUpvoteUrl(Settings.getUserName(CommentsActivity.this)) != null && !mUpvotedComments
+                    .contains(mComment));
+
+            mItems = new ArrayList<CharSequence>();
+            
+            if (mUpVotingEnabled)
+                mItems.add(getString(R.string.upvote));
+            else
+                mItems.add(getString(R.string.already_upvoted));
+            if (comment.getTreeNode().isExpanded())
+                mItems.add(getString(R.string.collapse_comment));
+            else
+                mItems.add(getString(R.string.expand_comment));
+        }
+
+        @Override
+        public int getCount() {
+            return mItems.size();
+        }
+
+        @Override
+        public CharSequence getItem(int position) {
+            return mItems.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView view = (TextView) mInflater.inflate(android.R.layout.simple_list_item_1, null);
+            view.setText(getItem(position));
+            if (!mUpVotingEnabled && position == 0)
+                view.setTextColor(getResources().getColor(android.R.color.darker_gray));
+            return view;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 1;
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return false;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public void registerDataSetObserver(DataSetObserver observer) {
+        }
+
+        @Override
+        public void unregisterDataSetObserver(DataSetObserver observer) {
+        }
+
+        @Override
+        public boolean areAllItemsEnabled() {
+            return false;
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+            if (!mUpVotingEnabled && position == 4)
+                return false;
+            return true;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int item) {
+            switch (item) {
+                case 0:
+                    if (!mIsLoggedIn)
+                        Toast.makeText(CommentsActivity.this, R.string.please_log_in, Toast.LENGTH_LONG).show();
+                    else if (mUpVotingEnabled)
+                        vote(mComment.getUpvoteUrl(Settings.getUserName(CommentsActivity.this)), mComment);
+                    break;
+                case 1:
+                    mComments.toggleCommentExpanded(mComment);
+                    mCommentsListAdapter.notifyDataSetChanged();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    }
+
+    class VoteTaskFinishedHandler implements ITaskFinishedHandler<Boolean> {
+        @Override
+        public void onTaskFinished(int taskCode, com.manuelmaly.hn.task.ITaskFinishedHandler.TaskResultCode code,
+            Boolean result, Object tag) {
+            if (taskCode == TASKCODE_VOTE) {
+                if (result != null && result.booleanValue()) {
+                    Toast.makeText(CommentsActivity.this, R.string.vote_success, Toast.LENGTH_SHORT).show();
+                    HNComment comment = (HNComment)tag;
+                    if (comment != null)
+                        mUpvotedComments.add(comment);
+                } else
+                    Toast.makeText(CommentsActivity.this, R.string.vote_error, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 
     class CommentsAdapter extends BaseAdapter {
 
@@ -243,6 +386,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             if (convertView == null) {
                 convertView = (FrameLayout) mInflater.inflate(R.layout.comments_list_item, null);
                 CommentViewHolder holder = new CommentViewHolder();
+                holder.rootView = convertView;
                 holder.textView = (LinkifiedTextView) convertView.findViewById(R.id.comments_list_item_text);
                 holder.spacersContainer = (LinearLayout) convertView
                     .findViewById(R.id.comments_list_item_spacerscontainer);
@@ -253,7 +397,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             }
             HNComment comment = getItem(position);
             CommentViewHolder holder = (CommentViewHolder) convertView.getTag();
-            holder.textView.setOnClickListener(new OnClickListener() {
+            holder.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
                     if (getItem(position).getTreeNode().hasChildren()) {
                         mComments.toggleCommentExpanded(getItem(position));
@@ -261,13 +405,25 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                     }
                 }
             });
+            holder.setOnLongClickListener(new OnLongClickListener() {
+                public boolean onLongClick(View v) {
+                    final HNComment comment = getItem(position);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CommentsActivity.this);
+                    LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(comment);
+                    builder.setAdapter(adapter, adapter).show();
+                    return true;
+                }
+            });
+            
             holder.setComment(comment, mCommentLevelIndentPx, CommentsActivity.this, mFontSizeText, mFontSizeMetadata);
+            
             return convertView;
         }
 
     }
 
     static class CommentViewHolder {
+        View rootView;
         LinkifiedTextView textView;
         TextView authorView;
         TextView timeAgoView;
@@ -293,6 +449,16 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                 spacer.setBackgroundColor(Color.argb(spacerAlpha, 0, 0, 0));
                 spacersContainer.addView(spacer, i);
             }
+        }
+        
+        public void setOnClickListener(OnClickListener onClickListener) {
+            rootView.setOnClickListener(onClickListener);
+            textView.setOnClickListener(onClickListener);
+        }
+        
+        public void setOnLongClickListener(OnLongClickListener onLongClickListener) {
+            rootView.setOnLongClickListener(onLongClickListener);
+            textView.setOnLongClickListener(onLongClickListener);
         }
     }
 
