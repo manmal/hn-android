@@ -1,7 +1,6 @@
 package com.manuelmaly.hn;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import android.app.Activity;
@@ -11,6 +10,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
@@ -79,11 +80,15 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     HNPostComments mComments;
     CommentsAdapter mCommentsListAdapter;
 
+    String mCurrentFontSize = null;
     int mFontSizeText;
     int mFontSizeMetadata;
     int mCommentLevelIndentPx;
     
     HashSet<HNComment> mUpvotedComments;
+    
+    private static final String LIST_STATE = "listState";
+    private Parcelable mListState = null;
 
     @AfterViews
     public void init() {
@@ -163,9 +168,14 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     protected void onResume() {
         super.onResume();
 
-        // refresh because font size could have changed:
-        refreshFontSizes();
-        mCommentsListAdapter.notifyDataSetChanged();
+        // refresh if font size changed
+        if (refreshFontSizes())
+        	mCommentsListAdapter.notifyDataSetChanged();
+        
+        // restore vertical scrolling position if applicable
+        if (mListState != null)
+            mCommentsList.onRestoreInstanceState(mListState);
+        mListState = null;
     }
 
     @Override
@@ -217,25 +227,42 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         updateStatusIndicatorOnLoadingStarted();
     }
 
-    private void refreshFontSizes() {
-        String fontSize = Settings.getFontSize(this);
-
-        if (fontSize.equals(getString(R.string.pref_fontsize_small))) {
-            mFontSizeText = 14;
-            mFontSizeMetadata = 12;
-        } else if (fontSize.equals(getString(R.string.pref_fontsize_normal))) {
-            mFontSizeText = 16;
-            mFontSizeMetadata = 14;
-        } else {
-            mFontSizeText = 20;
-            mFontSizeMetadata = 18;
+    private boolean refreshFontSizes() {
+        final String fontSize = Settings.getFontSize(this);
+        if ((mCurrentFontSize == null) || (!mCurrentFontSize.equals(fontSize))) {
+        	mCurrentFontSize = fontSize;
+	        if (fontSize.equals(getString(R.string.pref_fontsize_small))) {
+	            mFontSizeText = 14;
+	            mFontSizeMetadata = 12;
+	        } else if (fontSize.equals(getString(R.string.pref_fontsize_normal))) {
+	            mFontSizeText = 16;
+	            mFontSizeMetadata = 14;
+	        } else {
+	            mFontSizeText = 20;
+	            mFontSizeMetadata = 18;
+	        }
+	        return true;
         }
-
+        return false;
     }
     
     private void vote(String voteURL, HNComment comment) {
         HNVoteTask.start(voteURL, this, new VoteTaskFinishedHandler(), TASKCODE_VOTE, comment);
     }
+    
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+        mListState = state.getParcelable(LIST_STATE);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        mListState = mCommentsList.onSaveInstanceState();
+        state.putParcelable(LIST_STATE, mListState);
+    }
+
     
     private class LongPressMenuListAdapter implements ListAdapter, DialogInterface.OnClickListener {
 

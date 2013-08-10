@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -74,12 +76,16 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     PostsAdapter mPostsListAdapter;
     HashSet<HNPost> mUpvotedPosts;
 
+    String mCurrentFontSize = null;
     int mFontSizeTitle;
     int mFontSizeDetails;
 
     private static final int TASKCODE_LOAD_FEED = 10;
     private static final int TASKCODE_LOAD_MORE_POSTS = 20;
     private static final int TASKCODE_VOTE = 100;
+
+    private static final String LIST_STATE = "listState";
+    private Parcelable mListState = null;
 
     @AfterViews
     public void init() {
@@ -103,9 +109,14 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         if (HNCredentials.isInvalidated())
             startFeedLoading();
 
-        // refresh because font size could have changed:
-        refreshFontSizes();
-        mPostsListAdapter.notifyDataSetChanged();
+        // refresh if font size changed
+        if (refreshFontSizes())
+        	mPostsListAdapter.notifyDataSetChanged();
+        
+        // restore vertical scrolling position if applicable
+        if (mListState != null)
+            mPostsList.onRestoreInstanceState(mListState);
+        mListState = null;
     }
     
     @Click(R.id.actionbar)
@@ -213,22 +224,41 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         ViewRotator.startRotating(mActionbarRefresh);
     }
 
-    private void refreshFontSizes() {
-        String fontSize = Settings.getFontSize(this);
-        if (fontSize.equals(getString(R.string.pref_fontsize_small))) {
-            mFontSizeTitle = 15;
-            mFontSizeDetails = 11;
-        } else if (fontSize.equals(getString(R.string.pref_fontsize_normal))) {
-            mFontSizeTitle = 18;
-            mFontSizeDetails = 12;
+    private boolean refreshFontSizes() {
+        final String fontSize = Settings.getFontSize(this);
+        if ((mCurrentFontSize == null) || (!mCurrentFontSize.equals(fontSize))) {
+        	mCurrentFontSize = fontSize;
+	        if (fontSize.equals(getString(R.string.pref_fontsize_small))) {
+	            mFontSizeTitle = 15;
+	            mFontSizeDetails = 11;
+	        } else if (fontSize.equals(getString(R.string.pref_fontsize_normal))) {
+	            mFontSizeTitle = 18;
+	            mFontSizeDetails = 12;
+	        } else {
+	            mFontSizeTitle = 22;
+	            mFontSizeDetails = 15;
+	        }
+	        return true;
         } else {
-            mFontSizeTitle = 22;
-            mFontSizeDetails = 15;
+        	return false;
         }
     }
 
     private void vote(String voteURL, HNPost post) {
         HNVoteTask.start(voteURL, MainActivity.this, new VoteTaskFinishedHandler(), TASKCODE_VOTE, post);
+    }
+    
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+        mListState = state.getParcelable(LIST_STATE);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        mListState = mPostsList.onSaveInstanceState();
+        state.putParcelable(LIST_STATE, mListState);
     }
 
     class VoteTaskFinishedHandler implements ITaskFinishedHandler<Boolean> {
