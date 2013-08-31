@@ -1,7 +1,6 @@
 package com.manuelmaly.hn;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import android.app.Activity;
@@ -13,6 +12,7 @@ import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +34,7 @@ import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
+import com.manuelmaly.hn.login.LoginActivity_;
 import com.manuelmaly.hn.model.HNComment;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.model.HNPostComments;
@@ -53,6 +54,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
     public static final String EXTRA_HNPOST = "HNPOST";
     private static final int TASKCODE_VOTE = 100;
+
+    private static final int ACTIVITY_LOGIN = 136;
 
     @ViewById(R.id.comments_list)
     ListView mCommentsList;
@@ -84,6 +87,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     int mCommentLevelIndentPx;
     
     HashSet<HNComment> mUpvotedComments;
+
+    HNComment mPendingVote;
 
     @AfterViews
     public void init() {
@@ -253,6 +258,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
             mItems = new ArrayList<CharSequence>();
             
+            // Figure out why this is false
             if (mUpVotingEnabled)
                 mItems.add(getString(R.string.upvote));
             else
@@ -331,8 +337,11 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         public void onClick(DialogInterface dialog, int item) {
             switch (item) {
                 case 0:
-                    if (!mIsLoggedIn)
-                        Toast.makeText(CommentsActivity.this, R.string.please_log_in, Toast.LENGTH_LONG).show();
+                    if (!mIsLoggedIn) {
+                        setCommentToUpvote(mComment);
+                        startActivityForResult(new Intent(getApplicationContext(), LoginActivity_.class), 
+                            ACTIVITY_LOGIN);
+                    }
                     else if (mUpVotingEnabled)
                         vote(mComment.getUpvoteUrl(Settings.getUserName(CommentsActivity.this)), mComment);
                     break;
@@ -414,9 +423,9 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                     return true;
                 }
             });
-            
+
             holder.setComment(comment, mCommentLevelIndentPx, CommentsActivity.this, mFontSizeText, mFontSizeMetadata);
-            
+
             return convertView;
         }
 
@@ -450,15 +459,35 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                 spacersContainer.addView(spacer, i);
             }
         }
-        
+
         public void setOnClickListener(OnClickListener onClickListener) {
             rootView.setOnClickListener(onClickListener);
             textView.setOnClickListener(onClickListener);
         }
-        
+
         public void setOnLongClickListener(OnLongClickListener onLongClickListener) {
             rootView.setOnLongClickListener(onLongClickListener);
             textView.setOnLongClickListener(onLongClickListener);
+        }
+    }
+ 
+    protected void setCommentToUpvote(HNComment comment) {
+        mPendingVote = comment;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+        case ACTIVITY_LOGIN:
+            if (resultCode == RESULT_OK) {
+                if (mPendingVote != null) {
+                    mComments = new HNPostComments();
+                    mCommentsListAdapter.notifyDataSetChanged();
+                    startFeedLoading();
+                }
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, getString(R.string.error_login_to_vote), Toast.LENGTH_LONG).show();
+            }
         }
     }
 
