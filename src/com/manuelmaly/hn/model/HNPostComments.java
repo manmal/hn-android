@@ -10,6 +10,7 @@ public class HNPostComments implements Serializable {
     private List<HNCommentTreeNode> mTreeNodes;
     private transient List<HNComment> mCommentsCache;
     private boolean mIsTreeDirty;
+    private String mHeaderHtml;
 
     public HNPostComments() {
         mTreeNodes = new ArrayList<HNCommentTreeNode>();
@@ -39,6 +40,10 @@ public class HNPostComments implements Serializable {
             mIsTreeDirty = false;
         }
         return mCommentsCache;
+    }
+
+    public String getHeaderHtml() {
+        return mHeaderHtml;
     }
 
     private HNCommentTreeNode makeTreeNode(HNComment comment, List<HNComment> allComments) {

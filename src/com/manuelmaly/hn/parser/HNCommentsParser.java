@@ -15,16 +15,21 @@ import com.manuelmaly.hn.util.HNHelper;
 public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
 
     @Override
-    public HNPostComments parseDocument(Document doc) throws Exception {
+    public HNPostComments parseDocument(Element doc) throws Exception {
         if (doc == null)
             return new HNPostComments();
 
         ArrayList<HNComment> comments = new ArrayList<HNComment>();
 
         Elements tableRows = doc.select("table tr table tr:has(table)");
+        int tableRowsCount = doc.select("body table > tbody > tr").size();
+
+        if (tableRowsCount == 6) {
+            
+        }
 
         String currentUser = Settings.getUserName(App.getInstance());
-        
+
         String text = null;
         String author = null;
         int level = 0;
@@ -58,7 +63,7 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             String levelSpacerWidth = rowLevelElement.select("img").first().attr("width");
             if (levelSpacerWidth != null)
                 level = Integer.parseInt(levelSpacerWidth) / 40;
-            
+
             Element upVoteElement = tableRows.get(row).select("td:eq(1) a").first();
             if (upVoteElement != null) {
                 upvoteUrl = upVoteElement.attr("href").contains(currentUser) ? 
