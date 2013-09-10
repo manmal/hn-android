@@ -39,8 +39,12 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             Element rowLevelElement = tableRows.get(row).select("td:eq(0)").first();
             if (mainRowElement == null)
                 break;
-            
-            text = mainRowElement.select("span.comment > *:not(*:contains(reply))").html();
+
+            // The not portion of this query is meant to remove the reply link
+            // from the text.  As far as I can tell that is the only place
+            // where size=1 is used.  If that turns out to not be the case then
+            // searching for u tags is also a pretty decent option - @jmaltz
+            text = mainRowElement.select("span.comment > *:not(:has(font[size=1]))").html();
 
             Element comHeadElement = mainRowElement.select("span.comhead").first();
             author = comHeadElement.select("a[href*=user]").text();
