@@ -14,7 +14,8 @@
         <LinearLayout
             android:id="@+id/comments_list_item_spacerscontainer"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent" />
+            android:layout_height="fill_parent"
+            android:orientation="horizontal"/>
 
         <RelativeLayout
             android:id="@+id/comments_list_item_textcontainer"

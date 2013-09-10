@@ -1,7 +1,6 @@
 package com.manuelmaly.hn;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import android.app.Activity;
@@ -12,6 +11,7 @@ import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -436,9 +436,17 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             textView.setText(Html.fromHtml(comment.getText()));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
             authorView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, metadataTextSize);
-            authorView.setText(comment.getAuthor());
             timeAgoView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, metadataTextSize);
-            timeAgoView.setText(", " + comment.getTimeAgo());
+            if (!TextUtils.isEmpty(comment.getAuthor())) {
+                authorView.setText(comment.getAuthor());
+                timeAgoView.setText(", " + comment.getTimeAgo());
+            }
+            else {
+                authorView.setText(c.getString(R.string.deleted));
+                // We set this here so that convertView doesn't reuse the old
+                // timeAgoView value
+                timeAgoView.setText("");
+            }
             expandView.setVisibility(comment.getTreeNode().isExpanded() ? View.INVISIBLE : View.VISIBLE);
             spacersContainer.removeAllViews();
             for (int i = 0; i < comment.getCommentLevel(); i++) {
