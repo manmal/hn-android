@@ -15,7 +15,7 @@ public class HNCredentials {
     
     private static final String COOKIE_USER = "user";
     
-    public static CookieStore getCookieStore(Context c) {
+    public static synchronized CookieStore getCookieStore(Context c) {
         if (cookieStore != null && !invalidated)
             return cookieStore;
         
