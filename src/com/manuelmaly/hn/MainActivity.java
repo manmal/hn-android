@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -28,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,7 +43,6 @@ import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.parser.BaseHTMLParser;
 import com.manuelmaly.hn.reuse.ImageViewFader;
-import com.manuelmaly.hn.reuse.ViewRotator;
 import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.task.HNFeedTaskLoadMore;
 import com.manuelmaly.hn.task.HNFeedTaskMainFeed;
@@ -65,10 +66,16 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
 
     @ViewById(R.id.actionbar_refresh)
     ImageView mActionbarRefresh;
+    
+    @ViewById(R.id.actionbar_refresh_container)
+    LinearLayout mActionbarRefreshContainer;
+    
+    @ViewById(R.id.actionbar_refresh_progress)
+    ProgressBar mActionbarRefreshProgress;
 
     @ViewById(R.id.actionbar_more)
     ImageView mActionbarMore;
-
+    
     @SystemService
     LayoutInflater mInflater;
 
@@ -97,6 +104,8 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
         mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
+        
+        mActionbarRefreshProgress.setVisibility(View.GONE);
 
         loadIntermediateFeedFromStore();
         startFeedLoading();
@@ -124,7 +133,7 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         mPostsList.smoothScrollToPosition(0);
     }
 
-    @Click(R.id.actionbar_refresh)
+    @Click(R.id.actionbar_refresh_container)
     void refreshClicked() {
         if (HNFeedTaskMainFeed.isRunning(getApplicationContext()))
             HNFeedTaskMainFeed.stopCurrent(getApplicationContext());
@@ -178,16 +187,19 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
             if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
                 showFeed(result);
 
-            ViewRotator.stopRotating(mActionbarRefresh);
-            if (code.equals(TaskResultCode.Success)) {
-                ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh_ok, 100, this);
-                Run.delayed(new Runnable() {
-                    public void run() {
-                        ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh, 300,
-                            MainActivity.this);
-                    }
-                }, 2000);
-            }
+//            ViewRotator.stopRotating(mActionbarRefresh);
+            mActionbarRefreshProgress.setVisibility(View.GONE);
+            mActionbarRefresh.setVisibility(View.VISIBLE);
+            
+//            if (code.equals(TaskResultCode.Success)) {
+//                ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh_ok, 100, this);
+//                Run.delayed(new Runnable() {
+//                    public void run() {
+//                        ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh, 300,
+//                            MainActivity.this);
+//                    }
+//                }, 2000);
+//            }
 
         } else if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
             mFeed.appendLoadMoreFeed(result);
@@ -220,8 +232,11 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     private void startFeedLoading() {
         HNFeedTaskMainFeed.startOrReattach(this, this, TASKCODE_LOAD_FEED);
         mActionbarRefresh.setImageResource(R.drawable.refresh);
-        ViewRotator.stopRotating(mActionbarRefresh);
-        ViewRotator.startRotating(mActionbarRefresh);
+        
+        mActionbarRefreshProgress.setVisibility(View.VISIBLE);
+        mActionbarRefresh.setVisibility(View.GONE);
+//        ViewRotator.stopRotating(mActionbarRefresh);
+//        ViewRotator.startRotating(mActionbarRefresh);
     }
 
     private boolean refreshFontSizes() {
