@@ -6,6 +6,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.util.Log;
+
 import com.manuelmaly.hn.App;
 import com.manuelmaly.hn.Settings;
 import com.manuelmaly.hn.model.HNComment;
@@ -25,7 +27,7 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
         int tableRowsCount = doc.select("body table > tbody > tr").size();
 
         if (tableRowsCount == 6) {
-            
+            Log.e("MALTZ", "got the right situation!");
         }
 
         String currentUser = Settings.getUserName(App.getInstance());
