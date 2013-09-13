@@ -1,13 +1,11 @@
 package com.manuelmaly.hn.parser;
 
 import java.net.URI;
-import java.util.List;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.w3c.dom.Node;
@@ -20,7 +18,7 @@ public abstract class BaseHTMLParser<T> {
       return parseDocument(Jsoup.parse(input));
     }
 
-    public abstract T parseDocument(Document doc) throws Exception;
+    public abstract T parseDocument(Element doc) throws Exception;
 
     public static String getDomainName(String url) {
         URI uri;
@@ -32,14 +30,7 @@ public abstract class BaseHTMLParser<T> {
             return url;
         }
     }
-    
-    public static <T extends Object> T getSafe(List<T> list, int index) {
-        if (list.size() - 1 >= index)
-            return list.get(index);
-        else
-            return null;
-    }
-    
+
     public static String getFirstTextValueInElementChildren(Element element) {
         if (element == null)
             return "";

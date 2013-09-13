@@ -2,11 +2,8 @@ package com.manuelmaly.hn.parser;
 
 import java.util.ArrayList;
 
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import android.util.Log;
 
 import com.manuelmaly.hn.App;
 import com.manuelmaly.hn.Settings;
@@ -24,11 +21,6 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
         ArrayList<HNComment> comments = new ArrayList<HNComment>();
 
         Elements tableRows = doc.select("table tr table tr:has(table)");
-        int tableRowsCount = doc.select("body table > tbody > tr").size();
-
-        if (tableRowsCount == 6) {
-            Log.e("MALTZ", "got the right situation!");
-        }
 
         String currentUser = Settings.getUserName(App.getInstance());
 
@@ -76,6 +68,18 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
 
             if (endParsing)
                 break;
+        }
+
+        // Just using table:eq(0) would return an extra table, so we use
+        // get(0) instead, which only returns only the one we want
+        Element header = doc.select("body table:eq(0)  tbody > tr:eq(2) > td:eq(0) > table").get(0);
+
+        // Five table rows is what it takes for the title, post information
+        // And other boilerplate stuff.  More than five means we have something
+        // Special
+        if(header.select("tr").size() > 5) {
+            HeaderParser parser = new HeaderParser();
+            parser.parseDocument(header);
         }
 
         return new HNPostComments(comments);
