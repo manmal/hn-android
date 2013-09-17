@@ -52,13 +52,13 @@ import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.Run;
 
 @EActivity(R.layout.main)
-public class MainActivity extends Activity implements ITaskFinishedHandler<HNFeed> {
+public class MainActivity extends BaseListActivity implements ITaskFinishedHandler<HNFeed> {
 
     @ViewById(R.id.main_list)
     ListView mPostsList;
 
-    @ViewById(R.id.main_empty_view)
-    TextView mEmptyListPlaceholder;
+    @ViewById(R.id.main_root)
+    LinearLayout mRootView;
 
     @ViewById(R.id.actionbar_title)
     TextView mActionbarTitle;
@@ -72,6 +72,7 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     @SystemService
     LayoutInflater mInflater;
 
+    TextView mEmptyListPlaceholder;
     HNFeed mFeed;
     PostsAdapter mPostsListAdapter;
     HashSet<HNPost> mUpvotedPosts;
@@ -92,11 +93,12 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         mFeed = new HNFeed(new ArrayList<HNPost>(), null);
         mPostsListAdapter = new PostsAdapter();
         mUpvotedPosts = new HashSet<HNPost>();
-        mPostsList.setAdapter(mPostsListAdapter);
-        mPostsList.setEmptyView(mEmptyListPlaceholder);
         mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
-        mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
+
+        mEmptyListPlaceholder = getLoadingPanel(mRootView);
+        mPostsList.setEmptyView(mEmptyListPlaceholder);
+        mPostsList.setAdapter(mPostsListAdapter);
 
         loadIntermediateFeedFromStore();
         startFeedLoading();
