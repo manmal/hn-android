@@ -62,6 +62,8 @@
                 </data>
             </intent-filter>
         </activity>
+        <activity android:name=".login.LoginActivity_" android:label="@string/credentials" android:theme="@android:style/Theme.Dialog">
+        </activity>
     </application>
 
 </manifest>
