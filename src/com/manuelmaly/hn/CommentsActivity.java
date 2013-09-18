@@ -1,7 +1,6 @@
 package com.manuelmaly.hn;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import android.app.Activity;
@@ -11,8 +10,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +37,7 @@ import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
+import com.manuelmaly.hn.login.LoginActivity_;
 import com.manuelmaly.hn.model.HNComment;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.model.HNPostComments;
@@ -53,6 +57,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
     public static final String EXTRA_HNPOST = "HNPOST";
     private static final int TASKCODE_VOTE = 100;
+
+    private static final int ACTIVITY_LOGIN = 136;
 
     @ViewById(R.id.comments_list)
     ListView mCommentsList;
@@ -79,11 +85,17 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     HNPostComments mComments;
     CommentsAdapter mCommentsListAdapter;
 
+    String mCurrentFontSize = null;
     int mFontSizeText;
     int mFontSizeMetadata;
     int mCommentLevelIndentPx;
     
     HashSet<HNComment> mUpvotedComments;
+    
+    private static final String LIST_STATE = "listState";
+    private Parcelable mListState = null;
+
+    HNComment mPendingVote;
 
     @AfterViews
     public void init() {
@@ -163,9 +175,14 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     protected void onResume() {
         super.onResume();
 
-        // refresh because font size could have changed:
-        refreshFontSizes();
-        mCommentsListAdapter.notifyDataSetChanged();
+        // refresh if font size changed
+        if (refreshFontSizes())
+        	mCommentsListAdapter.notifyDataSetChanged();
+        
+        // restore vertical scrolling position if applicable
+        if (mListState != null)
+            mCommentsList.onRestoreInstanceState(mListState);
+        mListState = null;
     }
 
     @Override
@@ -217,25 +234,42 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         updateStatusIndicatorOnLoadingStarted();
     }
 
-    private void refreshFontSizes() {
-        String fontSize = Settings.getFontSize(this);
-
-        if (fontSize.equals(getString(R.string.pref_fontsize_small))) {
-            mFontSizeText = 14;
-            mFontSizeMetadata = 12;
-        } else if (fontSize.equals(getString(R.string.pref_fontsize_normal))) {
-            mFontSizeText = 16;
-            mFontSizeMetadata = 14;
-        } else {
-            mFontSizeText = 20;
-            mFontSizeMetadata = 18;
+    private boolean refreshFontSizes() {
+        final String fontSize = Settings.getFontSize(this);
+        if ((mCurrentFontSize == null) || (!mCurrentFontSize.equals(fontSize))) {
+        	mCurrentFontSize = fontSize;
+	        if (fontSize.equals(getString(R.string.pref_fontsize_small))) {
+	            mFontSizeText = 14;
+	            mFontSizeMetadata = 12;
+	        } else if (fontSize.equals(getString(R.string.pref_fontsize_normal))) {
+	            mFontSizeText = 16;
+	            mFontSizeMetadata = 14;
+	        } else {
+	            mFontSizeText = 20;
+	            mFontSizeMetadata = 18;
+	        }
+	        return true;
         }
-
+        return false;
     }
     
     private void vote(String voteURL, HNComment comment) {
         HNVoteTask.start(voteURL, this, new VoteTaskFinishedHandler(), TASKCODE_VOTE, comment);
     }
+    
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+        mListState = state.getParcelable(LIST_STATE);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        mListState = mCommentsList.onSaveInstanceState();
+        state.putParcelable(LIST_STATE, mListState);
+    }
+
     
     private class LongPressMenuListAdapter implements ListAdapter, DialogInterface.OnClickListener {
 
@@ -253,6 +287,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
             mItems = new ArrayList<CharSequence>();
             
+            // Figure out why this is false
             if (mUpVotingEnabled)
                 mItems.add(getString(R.string.upvote));
             else
@@ -331,8 +366,11 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         public void onClick(DialogInterface dialog, int item) {
             switch (item) {
                 case 0:
-                    if (!mIsLoggedIn)
-                        Toast.makeText(CommentsActivity.this, R.string.please_log_in, Toast.LENGTH_LONG).show();
+                    if (!mIsLoggedIn) {
+                        setCommentToUpvote(mComment);
+                        startActivityForResult(new Intent(getApplicationContext(), LoginActivity_.class), 
+                            ACTIVITY_LOGIN);
+                    }
                     else if (mUpVotingEnabled)
                         vote(mComment.getUpvoteUrl(Settings.getUserName(CommentsActivity.this)), mComment);
                     break;
@@ -414,9 +452,9 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                     return true;
                 }
             });
-            
+
             holder.setComment(comment, mCommentLevelIndentPx, CommentsActivity.this, mFontSizeText, mFontSizeMetadata);
-            
+
             return convertView;
         }
 
@@ -436,9 +474,17 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             textView.setText(Html.fromHtml(comment.getText()));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
             authorView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, metadataTextSize);
-            authorView.setText(comment.getAuthor());
             timeAgoView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, metadataTextSize);
-            timeAgoView.setText(", " + comment.getTimeAgo());
+            if (!TextUtils.isEmpty(comment.getAuthor())) {
+                authorView.setText(comment.getAuthor());
+                timeAgoView.setText(", " + comment.getTimeAgo());
+            }
+            else {
+                authorView.setText(c.getString(R.string.deleted));
+                // We set this here so that convertView doesn't reuse the old
+                // timeAgoView value
+                timeAgoView.setText("");
+            }
             expandView.setVisibility(comment.getTreeNode().isExpanded() ? View.INVISIBLE : View.VISIBLE);
             spacersContainer.removeAllViews();
             for (int i = 0; i < comment.getCommentLevel(); i++) {
@@ -450,15 +496,35 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                 spacersContainer.addView(spacer, i);
             }
         }
-        
+
         public void setOnClickListener(OnClickListener onClickListener) {
             rootView.setOnClickListener(onClickListener);
             textView.setOnClickListener(onClickListener);
         }
-        
+
         public void setOnLongClickListener(OnLongClickListener onLongClickListener) {
             rootView.setOnLongClickListener(onLongClickListener);
             textView.setOnLongClickListener(onLongClickListener);
+        }
+    }
+ 
+    protected void setCommentToUpvote(HNComment comment) {
+        mPendingVote = comment;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+        case ACTIVITY_LOGIN:
+            if (resultCode == RESULT_OK) {
+                if (mPendingVote != null) {
+                    mComments = new HNPostComments();
+                    mCommentsListAdapter.notifyDataSetChanged();
+                    startFeedLoading();
+                }
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, getString(R.string.error_login_to_vote), Toast.LENGTH_LONG).show();
+            }
         }
     }
 

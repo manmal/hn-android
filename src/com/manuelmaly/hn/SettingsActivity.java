@@ -1,15 +1,19 @@
 package com.manuelmaly.hn;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
+import com.manuelmaly.hn.login.LoginActivity_;
 import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.util.Run;
 
@@ -27,6 +31,9 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         HTMLVIEWER_WITHINAPP, HTMLVIEWER_BROWSER
     }
 
+    private static final int REQUEST_LOGIN = 100;
+    private Preference mUserPref;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +49,16 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 
         Preference htmlViewerPref = findPreference(Settings.PREF_HTMLVIEWER);
         htmlViewerPref.setSummary(sharedPref.getString(Settings.PREF_HTMLVIEWER, "Undefined"));
+
+        mUserPref= (UserPreference) findPreference(Settings.PREF_USER);
+        mUserPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(SettingsActivity.this, LoginActivity_.class);
+                startActivityForResult(intent, REQUEST_LOGIN);
+                return false;
+            }
+        });
 
         updateUserItem();
 
@@ -69,14 +86,11 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     }
 
     private void updateUserItem() {
-        UserPreference userPref = (UserPreference) findPreference(Settings.PREF_USER);
-        userPref.setActivity(this);
-
         String userName = Settings.getUserName(this);
         if (!userName.equals(""))
-            userPref.setSummary(userName);
+            mUserPref.setSummary(userName);
         else
-            userPref.setSummary(" ");
+            mUserPref.setSummary(" ");
     }
 
     @Override
@@ -89,6 +103,20 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     protected void onPause() {
         super.onPause();
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode) {
+        case REQUEST_LOGIN:
+            // If there was a successful login, then we want to show that to
+            // the user
+            if(resultCode == RESULT_OK) {
+                updateUserItem();
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }
