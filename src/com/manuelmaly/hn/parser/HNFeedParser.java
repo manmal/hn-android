@@ -30,6 +30,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
         tableRows.remove(0);
 
         Elements nextPageURLElements = tableRows.select("a:matches(^More$)");
+
         // In case there are multiple "More" elements, select only the one which is a relative link:
         if (nextPageURLElements.size() > 1) {
             nextPageURLElements = nextPageURLElements.select("a[href^=/]");

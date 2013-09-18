@@ -3,7 +3,6 @@ package com.manuelmaly.hn;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -53,7 +52,7 @@ import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.Run;
 
 @EActivity(R.layout.comments_activity)
-public class CommentsActivity extends Activity implements ITaskFinishedHandler<HNPostComments> {
+public class CommentsActivity extends BaseListActivity implements ITaskFinishedHandler<HNPostComments> {
 
     public static final String EXTRA_HNPOST = "HNPOST";
     private static final int TASKCODE_VOTE = 100;
@@ -78,8 +77,14 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     @ViewById(R.id.actionbar_back)
     ImageView mActionbarBack;
 
+    @ViewById(R.id.comments_root)
+    LinearLayout mRootView;
+
     @SystemService
     LayoutInflater mInflater;
+
+    LinearLayout mCommentHeader;
+    TextView mCommentHeaderText;
 
     HNPost mPost;
     HNPostComments mComments;
@@ -89,7 +94,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     int mFontSizeText;
     int mFontSizeMetadata;
     int mCommentLevelIndentPx;
-    
+
     HashSet<HNComment> mUpvotedComments;
     
     private static final String LIST_STATE = "listState";
@@ -108,9 +113,13 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
         mCommentLevelIndentPx = Math.min(DisplayHelper.getScreenHeight(this), DisplayHelper.getScreenWidth(this)) / 30;
 
+        initCommentsHeader();
         mComments = new HNPostComments();
         mUpvotedComments = new HashSet<HNComment>();
         mCommentsListAdapter = new CommentsAdapter();
+        mCommentHeaderText.setVisibility(View.GONE);
+        mCommentsList.setEmptyView(getLoadingPanel(mRootView));
+        mCommentsList.addHeaderView(mCommentHeader);
         mCommentsList.setAdapter(mCommentsListAdapter);
 
         mActionbarContainer.setOnClickListener(new OnClickListener() {
@@ -193,6 +202,14 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     private void showComments(HNPostComments comments) {
+        if (comments.getHeaderHtml() != null && mCommentHeaderText.getVisibility() != View.VISIBLE) {
+            mCommentHeaderText.setVisibility(View.VISIBLE);
+            mCommentHeaderText.setTextColor(getResources()
+                    .getColor(R.color.gray_comments_information));
+            mCommentHeaderText.setText(Html.fromHtml(comments.getHeaderHtml()));
+            int commentPadding = Math.min(DisplayHelper.getScreenHeight(this), DisplayHelper.getScreenWidth(this)) / 30;
+            mCommentHeaderText.setPadding(commentPadding, commentPadding, commentPadding, 0);
+        }
         mComments = comments;
         mCommentsListAdapter.notifyDataSetChanged();
     }
@@ -250,13 +267,14 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 	        }
 	        return true;
         }
+
         return false;
     }
     
     private void vote(String voteURL, HNComment comment) {
         HNVoteTask.start(voteURL, this, new VoteTaskFinishedHandler(), TASKCODE_VOTE, comment);
     }
-    
+
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
@@ -270,7 +288,15 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         state.putParcelable(LIST_STATE, mListState);
     }
 
-    
+    private void initCommentsHeader() {
+        // Don't worry about reallocating this stuff it has already been called
+        if (mCommentHeader == null) {
+            mCommentHeader = new LinearLayout(this);
+            mCommentHeaderText = new LinkifiedTextView(this, null);
+            mCommentHeader.addView(mCommentHeaderText);
+        }
+    }
+
     private class LongPressMenuListAdapter implements ListAdapter, DialogInterface.OnClickListener {
 
         HNComment mComment;

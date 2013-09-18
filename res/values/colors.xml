@@ -4,4 +4,5 @@
     <color name="peach_dark">#d8c9b9</color>
     <color name="red_dark">#871f08</color>
     <color name="red_dark_washedout">#9e402c</color>
+    <color name="gray_comments_information">#9c9186</color>
 </resources>

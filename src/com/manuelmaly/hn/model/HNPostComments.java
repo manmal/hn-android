@@ -17,11 +17,16 @@ public class HNPostComments implements Serializable {
     }
 
     public HNPostComments(List<HNComment> comments) {
+        this(comments, null);
+    }
+
+    public HNPostComments(List<HNComment> comments, String headerHtml) {
         mTreeNodes = new ArrayList<HNCommentTreeNode>();
         for (HNComment comment : comments) {
             if (comment.getCommentLevel() == 0)
                 mTreeNodes.add(makeTreeNode(comment, comments));
         }
+        mHeaderHtml = headerHtml;
     }
 
     public List<HNCommentTreeNode> getTreeNodes() {

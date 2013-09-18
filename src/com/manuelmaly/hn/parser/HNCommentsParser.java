@@ -73,16 +73,17 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
         // Just using table:eq(0) would return an extra table, so we use
         // get(0) instead, which only returns only the one we want
         Element header = doc.select("body table:eq(0)  tbody > tr:eq(2) > td:eq(0) > table").get(0);
+        String headerHtml = null;
 
         // Five table rows is what it takes for the title, post information
         // And other boilerplate stuff.  More than five means we have something
         // Special
         if(header.select("tr").size() > 5) {
-            HeaderParser parser = new HeaderParser();
-            parser.parseDocument(header);
+            HeaderParser headerParser = new HeaderParser();
+            headerHtml = headerParser.parseDocument(header);
         }
 
-        return new HNPostComments(comments);
+        return new HNPostComments(comments, headerHtml);
     }
 
 }

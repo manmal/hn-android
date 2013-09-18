@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:id="@+id/comments_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical" >
 
     <FrameLayout
         android:id="@+id/actionbar"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@drawable/actionbar_bg_orange"
         android:gravity="center" >
@@ -68,8 +69,8 @@
 
     <ListView
         android:id="@+id/comments_list"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@color/peach"
         android:cacheColorHint="@color/peach"
         android:divider="#b8ab9e"
