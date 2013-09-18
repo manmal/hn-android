@@ -283,8 +283,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             mIsLoggedIn = Settings.isUserLoggedIn(CommentsActivity.this);
             mUpVotingEnabled = !mIsLoggedIn
                 || (mComment.getUpvoteUrl(Settings.getUserName(CommentsActivity.this)) != null && !mVotedComments.contains(mComment));
-            mDownVotingEnabled = !mIsLoggedIn
-                || (mComment.getDownvoteUrl(Settings.getUserName(CommentsActivity.this)) != null && !mVotedComments.contains(mComments));
+            mDownVotingEnabled = mIsLoggedIn
+                && (mComment.getDownvoteUrl(Settings.getUserName(CommentsActivity.this)) != null && !mVotedComments.contains(mComments));
 
             mItems = new ArrayList<CharSequence>();
             
