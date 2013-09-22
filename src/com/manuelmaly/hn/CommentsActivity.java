@@ -2,6 +2,9 @@ package com.manuelmaly.hn;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.regex.Pattern;
+
+import org.jsoup.helper.StringUtil;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,7 +17,7 @@ import android.os.Parcelable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
+import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -119,7 +122,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         mCommentsListAdapter = new CommentsAdapter();
         mCommentHeaderText.setVisibility(View.GONE);
         mCommentsList.setEmptyView(getLoadingPanel(mRootView));
-        mCommentsList.addHeaderView(mCommentHeader);
+        mCommentsList.addHeaderView(mCommentHeader, null, false);
         mCommentsList.setAdapter(mCommentsListAdapter);
 
         mActionbarContainer.setOnClickListener(new OnClickListener() {
@@ -207,9 +210,11 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             mCommentHeaderText.setTextColor(getResources()
                     .getColor(R.color.gray_comments_information));
             mCommentHeaderText.setText(Html.fromHtml(comments.getHeaderHtml()));
-            int commentPadding = Math.min(DisplayHelper.getScreenHeight(this), DisplayHelper.getScreenWidth(this)) / 30;
-            mCommentHeaderText.setPadding(commentPadding, commentPadding, commentPadding, 0);
+            mCommentHeaderText.setPadding(mCommentLevelIndentPx, mCommentLevelIndentPx/2, mCommentLevelIndentPx/2, mCommentLevelIndentPx/2);
+            Linkify.addLinks(mCommentHeaderText, 
+                    Pattern.compile("(https?:\\/\\/)([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?"), "");
         }
+
         mComments = comments;
         mCommentsListAdapter.notifyDataSetChanged();
     }
@@ -292,8 +297,13 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         // Don't worry about reallocating this stuff it has already been called
         if (mCommentHeader == null) {
             mCommentHeader = new LinearLayout(this);
-            mCommentHeaderText = new LinkifiedTextView(this, null);
+            mCommentHeader.setOrientation(LinearLayout.VERTICAL);
+            mCommentHeaderText = new TextView(this);
             mCommentHeader.addView(mCommentHeaderText);
+            View v = new View(this);
+            v.setBackgroundColor(getResources().getColor(R.color.gray_comments_divider));
+            v.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 1));
+            mCommentHeader.addView(v);
         }
     }
 
