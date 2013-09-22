@@ -15,7 +15,6 @@ import android.os.Parcelable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -378,7 +377,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             // we want to tell the user to login
             if (clickedText.equals(getApplicationContext().getString(R.string.upvote))) {
                 if (!mIsLoggedIn)
-                    Toast.makeText(CommentsActivity.this, R.string.please_log_in, Toast.LENGTH_LONG).show();
+                    startActivityForResult(new Intent(getApplicationContext(), LoginActivity_.class),
+                            ACTIVITY_LOGIN);
                 else
                     vote(mComment.getUpvoteUrl(Settings.getUserName(CommentsActivity.this)), mComment);
             } else if (clickedText.equals(getApplicationContext().getString(R.string.downvote))) {
