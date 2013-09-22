@@ -376,14 +376,16 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             // the user is logged in.  If the user is not logged in then
             // we want to tell the user to login
             if (clickedText.equals(getApplicationContext().getString(R.string.upvote))) {
-                if (!mIsLoggedIn)
+                if (!mIsLoggedIn) {
+                    setCommentToUpvote(mComment);
                     startActivityForResult(new Intent(getApplicationContext(), LoginActivity_.class),
                             ACTIVITY_LOGIN);
+                }
                 else
                     vote(mComment.getUpvoteUrl(Settings.getUserName(CommentsActivity.this)), mComment);
             } else if (clickedText.equals(getApplicationContext().getString(R.string.downvote))) {
                 // We don't need to test if the user is logged in here because
-                // They won't have a dowvnote url to see
+                // They won't have a dowvnote url to see if they aren't logged in
                 vote(mComment.getDownvoteUrl(Settings.getUserName(CommentsActivity.this)), mComment);
             } else {
                 mComments.toggleCommentExpanded(mComment);
