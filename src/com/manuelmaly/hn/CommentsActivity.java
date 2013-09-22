@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
-import org.jsoup.helper.StringUtil;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,7 +13,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.Html;
-import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.TypedValue;
@@ -207,11 +204,10 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     private void showComments(HNPostComments comments) {
         if (comments.getHeaderHtml() != null && mCommentHeaderText.getVisibility() != View.VISIBLE) {
             mCommentHeaderText.setVisibility(View.VISIBLE);
-            mCommentHeaderText.setTextColor(getResources()
-                    .getColor(R.color.gray_comments_information));
-            mCommentHeaderText.setText(Html.fromHtml(comments.getHeaderHtml()));
-            mCommentHeaderText.setPadding(mCommentLevelIndentPx, mCommentLevelIndentPx/2, mCommentLevelIndentPx/2, mCommentLevelIndentPx/2);
-            Linkify.addLinks(mCommentHeaderText, 
+            // We trip it here to get rid of pesky newlines that come from
+            // closing <p> tags
+            mCommentHeaderText.setText(Html.fromHtml(comments.getHeaderHtml()).toString().trim());
+            Linkify.addLinks(mCommentHeaderText,
                     Pattern.compile("(https?:\\/\\/)([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?"), "");
         }
 
@@ -299,7 +295,13 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             mCommentHeader = new LinearLayout(this);
             mCommentHeader.setOrientation(LinearLayout.VERTICAL);
             mCommentHeaderText = new TextView(this);
+
+            // Division by 2 just gave the right feel, I'm unsure how well it
+            // will work across platforms
+            mCommentHeaderText.setPadding(mCommentLevelIndentPx, mCommentLevelIndentPx/2, mCommentLevelIndentPx/2, mCommentLevelIndentPx/2);
             mCommentHeader.addView(mCommentHeaderText);
+            mCommentHeaderText.setTextColor(getResources()
+                    .getColor(R.color.gray_comments_information));
             View v = new View(this);
             v.setBackgroundColor(getResources().getColor(R.color.gray_comments_divider));
             v.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 1));
