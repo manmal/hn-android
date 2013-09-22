@@ -8,7 +8,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -34,6 +33,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     private static final int REQUEST_LOGIN = 100;
     private Preference mUserPref;
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +72,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 
     public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
         Run.onUiThread(new Runnable() {
+            @SuppressWarnings("deprecation")
             @Override
             public void run() {
                 if (key.equals(Settings.PREF_FONTSIZE) || key.equals(Settings.PREF_HTMLPROVIDER)
@@ -93,12 +94,14 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             mUserPref.setSummary(" ");
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void onResume() {
         super.onResume();
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void onPause() {
         super.onPause();

@@ -2,6 +2,7 @@ package com.manuelmaly.hn;
 
 import java.net.URLEncoder;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -61,6 +62,7 @@ public class ArticleReaderActivity extends Activity {
     boolean mIsLoading;
 	private Bundle mWebViewSavedState;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @AfterViews
     public void init() {
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
@@ -142,6 +144,7 @@ public class ArticleReaderActivity extends Activity {
         ViewRotator.startRotating(mActionbarRefresh);
     }
 
+    @SuppressWarnings("deprecation")
     public static String getArticleViewURL(HNPost post, String htmlProvider, Context c) {
         String encodedURL = URLEncoder.encode(post.getURL());
         if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_viewtext)))

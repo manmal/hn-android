@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import android.content.AsyncQueryHandler;
 import android.os.AsyncTask;
 import android.util.Log;
 
