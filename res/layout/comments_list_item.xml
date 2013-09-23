@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/someauthor"
-                android:textColor="#9c9186"
+                android:textColor="@color/gray_comments_information"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/comments_list_item_author"
-                android:textColor="#9c9186"
+                android:textColor="@color/gray_comments_information"
                 android:textSize="14sp" />
 
             <com.manuelmaly.hn.reuse.LinkifiedTextView
