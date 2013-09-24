@@ -2,7 +2,6 @@ package com.manuelmaly.hn.parser;
 
 import java.util.ArrayList;
 
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -15,7 +14,7 @@ import com.manuelmaly.hn.util.HNHelper;
 public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
 
     @Override
-    public HNPostComments parseDocument(Document doc) throws Exception {
+    public HNPostComments parseDocument(Element doc) throws Exception {
         if (doc == null)
             return new HNPostComments();
 
@@ -24,7 +23,7 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
         Elements tableRows = doc.select("table tr table tr:has(table)");
 
         String currentUser = Settings.getUserName(App.getInstance());
-        
+
         String text = null;
         String author = null;
         int level = 0;
@@ -58,7 +57,7 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             String levelSpacerWidth = rowLevelElement.select("img").first().attr("width");
             if (levelSpacerWidth != null)
                 level = Integer.parseInt(levelSpacerWidth) / 40;
-            
+
             Element upVoteElement = tableRows.get(row).select("td:eq(1) a").first();
             if (upVoteElement != null) {
                 upvoteUrl = upVoteElement.attr("href").contains(currentUser) ? 
@@ -71,7 +70,20 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
                 break;
         }
 
-        return new HNPostComments(comments);
+        // Just using table:eq(0) would return an extra table, so we use
+        // get(0) instead, which only returns only the one we want
+        Element header = doc.select("body table:eq(0)  tbody > tr:eq(2) > td:eq(0) > table").get(0);
+        String headerHtml = null;
+
+        // Five table rows is what it takes for the title, post information
+        // And other boilerplate stuff.  More than five means we have something
+        // Special
+        if(header.select("tr").size() > 5) {
+            HeaderParser headerParser = new HeaderParser();
+            headerHtml = headerParser.parseDocument(header);
+        }
+
+        return new HNPostComments(comments, headerHtml);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.manuelmaly.hn.parser;
 
-import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
@@ -11,7 +11,7 @@ import org.jsoup.select.Elements;
 public class HNNewsLoginParser extends BaseHTMLParser<String> {
 
     @Override
-    public String parseDocument(Document doc) throws Exception {
+    public String parseDocument(Element doc) throws Exception {
         if (doc == null)
             return null;
 
