@@ -15,7 +15,6 @@ import android.os.Parcelable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -490,7 +489,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
             for (int i = 0; i < comment.getCommentLevel(); i++) {
                 View spacer = new View(c);
                 spacer.setLayoutParams(new android.widget.LinearLayout.LayoutParams(commentLevelIndentPx,
-                    LayoutParams.FILL_PARENT));
+                    LayoutParams.MATCH_PARENT));
                 int spacerAlpha = Math.max(70 - i * 10, 10);
                 spacer.setBackgroundColor(Color.argb(spacerAlpha, 0, 0, 0));
                 spacersContainer.addView(spacer, i);
