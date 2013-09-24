@@ -213,6 +213,11 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         }
 
         mComments = comments;
+
+        // We don't want the loading view to show if there are actually
+        // no comments to display
+        if (mComments.getComments().size() == 0)
+            mCommentsList.setEmptyView(null);
         mCommentsListAdapter.notifyDataSetChanged();
     }
 
