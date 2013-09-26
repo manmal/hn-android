@@ -33,7 +33,7 @@ public class ArticleReaderActivity extends Activity {
 
     private static final String HTMLPROVIDER_PREFIX_VIEWTEXT = "http://viewtext.org/article?url=";
     private static final String HTMLPROVIDER_PREFIX_GOOGLE = "http://www.google.com/gwt/x?u=";
-    private static final String HTMLPROVIDER_PREFIX_INSTAPER = "http://www.instapaper.com/text?u=";
+    private static final String HTMLPROVIDER_PREFIX_INSTAPAPER = "http://www.instapaper.com/text?u=";
 
     @ViewById(R.id.article_webview)
     WebView mWebView;
@@ -150,7 +150,7 @@ public class ArticleReaderActivity extends Activity {
         else if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_google)))
             return HTMLPROVIDER_PREFIX_GOOGLE + encodedURL;
         else if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_instapaper)))
-            return HTMLPROVIDER_PREFIX_INSTAPER + encodedURL;
+            return HTMLPROVIDER_PREFIX_INSTAPAPER + encodedURL;
         else
             return post.getURL();
     }
