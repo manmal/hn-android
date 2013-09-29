@@ -6,8 +6,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.util.Log;
-
 import com.manuelmaly.hn.App;
 import com.manuelmaly.hn.Settings;
 import com.manuelmaly.hn.model.HNFeed;
