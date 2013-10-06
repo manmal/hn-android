@@ -32,6 +32,7 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
         String url = null;
         Boolean isDownvoted = false;
         String upvoteUrl = null;
+        String downvoteUrl = null;
 
         boolean endParsing = false;
         for (int row = 0; row < tableRows.size(); row++) {
@@ -58,20 +59,37 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             String levelSpacerWidth = rowLevelElement.select("img").first().attr("width");
             if (levelSpacerWidth != null)
                 level = Integer.parseInt(levelSpacerWidth) / 40;
-            
-            Element upVoteElement = tableRows.get(row).select("td:eq(1) a").first();
-            if (upVoteElement != null) {
-                upvoteUrl = upVoteElement.attr("href").contains(currentUser) ? 
-                    HNHelper.resolveRelativeHNURL(upVoteElement.attr("href")) : null;
-            }
 
-            comments.add(new HNComment(timeAgo, author, url, text, level, isDownvoted, upvoteUrl));
+            Elements voteElements = tableRows.get(row).select("td:eq(1) a");
+            upvoteUrl = getVoteUrl(voteElements.first(), currentUser);
+
+            // We want to test for size because unlike first() calling .get(1)
+            // Will throw an error if there are not two elements
+            if (voteElements.size() > 1)
+               downvoteUrl = getVoteUrl(voteElements.get(1), currentUser);
+
+            comments.add(new HNComment(timeAgo, author, url, text, level, isDownvoted, upvoteUrl, downvoteUrl));
 
             if (endParsing)
                 break;
         }
 
         return new HNPostComments(comments);
+    }
+
+    /**
+     * Parses out the url for voting from a given element
+     * @param voteElement The element from which to parse out the voting url
+     * @param currentUser The currently logged in user
+     * @return The relative url to vote in the given direction for that comment
+     */
+    private String getVoteUrl(Element voteElement, String currentUser) {
+        if (voteElement != null) {
+            return voteElement.attr("href").contains(currentUser) ?
+                HNHelper.resolveRelativeHNURL(voteElement.attr("href")) : null;
+        }
+
+        return null;
     }
 
 }

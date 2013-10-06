@@ -15,7 +15,6 @@ import android.os.Parcelable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,13 +88,12 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     int mFontSizeText;
     int mFontSizeMetadata;
     int mCommentLevelIndentPx;
-    
-    HashSet<HNComment> mUpvotedComments;
-    
+
     private static final String LIST_STATE = "listState";
     private Parcelable mListState = null;
 
     HNComment mPendingVote;
+    HashSet<HNComment> mVotedComments;
 
     @AfterViews
     public void init() {
@@ -109,7 +107,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         mCommentLevelIndentPx = Math.min(DisplayHelper.getScreenHeight(this), DisplayHelper.getScreenWidth(this)) / 30;
 
         mComments = new HNPostComments();
-        mUpvotedComments = new HashSet<HNComment>();
+        mVotedComments = new HashSet<HNComment>();
         mCommentsListAdapter = new CommentsAdapter();
         mCommentsList.setAdapter(mCommentsListAdapter);
 
@@ -276,22 +274,28 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         HNComment mComment;
         boolean mIsLoggedIn;
         boolean mUpVotingEnabled;
+        boolean mDownVotingEnabled;
         ArrayList<CharSequence> mItems;
 
         public LongPressMenuListAdapter(HNComment comment) {
             mComment = comment;
             mIsLoggedIn = Settings.isUserLoggedIn(CommentsActivity.this);
             mUpVotingEnabled = !mIsLoggedIn
-                || (mComment.getUpvoteUrl(Settings.getUserName(CommentsActivity.this)) != null && !mUpvotedComments
-                    .contains(mComment));
+                || (mComment.getUpvoteUrl(Settings.getUserName(CommentsActivity.this)) != null && !mVotedComments.contains(mComment));
+            mDownVotingEnabled = mIsLoggedIn
+                && (mComment.getDownvoteUrl(Settings.getUserName(CommentsActivity.this)) != null && !mVotedComments.contains(mComments));
 
             mItems = new ArrayList<CharSequence>();
             
             // Figure out why this is false
             if (mUpVotingEnabled)
                 mItems.add(getString(R.string.upvote));
-            else
-                mItems.add(getString(R.string.already_upvoted));
+            if (mDownVotingEnabled)
+                mItems.add(getString(R.string.downvote));
+
+            if(!mUpVotingEnabled && !mDownVotingEnabled)
+                mItems.add(getString(R.string.already_voted_on));
+
             if (comment.getTreeNode().isExpanded())
                 mItems.add(getString(R.string.collapse_comment));
             else
@@ -357,32 +361,37 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
         @Override
         public boolean isEnabled(int position) {
-            if (!mUpVotingEnabled && position == 4)
+            // Top item will always be "upvote" or "already upvoted"
+            // So, if upvoting is not enabled, this must be already upvoted
+            // In that case we want to disable it
+            if (!mUpVotingEnabled && position == 0)
                 return false;
             return true;
         }
 
         @Override
         public void onClick(DialogInterface dialog, int item) {
-            switch (item) {
-                case 0:
-                    if (!mIsLoggedIn) {
-                        setCommentToUpvote(mComment);
-                        startActivityForResult(new Intent(getApplicationContext(), LoginActivity_.class), 
+            String clickedText = getItem(item).toString();
+            // If the clicked text is "upvote", then we want to upvote if
+            // the user is logged in.  If the user is not logged in then
+            // we want to tell the user to login
+            if (clickedText.equals(getApplicationContext().getString(R.string.upvote))) {
+                if (!mIsLoggedIn) {
+                    setCommentToUpvote(mComment);
+                    startActivityForResult(new Intent(getApplicationContext(), LoginActivity_.class),
                             ACTIVITY_LOGIN);
-                    }
-                    else if (mUpVotingEnabled)
-                        vote(mComment.getUpvoteUrl(Settings.getUserName(CommentsActivity.this)), mComment);
-                    break;
-                case 1:
-                    mComments.toggleCommentExpanded(mComment);
-                    mCommentsListAdapter.notifyDataSetChanged();
-                    break;
-                default:
-                    break;
+                }
+                else
+                    vote(mComment.getUpvoteUrl(Settings.getUserName(CommentsActivity.this)), mComment);
+            } else if (clickedText.equals(getApplicationContext().getString(R.string.downvote))) {
+                // We don't need to test if the user is logged in here because
+                // They won't have a dowvnote url to see if they aren't logged in
+                vote(mComment.getDownvoteUrl(Settings.getUserName(CommentsActivity.this)), mComment);
+            } else {
+                mComments.toggleCommentExpanded(mComment);
+                mCommentsListAdapter.notifyDataSetChanged();
             }
         }
-
     }
 
     class VoteTaskFinishedHandler implements ITaskFinishedHandler<Boolean> {
@@ -394,7 +403,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                     Toast.makeText(CommentsActivity.this, R.string.vote_success, Toast.LENGTH_SHORT).show();
                     HNComment comment = (HNComment)tag;
                     if (comment != null)
-                        mUpvotedComments.add(comment);
+                        mVotedComments.add(comment);
                 } else
                     Toast.makeText(CommentsActivity.this, R.string.vote_error, Toast.LENGTH_LONG).show();
             }
