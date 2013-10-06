@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -29,8 +28,8 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.ProgressBar;
 import android.widget.PopupWindow.OnDismissListener;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,8 +41,6 @@ import com.googlecode.androidannotations.annotations.ViewById;
 import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.parser.BaseHTMLParser;
-import com.manuelmaly.hn.reuse.ImageViewFader;
-import com.manuelmaly.hn.reuse.ViewRotator;
 import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.task.HNFeedTaskLoadMore;
 import com.manuelmaly.hn.task.HNFeedTaskMainFeed;
@@ -51,7 +48,6 @@ import com.manuelmaly.hn.task.HNVoteTask;
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
-import com.manuelmaly.hn.util.Run;
 
 @EActivity(R.layout.main)
 public class MainActivity extends BaseListActivity implements ITaskFinishedHandler<HNFeed> {

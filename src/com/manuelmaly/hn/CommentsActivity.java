@@ -546,7 +546,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             for (int i = 0; i < comment.getCommentLevel(); i++) {
                 View spacer = new View(c);
                 spacer.setLayoutParams(new android.widget.LinearLayout.LayoutParams(commentLevelIndentPx,
-                    LayoutParams.FILL_PARENT));
+                    LayoutParams.MATCH_PARENT));
                 int spacerAlpha = Math.max(70 - i * 10, 10);
                 spacer.setBackgroundColor(Color.argb(spacerAlpha, 0, 0, 0));
                 spacersContainer.addView(spacer, i);

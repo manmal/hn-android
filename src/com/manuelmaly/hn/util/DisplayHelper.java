@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.Display;
 import android.view.View;
@@ -22,6 +23,7 @@ public class DisplayHelper {
 		return (int)((float)dp * scale);
 	} 
 	
+	@SuppressWarnings("deprecation")
 	public static BitmapDrawable bitmapWithConstraints(int bitmapResource, Context ctx, int dpConstraintWidthAndHeight, int padding) {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inScaled = false;
@@ -42,13 +44,17 @@ public class DisplayHelper {
 	}
 	
 	public static int getScreenWidth(Activity a) {
-		Display display = a.getWindowManager().getDefaultDisplay(); 
-		return display.getWidth();
+		Display display = a.getWindowManager().getDefaultDisplay();
+		Point holder = new Point();
+		display.getSize(holder);
+		return holder.x;
 	}
 	
 	public static int getScreenHeight(Activity a) {
-		Display display = a.getWindowManager().getDefaultDisplay(); 
-		return display.getHeight();
+		Display display = a.getWindowManager().getDefaultDisplay();
+		Point holder = new Point();
+		display.getSize(holder);
+		return holder.y;
 	}
 	
 	public static void setDialogParams(Dialog d, Activity a, boolean hasTitleBar, View layout, int marginHorizontalDP) {

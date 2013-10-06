@@ -8,7 +8,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -38,6 +37,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     private Preference mUserPref;
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
@@ -73,6 +73,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         });
     }
 
+    @SuppressWarnings("deprecation")
     public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
         Run.onUiThread(new Runnable() {
             @Override
@@ -97,12 +98,14 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void onResume() {
         super.onResume();
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void onPause() {
         super.onPause();
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);

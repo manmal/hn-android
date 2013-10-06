@@ -18,7 +18,7 @@ public class ViewRotator {
                 anim.setRepeatCount(Animation.INFINITE);
                 anim.setDuration(1000);
                 view.startAnimation(anim);
-                view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
         view.requestLayout();
