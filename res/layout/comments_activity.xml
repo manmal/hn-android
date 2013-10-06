@@ -52,18 +52,24 @@
             android:paddingTop="8dp"
             android:src="@drawable/share" />
 
-        <ImageView
-            android:id="@+id/actionbar_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:id="@+id/actionbar_refresh_container"
+            android:layout_width="56dp"
+            android:layout_height="fill_parent"
             android:layout_gravity="right"
-            android:contentDescription="@string/refresh"
-            android:paddingBottom="8dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingTop="8dp"
-            android:src="@drawable/refresh" />
+            android:gravity="center" >
 
+            <ImageView
+                android:id="@+id/actionbar_refresh"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@string/refresh"
+                android:src="@drawable/refresh" />
+
+            <ProgressBar
+                android:id="@+id/actionbar_refresh_progress"
+                style="@style/MenubarRefresh" />
+        </LinearLayout>
     </FrameLayout>
 
     <ListView

@@ -8,5 +8,11 @@
         <item name="android:padding">16dp</item>
         <item name="android:gravity">left</item>
     </style>
-
+    
+    <style name="MenubarRefresh" parent="@android:style/Widget.Holo.Light.ProgressBar.Large">
+        <item name="android:maxWidth">32dp</item>
+        <item name="android:indeterminateOnly">true</item>
+        <item name="android:layout_width">32dp</item>
+        <item name="android:layout_height">32dp</item>
+    </style>
 </resources>

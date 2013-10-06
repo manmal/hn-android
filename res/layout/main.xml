@@ -56,12 +56,7 @@
 
             <ProgressBar
                 android:id="@+id/actionbar_refresh_progress"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                style="@android:style/Widget.ProgressBar.Large"
-                android:indeterminateOnly="true"
-                android:maxWidth="28dp" >
-            </ProgressBar>
+                style="@style/MenubarRefresh" />
         </LinearLayout>
     </FrameLayout>
 

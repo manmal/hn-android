@@ -187,20 +187,8 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
             if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
                 showFeed(result);
 
-//            ViewRotator.stopRotating(mActionbarRefresh);
             mActionbarRefreshProgress.setVisibility(View.GONE);
             mActionbarRefresh.setVisibility(View.VISIBLE);
-            
-//            if (code.equals(TaskResultCode.Success)) {
-//                ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh_ok, 100, this);
-//                Run.delayed(new Runnable() {
-//                    public void run() {
-//                        ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh, 300,
-//                            MainActivity.this);
-//                    }
-//                }, 2000);
-//            }
-
         } else if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
             mFeed.appendLoadMoreFeed(result);
             mPostsListAdapter.notifyDataSetChanged();
@@ -235,8 +223,6 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         
         mActionbarRefreshProgress.setVisibility(View.VISIBLE);
         mActionbarRefresh.setVisibility(View.GONE);
-//        ViewRotator.stopRotating(mActionbarRefresh);
-//        ViewRotator.startRotating(mActionbarRefresh);
     }
 
     private boolean refreshFontSizes() {

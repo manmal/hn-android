@@ -15,13 +15,14 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
 import com.manuelmaly.hn.model.HNPost;
-import com.manuelmaly.hn.reuse.ViewRotator;
 import com.manuelmaly.hn.util.FontHelper;
 
 @EActivity(R.layout.article_activity)
@@ -51,7 +52,13 @@ public class ArticleReaderActivity extends Activity {
 
     @ViewById(R.id.actionbar_refresh)
     ImageView mActionbarRefresh;
-
+    
+    @ViewById(R.id.actionbar_refresh_container)
+    LinearLayout mActionbarRefreshContainer;
+    
+    @ViewById(R.id.actionbar_refresh_progress)
+    ProgressBar mActionbarRefreshProgress;
+    
     @SystemService
     LayoutInflater mInflater;
 
@@ -87,11 +94,9 @@ public class ArticleReaderActivity extends Activity {
             public void onClick(View v) {
                 if (mWebView.getProgress() < 100 && mIsLoading) {
                     mWebView.stopLoading();
-                    mIsLoading = false;
-                    ViewRotator.stopRotating(mActionbarRefresh);
+                    setIsLoading(false);
                 } else {
-                    mIsLoading = true;
-                    ViewRotator.startRotating(mActionbarRefresh);
+                	setIsLoading(true);
                     mWebView.loadUrl(getArticleViewURL(mPost, mHtmlProvider, ArticleReaderActivity.this));
                 }
             }
@@ -124,13 +129,11 @@ public class ArticleReaderActivity extends Activity {
         mWebView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
                 if (progress == 100 && mIsLoading) {
-                    mIsLoading = false;
-                    ViewRotator.stopRotating(mActionbarRefresh);
+                	setIsLoading(false);
                 } else if (!mIsLoading) {
                     // Most probably, user tapped on a link in the webview -
                     // let's spin the refresh icon:
-                    mIsLoading = true;
-                    ViewRotator.startRotating(mActionbarRefresh);
+                	setIsLoading(true);
                 }
             }
         });
@@ -138,8 +141,14 @@ public class ArticleReaderActivity extends Activity {
             mWebView.restoreState(mWebViewSavedState);
         }
 
-        mIsLoading = true;
-        ViewRotator.startRotating(mActionbarRefresh);
+        setIsLoading(true);
+    }
+    
+    protected void setIsLoading(boolean loading) {
+    	mIsLoading = loading;
+		mActionbarRefreshProgress.setVisibility(loading ? View.VISIBLE
+				: View.GONE);
+		mActionbarRefresh.setVisibility(loading ? View.GONE : View.VISIBLE);
     }
 
     public static String getArticleViewURL(HNPost post, String htmlProvider, Context c) {

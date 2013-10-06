@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,6 +71,12 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
     @ViewById(R.id.actionbar_refresh)
     ImageView mActionbarRefresh;
+    
+    @ViewById(R.id.actionbar_refresh_container)
+    LinearLayout mActionbarRefreshContainer;
+    
+    @ViewById(R.id.actionbar_refresh_progress)
+    ProgressBar mActionbarRefreshProgress;
 
     @ViewById(R.id.actionbar_share)
     ImageView mActionbarShare;
@@ -156,7 +163,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         });
 
         mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
-        mActionbarRefresh.setOnClickListener(new OnClickListener() {
+        mActionbarRefreshContainer.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if (HNPostCommentsTask.isRunning(mPost.getPostID()))
                     HNPostCommentsTask.stopCurrent(mPost.getPostID());
@@ -164,6 +171,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                     startFeedLoading();
             }
         });
+        
+        mActionbarRefreshProgress.setVisibility(View.GONE);
 
         loadIntermediateCommentsFromStore();
         startFeedLoading();
@@ -209,22 +218,13 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     private void updateStatusIndicatorOnLoadingStarted() {
-        mActionbarRefresh.setImageResource(R.drawable.refresh);
-        ViewRotator.stopRotating(mActionbarRefresh);
-        ViewRotator.startRotating(mActionbarRefresh);
+        mActionbarRefreshProgress.setVisibility(View.VISIBLE);
+        mActionbarRefresh.setVisibility(View.GONE);
     }
 
     private void updateStatusIndicatorOnLoadingFinished(TaskResultCode code) {
-        ViewRotator.stopRotating(mActionbarRefresh);
-        if (code == TaskResultCode.Success) {
-            ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh_ok, 100, this);
-            Run.delayed(new Runnable() {
-                public void run() {
-                    ImageViewFader.startFadeOverToImage(mActionbarRefresh, R.drawable.refresh, 300,
-                        CommentsActivity.this);
-                }
-            }, 2000);
-        }
+    	mActionbarRefreshProgress.setVisibility(View.GONE);
+        mActionbarRefresh.setVisibility(View.VISIBLE);
     }
 
     private void startFeedLoading() {
