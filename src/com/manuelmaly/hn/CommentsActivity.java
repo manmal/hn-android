@@ -41,16 +41,13 @@ import com.manuelmaly.hn.login.LoginActivity_;
 import com.manuelmaly.hn.model.HNComment;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.model.HNPostComments;
-import com.manuelmaly.hn.reuse.ImageViewFader;
 import com.manuelmaly.hn.reuse.LinkifiedTextView;
-import com.manuelmaly.hn.reuse.ViewRotator;
 import com.manuelmaly.hn.task.HNPostCommentsTask;
 import com.manuelmaly.hn.task.HNVoteTask;
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
 import com.manuelmaly.hn.util.DisplayHelper;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
-import com.manuelmaly.hn.util.Run;
 
 @EActivity(R.layout.comments_activity)
 public class CommentsActivity extends Activity implements ITaskFinishedHandler<HNPostComments> {
