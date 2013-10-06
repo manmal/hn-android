@@ -2,7 +2,6 @@ package com.manuelmaly.hn.parser;
 
 import java.util.ArrayList;
 
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -15,7 +14,7 @@ import com.manuelmaly.hn.util.HNHelper;
 public class HNFeedParser extends BaseHTMLParser<HNFeed> {
 
     @Override
-    public HNFeed parseDocument(Document doc) throws Exception {
+    public HNFeed parseDocument(Element doc) throws Exception {
         if (doc == null)
             return new HNFeed();
         
@@ -29,6 +28,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
         tableRows.remove(0);
 
         Elements nextPageURLElements = tableRows.select("a:matches(^More$)");
+
         // In case there are multiple "More" elements, select only the one which is a relative link:
         if (nextPageURLElements.size() > 1) {
             nextPageURLElements = nextPageURLElements.select("a[href^=/]");

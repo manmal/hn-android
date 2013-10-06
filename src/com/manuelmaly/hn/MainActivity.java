@@ -43,6 +43,7 @@ import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.parser.BaseHTMLParser;
 import com.manuelmaly.hn.reuse.ImageViewFader;
+import com.manuelmaly.hn.reuse.ViewRotator;
 import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.task.HNFeedTaskLoadMore;
 import com.manuelmaly.hn.task.HNFeedTaskMainFeed;
@@ -53,13 +54,13 @@ import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.Run;
 
 @EActivity(R.layout.main)
-public class MainActivity extends Activity implements ITaskFinishedHandler<HNFeed> {
+public class MainActivity extends BaseListActivity implements ITaskFinishedHandler<HNFeed> {
 
     @ViewById(R.id.main_list)
     ListView mPostsList;
 
-    @ViewById(R.id.main_empty_view)
-    TextView mEmptyListPlaceholder;
+    @ViewById(R.id.main_root)
+    LinearLayout mRootView;
 
     @ViewById(R.id.actionbar_title)
     TextView mActionbarTitle;
@@ -79,6 +80,7 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
     @SystemService
     LayoutInflater mInflater;
 
+    TextView mEmptyListPlaceholder;
     HNFeed mFeed;
     PostsAdapter mPostsListAdapter;
     HashSet<HNPost> mUpvotedPosts;
@@ -99,14 +101,16 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
         mFeed = new HNFeed(new ArrayList<HNPost>(), null);
         mPostsListAdapter = new PostsAdapter();
         mUpvotedPosts = new HashSet<HNPost>();
-        mPostsList.setAdapter(mPostsListAdapter);
-        mPostsList.setEmptyView(mEmptyListPlaceholder);
         mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
-        mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
         
         mActionbarRefreshProgress.setVisibility(View.GONE);
+        mEmptyListPlaceholder = getLoadingPanel(mRootView);
+        mPostsList.setEmptyView(mEmptyListPlaceholder);
+        mPostsList.setAdapter(mPostsListAdapter);
 
+        mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
+        
         loadIntermediateFeedFromStore();
         startFeedLoading();
     }
@@ -187,8 +191,10 @@ public class MainActivity extends Activity implements ITaskFinishedHandler<HNFee
             if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
                 showFeed(result);
 
-            mActionbarRefreshProgress.setVisibility(View.GONE);
-            mActionbarRefresh.setVisibility(View.VISIBLE);
+            if (code.equals(TaskResultCode.Success)) {
+            	mActionbarRefreshProgress.setVisibility(View.GONE);
+            	mActionbarRefresh.setVisibility(View.VISIBLE);
+            }
         } else if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
             mFeed.appendLoadMoreFeed(result);
             mPostsListAdapter.notifyDataSetChanged();

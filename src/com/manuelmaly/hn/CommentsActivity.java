@@ -2,8 +2,8 @@ package com.manuelmaly.hn;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.regex.Pattern;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,6 +15,7 @@ import android.os.Parcelable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +51,7 @@ import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
 
 @EActivity(R.layout.comments_activity)
-public class CommentsActivity extends Activity implements ITaskFinishedHandler<HNPostComments> {
+public class CommentsActivity extends BaseListActivity implements ITaskFinishedHandler<HNPostComments> {
 
     public static final String EXTRA_HNPOST = "HNPOST";
     private static final int TASKCODE_VOTE = 100;
@@ -81,8 +82,14 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     @ViewById(R.id.actionbar_back)
     ImageView mActionbarBack;
 
+    @ViewById(R.id.comments_root)
+    LinearLayout mRootView;
+
     @SystemService
     LayoutInflater mInflater;
+
+    LinearLayout mCommentHeader;
+    TextView mCommentHeaderText;
 
     HNPost mPost;
     HNPostComments mComments;
@@ -93,6 +100,8 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     int mFontSizeMetadata;
     int mCommentLevelIndentPx;
 
+    HashSet<HNComment> mUpvotedComments;
+    
     private static final String LIST_STATE = "listState";
     private Parcelable mListState = null;
 
@@ -110,9 +119,13 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 
         mCommentLevelIndentPx = Math.min(DisplayHelper.getScreenHeight(this), DisplayHelper.getScreenWidth(this)) / 30;
 
+        initCommentsHeader();
         mComments = new HNPostComments();
         mVotedComments = new HashSet<HNComment>();
         mCommentsListAdapter = new CommentsAdapter();
+        mCommentHeaderText.setVisibility(View.GONE);
+        mCommentsList.setEmptyView(getLoadingPanel(mRootView));
+        mCommentsList.addHeaderView(mCommentHeader, null, false);
         mCommentsList.setAdapter(mCommentsListAdapter);
 
         mActionbarContainer.setOnClickListener(new OnClickListener() {
@@ -197,7 +210,21 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     private void showComments(HNPostComments comments) {
+        if (comments.getHeaderHtml() != null && mCommentHeaderText.getVisibility() != View.VISIBLE) {
+            mCommentHeaderText.setVisibility(View.VISIBLE);
+            // We trip it here to get rid of pesky newlines that come from
+            // closing <p> tags
+            mCommentHeaderText.setText(Html.fromHtml(comments.getHeaderHtml()).toString().trim());
+            Linkify.addLinks(mCommentHeaderText,
+                    Pattern.compile("(https?:\\/\\/)([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?"), "");
+        }
+
         mComments = comments;
+
+        // We don't want the loading view to show if there are actually
+        // no comments to display
+        if (mComments.getComments().size() == 0)
+            mCommentsList.setEmptyView(null);
         mCommentsListAdapter.notifyDataSetChanged();
     }
 
@@ -220,8 +247,10 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
     }
 
     private void updateStatusIndicatorOnLoadingFinished(TaskResultCode code) {
-    	mActionbarRefreshProgress.setVisibility(View.GONE);
-        mActionbarRefresh.setVisibility(View.VISIBLE);
+        if (code == TaskResultCode.Success) {
+        	mActionbarRefreshProgress.setVisibility(View.GONE);
+        	mActionbarRefresh.setVisibility(View.VISIBLE);
+        }
     }
 
     private void startFeedLoading() {
@@ -245,13 +274,14 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
 	        }
 	        return true;
         }
+
         return false;
     }
     
     private void vote(String voteURL, HNComment comment) {
         HNVoteTask.start(voteURL, this, new VoteTaskFinishedHandler(), TASKCODE_VOTE, comment);
     }
-    
+
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
@@ -265,7 +295,26 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
         state.putParcelable(LIST_STATE, mListState);
     }
 
-    
+    private void initCommentsHeader() {
+        // Don't worry about reallocating this stuff it has already been called
+        if (mCommentHeader == null) {
+            mCommentHeader = new LinearLayout(this);
+            mCommentHeader.setOrientation(LinearLayout.VERTICAL);
+            mCommentHeaderText = new TextView(this);
+
+            // Division by 2 just gave the right feel, I'm unsure how well it
+            // will work across platforms
+            mCommentHeaderText.setPadding(mCommentLevelIndentPx, mCommentLevelIndentPx/2, mCommentLevelIndentPx/2, mCommentLevelIndentPx/2);
+            mCommentHeader.addView(mCommentHeaderText);
+            mCommentHeaderText.setTextColor(getResources()
+                    .getColor(R.color.gray_comments_information));
+            View v = new View(this);
+            v.setBackgroundColor(getResources().getColor(R.color.gray_comments_divider));
+            v.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 1));
+            mCommentHeader.addView(v);
+        }
+    }
+
     private class LongPressMenuListAdapter implements ListAdapter, DialogInterface.OnClickListener {
 
         HNComment mComment;
@@ -389,6 +438,7 @@ public class CommentsActivity extends Activity implements ITaskFinishedHandler<H
                 mCommentsListAdapter.notifyDataSetChanged();
             }
         }
+
     }
 
     class VoteTaskFinishedHandler implements ITaskFinishedHandler<Boolean> {
