@@ -43,18 +43,16 @@ public class DisplayHelper {
 		return new BitmapDrawable(resizedBitmap);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static int getScreenWidth(Activity a) {
-		Display display = a.getWindowManager().getDefaultDisplay();
-		Point holder = new Point();
-		display.getSize(holder);
-		return holder.x;
+		Display display = a.getWindowManager().getDefaultDisplay(); 
+		return display.getWidth();
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static int getScreenHeight(Activity a) {
-		Display display = a.getWindowManager().getDefaultDisplay();
-		Point holder = new Point();
-		display.getSize(holder);
-		return holder.y;
+		Display display = a.getWindowManager().getDefaultDisplay(); 
+		return display.getHeight();
 	}
 	
 	public static void setDialogParams(Dialog d, Activity a, boolean hasTitleBar, View layout, int marginHorizontalDP) {

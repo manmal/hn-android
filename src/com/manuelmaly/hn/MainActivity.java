@@ -374,23 +374,6 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                     holder.textContainer.setOnLongClickListener(new OnLongClickListener() {
                         public boolean onLongClick(View v) {
                             final HNPost post = getItem(position);
-                            final boolean isLoggedIn = Settings.getUserName(MainActivity.this) != null;
-                            final boolean upVotingEnabled = !isLoggedIn
-                                || (post.getUpvoteURL(Settings.getUserName(MainActivity.this)) != null && !mUpvotedPosts
-                                    .contains(post)); // We display "upvote"
-                                                      // when not logged in for
-                                                      // UX reasons
-
-                            final ArrayList<CharSequence> items = new ArrayList<CharSequence>(Arrays.asList(
-                                getString(R.string.pref_htmlprovider_original_url),
-                                getString(R.string.pref_htmlprovider_viewtext),
-                                getString(R.string.pref_htmlprovider_google),
-                                getString(R.string.pref_htmlprovider_instapaper),
-                                getString(R.string.external_browser)));
-                            if (upVotingEnabled)
-                                items.add(getString(R.string.upvote));
-                            else
-                                items.add(getString(R.string.already_upvoted));
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                             LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(post);
@@ -536,9 +519,10 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                 case 1:
                 case 2:
                 case 3:
+                case 4:
                     openPostInApp(mPost, getItem(item).toString(), MainActivity.this);
                     break;
-                case 4:
+                case 5:
                     openURLInBrowser(getArticleViewURL(mPost), MainActivity.this);
                     break;
                 default:
