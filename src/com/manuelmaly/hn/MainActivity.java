@@ -187,10 +187,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
                 showFeed(result);
 
-            if (code.equals(TaskResultCode.Success)) {
-            	mActionbarRefreshProgress.setVisibility(View.GONE);
-            	mActionbarRefresh.setVisibility(View.VISIBLE);
-            }
+			mActionbarRefreshProgress.setVisibility(View.GONE);
+			mActionbarRefresh.setVisibility(View.VISIBLE);
         } else if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
             mFeed.appendLoadMoreFeed(result);
             mPostsListAdapter.notifyDataSetChanged();

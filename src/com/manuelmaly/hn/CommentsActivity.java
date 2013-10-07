@@ -247,10 +247,8 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     }
 
     private void updateStatusIndicatorOnLoadingFinished(TaskResultCode code) {
-        if (code == TaskResultCode.Success) {
-        	mActionbarRefreshProgress.setVisibility(View.GONE);
-        	mActionbarRefresh.setVisibility(View.VISIBLE);
-        }
+    	mActionbarRefreshProgress.setVisibility(View.GONE);
+    	mActionbarRefresh.setVisibility(View.VISIBLE);
     }
 
     private void startFeedLoading() {
