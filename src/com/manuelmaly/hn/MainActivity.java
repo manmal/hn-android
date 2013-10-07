@@ -390,7 +390,9 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                             final ArrayList<CharSequence> items = new ArrayList<CharSequence>(Arrays.asList(
                                 getString(R.string.pref_htmlprovider_original_url),
                                 getString(R.string.pref_htmlprovider_viewtext),
-                                getString(R.string.pref_htmlprovider_google), getString(R.string.external_browser)));
+                                getString(R.string.pref_htmlprovider_google),
+                                getString(R.string.pref_htmlprovider_instapaper),
+                                getString(R.string.external_browser)));
                             if (upVotingEnabled)
                                 items.add(getString(R.string.upvote));
                             else
@@ -456,8 +458,11 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                 mItems.add(getString(R.string.upvote));
             else
                 mItems.add(getString(R.string.already_upvoted));
-            mItems.addAll(Arrays.asList(getString(R.string.pref_htmlprovider_original_url),
-                getString(R.string.pref_htmlprovider_viewtext), getString(R.string.pref_htmlprovider_google),
+            mItems.addAll(Arrays.asList(
+                getString(R.string.pref_htmlprovider_original_url),
+                getString(R.string.pref_htmlprovider_viewtext),
+                getString(R.string.pref_htmlprovider_google),
+                getString(R.string.pref_htmlprovider_instapaper),
                 getString(R.string.external_browser)));
         }
 
