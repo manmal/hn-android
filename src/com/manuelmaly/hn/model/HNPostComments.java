@@ -11,22 +11,24 @@ public class HNPostComments implements Serializable {
     private transient List<HNComment> mCommentsCache;
     private boolean mIsTreeDirty;
     private String mHeaderHtml;
+    private String mUserAcquiredFor;
 
     public HNPostComments() {
         mTreeNodes = new ArrayList<HNCommentTreeNode>();
     }
 
     public HNPostComments(List<HNComment> comments) {
-        this(comments, null);
+        this(comments, null, "");
     }
 
-    public HNPostComments(List<HNComment> comments, String headerHtml) {
+    public HNPostComments(List<HNComment> comments, String headerHtml, String userAcquiredFor) {
         mTreeNodes = new ArrayList<HNCommentTreeNode>();
         for (HNComment comment : comments) {
             if (comment.getCommentLevel() == 0)
                 mTreeNodes.add(makeTreeNode(comment, comments));
         }
         mHeaderHtml = headerHtml;
+        mUserAcquiredFor = userAcquiredFor;
     }
 
     public List<HNCommentTreeNode> getTreeNodes() {
@@ -49,6 +51,10 @@ public class HNPostComments implements Serializable {
 
     public String getHeaderHtml() {
         return mHeaderHtml;
+    }
+
+    public String getUserAcquiredFor() {
+        return mUserAcquiredFor;
     }
 
     private HNCommentTreeNode makeTreeNode(HNComment comment, List<HNComment> allComments) {
@@ -76,5 +82,4 @@ public class HNPostComments implements Serializable {
             mIsTreeDirty = true;
         }
     }
-
 }
