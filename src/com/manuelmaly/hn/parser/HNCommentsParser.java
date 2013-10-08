@@ -23,7 +23,7 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
         Elements tableRows = doc.select("table tr table tr:has(table)");
 
         String currentUser = Settings.getUserName(App.getInstance());
-        
+
         String text = null;
         String author = null;
         int level = 0;
@@ -86,7 +86,7 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             headerHtml = headerParser.parseDocument(header);
         }
 
-        return new HNPostComments(comments, headerHtml);
+        return new HNPostComments(comments, headerHtml, currentUser);
     }
 
     /**

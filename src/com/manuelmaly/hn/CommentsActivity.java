@@ -236,8 +236,10 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         protected void onPostExecute(HNPostComments result) {
             if (result == null) {
                 // TODO: display "Loading..." instead
-            } else
+            } else if (result.getUserAcquiredFor().equals(Settings
+                    .getUserName(CommentsActivity.this)))
                 showComments(result);
+            
         }
     }
 

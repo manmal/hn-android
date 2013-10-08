@@ -96,7 +96,8 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                 break;
         }
 
-        return new HNFeed(posts, nextPageURL);
+        return new HNFeed(posts, nextPageURL, Settings
+                .getUserName(App.getInstance()));
     }
    
 
