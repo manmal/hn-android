@@ -61,5 +61,4 @@ public class HNFeed implements Serializable {
     public String getUserAcquiredFor() {
         return mUserAcquiredFor;
     }
-    
 }

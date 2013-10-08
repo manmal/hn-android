@@ -82,5 +82,4 @@ public class HNPostComments implements Serializable {
             mIsTreeDirty = true;
         }
     }
-
 }
