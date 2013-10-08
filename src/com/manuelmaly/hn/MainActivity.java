@@ -117,8 +117,11 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         
         // We want to reload the feed if a new user logged in
         if (HNCredentials.isInvalidated() || 
-                !mFeed.getUserAcquiredFor().equals(Settings.getUserName(this)))
+                !mFeed.getUserAcquiredFor()
+                    .equals(Settings.getUserName(this))) {
+            showFeed(new HNFeed(new ArrayList<HNPost>(), null, ""));
             startFeedLoading();
+        }
 
         // refresh if font size changed
         if (refreshFontSizes())

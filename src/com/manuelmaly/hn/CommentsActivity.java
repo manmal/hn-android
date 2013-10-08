@@ -16,6 +16,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -237,8 +238,9 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             if (result == null) {
                 // TODO: display "Loading..." instead
             } else if (result.getUserAcquiredFor().equals(Settings
-                    .getUserName(CommentsActivity.this)))
+                    .getUserName(CommentsActivity.this))) {
                 showComments(result);
+            }
             
         }
     }
@@ -577,6 +579,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
                     mComments = new HNPostComments();
                     mCommentsListAdapter.notifyDataSetChanged();
                     startFeedLoading();
+                    Toast.makeText(this, getString(R.string.login_success_reloading), Toast.LENGTH_SHORT).show();
                 }
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, getString(R.string.error_login_to_vote), Toast.LENGTH_LONG).show();
