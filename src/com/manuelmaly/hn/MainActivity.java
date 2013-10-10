@@ -94,7 +94,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
     @AfterViews
     public void init() {
-        mFeed = new HNFeed(new ArrayList<HNPost>(), null);
+        mFeed = new HNFeed(new ArrayList<HNPost>(), null, "");
         mPostsListAdapter = new PostsAdapter();
         mUpvotedPosts = new HashSet<HNPost>();
         mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
@@ -115,8 +115,13 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     protected void onResume() {
         super.onResume();
         
-        if (HNCredentials.isInvalidated())
+        // We want to reload the feed if a new user logged in
+        if (HNCredentials.isInvalidated() || 
+                !mFeed.getUserAcquiredFor()
+                    .equals(Settings.getUserName(this))) {
+            showFeed(new HNFeed(new ArrayList<HNPost>(), null, ""));
             startFeedLoading();
+        }
 
         // refresh if font size changed
         if (refreshFontSizes())
@@ -212,7 +217,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         protected void onPostExecute(HNFeed result) {
             if (result == null) {
                 // TODO: display "Loading..." instead
-            } else
+            } else if (result.getUserAcquiredFor().equals(Settings
+                    .getUserName(App.getInstance())))
                 showFeed(result);
         }
     }
