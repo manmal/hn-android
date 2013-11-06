@@ -38,7 +38,7 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             Element mainRowElement = tableRows.get(row).select("td:eq(2)").first();
             Element rowLevelElement = tableRows.get(row).select("td:eq(0)").first();
             if (mainRowElement == null)
-                break;
+                continue;
 
             // The not portion of this query is meant to remove the reply link
             // from the text.  As far as I can tell that is the only place
