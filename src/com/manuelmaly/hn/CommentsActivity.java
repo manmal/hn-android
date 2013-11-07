@@ -212,11 +212,14 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     private void showComments(HNPostComments comments) {
         if (comments.getHeaderHtml() != null && mCommentHeaderText.getVisibility() != View.VISIBLE) {
             mCommentHeaderText.setVisibility(View.VISIBLE);
-            // We trip it here to get rid of pesky newlines that come from
+            // We trim it here to get rid of pesky newlines that come from
             // closing <p> tags
             mCommentHeaderText.setText(Html.fromHtml(comments.getHeaderHtml()).toString().trim());
+
+            // Linkify.ALL does some highlighting where we don't want it
+            // (i.e if you just put certain tlds in) so we use this custom regex.
             Linkify.addLinks(mCommentHeaderText,
-                    Pattern.compile("(https?:\\/\\/)([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?"), "");
+                    Pattern.compile("((h|H)ttps?:\\/\\/)([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?(\\?(\\w+\\=\\w+&?)+)?"), "");
         }
 
         mComments = comments;
