@@ -49,6 +49,7 @@ import com.manuelmaly.hn.task.ITaskFinishedHandler;
 import com.manuelmaly.hn.util.DisplayHelper;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
+import com.manuelmaly.hn.util.StringUtils;
 
 @EActivity(R.layout.comments_activity)
 public class CommentsActivity extends BaseListActivity implements ITaskFinishedHandler<HNPostComments> {
@@ -214,7 +215,8 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             mCommentHeaderText.setVisibility(View.VISIBLE);
             // We trip it here to get rid of pesky newlines that come from
             // closing <p> tags
-            mCommentHeaderText.setText(Html.fromHtml(comments.getHeaderHtml()).toString().trim());
+            mCommentHeaderText.setText(StringUtils.trimTrailingWhitespace(
+                    Html.fromHtml(comments.getHeaderHtml())));
             Linkify.addLinks(mCommentHeaderText,
                     Pattern.compile("(https?:\\/\\/)([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?"), "");
         }
@@ -526,7 +528,8 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         public void setComment(HNComment comment, int commentLevelIndentPx, Context c, int commentTextSize,
             int metadataTextSize) {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, commentTextSize);
-            textView.setText(Html.fromHtml(comment.getText()));
+            textView.setText(StringUtils.trimTrailingWhitespace(Html.fromHtml(
+                    comment.getText())));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
             authorView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, metadataTextSize);
             timeAgoView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, metadataTextSize);
