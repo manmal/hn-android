@@ -1,6 +1,7 @@
 package com.manuelmaly.hn.parser;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -44,7 +45,8 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             // from the text.  As far as I can tell that is the only place
             // where size=1 is used.  If that turns out to not be the case then
             // searching for u tags is also a pretty decent option - @jmaltz
-            text = mainRowElement.select("span.comment > *:not(:has(font[size=1]))").html();
+            Elements elements = mainRowElement.select("span.comment font:not(font[size=1])");
+            text = this.parseCommentText(elements);
 
             Element comHeadElement = mainRowElement.select("span.comhead").first();
             author = comHeadElement.select("a[href*=user]").text();
@@ -102,6 +104,40 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
         }
 
         return null;
+    }
+
+    /**
+     * This is basically a hand-rolled version of the elements.html() method
+     * We can't use elements.html() because the way HackerNews' structure is
+     * setup, there are font elements which sometimes live inside <p> elements.
+     * To get around this, we assume that every time we have a new element
+     * there is a surrounding <p> tag.
+     * @param elements The list of elements which make up the comments
+     * @return A formatted html String
+     */
+    private String parseCommentText(Elements elements) {
+        Iterator<Element> iter = elements.iterator();
+        StringBuilder builder = new StringBuilder();
+        boolean addedPTag = false;
+        while(iter.hasNext()) {
+            addedPTag = false;
+            Element el = iter.next();
+
+            // Just in case our font attributes are colored, remove that so that
+            // the view doesn't get all screwed up
+            el.removeAttr("color");
+
+            if (builder.length() != 0) {
+                builder.append("<p>");
+                addedPTag = true;
+            }
+
+            builder.append(el.html());
+
+            if (addedPTag)
+                builder.append("</p>");
+        }
+        return builder.toString();
     }
 
 }
