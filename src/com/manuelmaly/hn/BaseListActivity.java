@@ -11,7 +11,7 @@ public class BaseListActivity extends Activity{
 
     private TextView mLoadingView;
 
-    protected TextView getLoadingPanel(ViewGroup parent) {
+    protected TextView getEmptyTextView(ViewGroup parent) {
         if(mLoadingView == null) {
             ViewGroup root = (ViewGroup) getLayoutInflater().
                     inflate(R.layout.panel_loading, parent, true);

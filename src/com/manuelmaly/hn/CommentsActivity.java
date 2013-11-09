@@ -90,10 +90,12 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
     LinearLayout mCommentHeader;
     TextView mCommentHeaderText;
+    TextView mEmptyView;
 
     HNPost mPost;
     HNPostComments mComments;
     CommentsAdapter mCommentsListAdapter;
+    boolean mHaveLoadedPosts = false;
 
     String mCurrentFontSize = null;
     int mFontSizeText;
@@ -124,7 +126,8 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         mVotedComments = new HashSet<HNComment>();
         mCommentsListAdapter = new CommentsAdapter();
         mCommentHeaderText.setVisibility(View.GONE);
-        mCommentsList.setEmptyView(getLoadingPanel(mRootView));
+        mEmptyView = getEmptyTextView(mRootView);
+        mCommentsList.setEmptyView(mEmptyView);
         mCommentsList.addHeaderView(mCommentHeader, null, false);
         mCommentsList.setAdapter(mCommentsListAdapter);
 
@@ -181,7 +184,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
                     startFeedLoading();
             }
         });
-        
+
         mActionbarRefreshProgress.setVisibility(View.GONE);
 
         loadIntermediateCommentsFromStore();
@@ -195,7 +198,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         // refresh if font size changed
         if (refreshFontSizes())
         	mCommentsListAdapter.notifyDataSetChanged();
-        
+
         // restore vertical scrolling position if applicable
         if (mListState != null)
             mCommentsList.onRestoreInstanceState(mListState);
@@ -206,6 +209,10 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     public void onTaskFinished(int taskCode, TaskResultCode code, HNPostComments result, Object tag) {
         if (code.equals(TaskResultCode.Success) && mCommentsListAdapter != null)
             showComments(result);
+        else if (!code.equals(TaskResultCode.Success))
+            Toast.makeText(this, getString(R.string.
+                    error_unable_to_retrieve_comments), Toast.LENGTH_SHORT).show();
+        updateEmptyView();
         updateStatusIndicatorOnLoadingFinished(code);
     }
 
@@ -221,24 +228,21 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
         mComments = comments;
 
-        // We don't want the loading view to show if there are actually
-        // no comments to display
-        if (mComments.getComments().size() == 0)
-            mCommentsList.setEmptyView(null);
         mCommentsListAdapter.notifyDataSetChanged();
     }
 
     private void loadIntermediateCommentsFromStore() {
         new GetLastHNPostCommentsTask().execute(mPost.getPostID());
     }
-    
+
     class GetLastHNPostCommentsTask extends FileUtil.GetLastHNPostCommentsTask {
         protected void onPostExecute(HNPostComments result) {
-            if (result == null) {
-                // TODO: display "Loading..." instead
-            } else if (result.getUserAcquiredFor().equals(Settings
+            if (result != null && result.getUserAcquiredFor().equals(Settings
                     .getUserName(CommentsActivity.this)))
                 showComments(result);
+            else {
+                updateEmptyView();
+            }
         }
     }
 
@@ -253,6 +257,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     }
 
     private void startFeedLoading() {
+        mHaveLoadedPosts = false;
         HNPostCommentsTask.startOrReattach(this, this, mPost.getPostID(), 0);
         updateStatusIndicatorOnLoadingStarted();
     }
@@ -312,6 +317,13 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             v.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 1));
             mCommentHeader.addView(v);
         }
+    }
+
+    private void updateEmptyView() {
+        if (mHaveLoadedPosts)
+            mEmptyView.setText(getString(R.string.no_comments));
+
+        mHaveLoadedPosts = true;
     }
 
     private class LongPressMenuListAdapter implements ListAdapter, DialogInterface.OnClickListener {

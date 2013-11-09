@@ -101,7 +101,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
         
         mActionbarRefreshProgress.setVisibility(View.GONE);
-        mEmptyListPlaceholder = getLoadingPanel(mRootView);
+        mEmptyListPlaceholder = getEmptyTextView(mRootView);
         mPostsList.setEmptyView(mEmptyListPlaceholder);
         mPostsList.setAdapter(mPostsListAdapter);
 
@@ -191,10 +191,17 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         if (taskCode == TASKCODE_LOAD_FEED) {
             if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
                 showFeed(result);
+            else if (!code.equals(TaskResultCode.Success))
+                Toast.makeText(this, getString(R.string.
+                        error_unable_to_retrieve_feed), Toast.LENGTH_SHORT).show();
 
-			mActionbarRefreshProgress.setVisibility(View.GONE);
-			mActionbarRefresh.setVisibility(View.VISIBLE);
+            mActionbarRefreshProgress.setVisibility(View.GONE);
+            mActionbarRefresh.setVisibility(View.VISIBLE);
         } else if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
+            if (!code.equals(TaskResultCode.Success))
+                Toast.makeText(this, getString(R.string.
+                        error_unable_to_load_more), Toast.LENGTH_SHORT).show();
+
             mFeed.appendLoadMoreFeed(result);
             mPostsListAdapter.notifyDataSetChanged();
         }
