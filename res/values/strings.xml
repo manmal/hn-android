@@ -17,10 +17,6 @@
     <string name="cancel">Cancel</string>
     <string name="vote_success">Voted!</string>
     <string name="vote_error">Voting failed - have you voted for this before?</string>
-    <string name="error_login_device_offline">Your device has no network connection at the moment.</string>
-    <string name="error_unknown_error">An unknown error occurred.</string>
-    <string name="error_login_failed">Could not login - please check username and password.</string>
-    <string name="error_login_to_vote">Sorry, you must login in order to vote.</string>
     <string name="share_comments_url">Share Comments URL</string>
     <string name="about">About</string>
     <string name="someauthor">someauthor</string>
@@ -38,5 +34,15 @@
     <string name="deleted">[deleted]</string>
     <string name="expand_comment">Expand Comment</string>
     <string name="collapse_comment">Collapse Comment</string>
+    <string name="no_comments">No Comments</string>
     <string name="login_success_reloading">Login successful: reloading the comments to get proper upvote links.</string>
+    
+    <!-- Error messages -->
+    <string name="error_login_device_offline">Your device has no network connection at the moment.</string>
+    <string name="error_unknown_error">An unknown error occurred.</string>
+    <string name="error_login_failed">Could not login - please check username and password.</string>
+    <string name="error_login_to_vote">Sorry, you must login in order to vote.</string>
+    <string name="error_unable_to_retrieve_comments">We were unable to retrieve the latest comments for this post.</string>
+    <string name="error_unable_to_retrieve_feed">We were unable to update the posts feed</string>
+    <string name="error_unable_to_load_more">We were unable to load more articles</string>
 </resources>
