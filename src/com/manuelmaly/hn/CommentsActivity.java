@@ -16,6 +16,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -218,8 +219,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
             // Linkify.ALL does some highlighting where we don't want it
             // (i.e if you just put certain tlds in) so we use this custom regex.
-            Linkify.addLinks(mCommentHeaderText,
-                    Pattern.compile("((h|H)ttps?:\\/\\/)([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?(\\?(\\w+\\=\\w+&?)+)?"), "");
+            Linkify.addLinks(mCommentHeaderText, Linkify.WEB_URLS); //
         }
 
         mComments = comments;
