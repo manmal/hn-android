@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -50,518 +51,582 @@ import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
 
 @EActivity(R.layout.main)
-public class MainActivity extends BaseListActivity implements ITaskFinishedHandler<HNFeed> {
+public class MainActivity extends BaseListActivity implements
+		ITaskFinishedHandler<HNFeed> {
 
-    @ViewById(R.id.main_list)
-    ListView mPostsList;
+	@ViewById(R.id.main_list)
+	ListView mPostsList;
 
-    @ViewById(R.id.main_root)
-    LinearLayout mRootView;
+	@ViewById(R.id.main_root)
+	LinearLayout mRootView;
 
-    @ViewById(R.id.actionbar_title)
-    TextView mActionbarTitle;
+	@ViewById(R.id.actionbar_title)
+	TextView mActionbarTitle;
 
-    @ViewById(R.id.actionbar_refresh)
-    ImageView mActionbarRefresh;
-    
-    @ViewById(R.id.actionbar_refresh_container)
-    LinearLayout mActionbarRefreshContainer;
-    
-    @ViewById(R.id.actionbar_refresh_progress)
-    ProgressBar mActionbarRefreshProgress;
+	@ViewById(R.id.actionbar_refresh)
+	ImageView mActionbarRefresh;
 
-    @ViewById(R.id.actionbar_more)
-    ImageView mActionbarMore;
-    
-    @SystemService
-    LayoutInflater mInflater;
+	@ViewById(R.id.actionbar_refresh_container)
+	LinearLayout mActionbarRefreshContainer;
 
-    TextView mEmptyListPlaceholder;
-    HNFeed mFeed;
-    PostsAdapter mPostsListAdapter;
-    HashSet<HNPost> mUpvotedPosts;
+	@ViewById(R.id.actionbar_refresh_progress)
+	ProgressBar mActionbarRefreshProgress;
 
-    String mCurrentFontSize = null;
-    int mFontSizeTitle;
-    int mFontSizeDetails;
+	@ViewById(R.id.actionbar_more)
+	ImageView mActionbarMore;
 
-    private static final int TASKCODE_LOAD_FEED = 10;
-    private static final int TASKCODE_LOAD_MORE_POSTS = 20;
-    private static final int TASKCODE_VOTE = 100;
+	@SystemService
+	LayoutInflater mInflater;
 
-    private static final String LIST_STATE = "listState";
-    private Parcelable mListState = null;
+	TextView mEmptyListPlaceholder;
+	HNFeed mFeed;
+	PostsAdapter mPostsListAdapter;
+	HashSet<HNPost> mUpvotedPosts;
 
-    @AfterViews
-    public void init() {
-        mFeed = new HNFeed(new ArrayList<HNPost>(), null, "");
-        mPostsListAdapter = new PostsAdapter();
-        mUpvotedPosts = new HashSet<HNPost>();
-        mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
-        mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
-        
-        mActionbarRefreshProgress.setVisibility(View.GONE);
-        mEmptyListPlaceholder = getLoadingPanel(mRootView);
-        mPostsList.setEmptyView(mEmptyListPlaceholder);
-        mPostsList.setAdapter(mPostsListAdapter);
+	String mCurrentFontSize = null;
+	int mFontSizeTitle;
+	int mFontSizeDetails;
 
-        mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
-        
-        loadIntermediateFeedFromStore();
-        startFeedLoading();
-    }
+	private static final int TASKCODE_LOAD_FEED = 10;
+	private static final int TASKCODE_LOAD_MORE_POSTS = 20;
+	private static final int TASKCODE_VOTE = 100;
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        
-        // We want to reload the feed if a new user logged in
-        if (HNCredentials.isInvalidated() || 
-                !mFeed.getUserAcquiredFor()
-                    .equals(Settings.getUserName(this))) {
-            showFeed(new HNFeed(new ArrayList<HNPost>(), null, ""));
-            startFeedLoading();
-        }
+	private static final String LIST_STATE = "listState";
+	private Parcelable mListState = null;
 
-        // refresh if font size changed
-        if (refreshFontSizes())
-        	mPostsListAdapter.notifyDataSetChanged();
-        
-        // restore vertical scrolling position if applicable
-        if (mListState != null)
-            mPostsList.onRestoreInstanceState(mListState);
-        mListState = null;
-    }
-    
-    @Click(R.id.actionbar)
-    void actionBarClicked() {
-        mPostsList.smoothScrollToPosition(0);
-    }
+	@AfterViews
+	public void init() {
+		mFeed = new HNFeed(new ArrayList<HNPost>(), null, "");
+		mPostsListAdapter = new PostsAdapter();
+		mUpvotedPosts = new HashSet<HNPost>();
+		mActionbarRefresh.setImageDrawable(getResources().getDrawable(
+				R.drawable.refresh));
+		mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
 
-    @Click(R.id.actionbar_refresh_container)
-    void refreshClicked() {
-        if (HNFeedTaskMainFeed.isRunning(getApplicationContext()))
-            HNFeedTaskMainFeed.stopCurrent(getApplicationContext());
-        else
-            startFeedLoading();
-    }
+		mActionbarRefreshProgress.setVisibility(View.GONE);
+		mEmptyListPlaceholder = getLoadingPanel(mRootView);
+		mPostsList.setEmptyView(mEmptyListPlaceholder);
+		mPostsList.setAdapter(mPostsListAdapter);
 
-    @Click(R.id.actionbar_more)
-    void moreClicked() {
-        mActionbarMore.setSelected(true);
-        LinearLayout moreContentView = (LinearLayout) mInflater.inflate(R.layout.main_more_content, null);
+		mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
 
-        moreContentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        final PopupWindow popupWindow = new PopupWindow(this);
-        popupWindow.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.red_dark_washedout)));
-        popupWindow.setContentView(moreContentView);
-        popupWindow.showAsDropDown(mActionbarMore);
-        popupWindow.setTouchable(true);
-        popupWindow.setFocusable(true);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setOnDismissListener(new OnDismissListener() {
-            public void onDismiss() {
-                mActionbarMore.setSelected(false);
-            }
-        });
+		loadIntermediateFeedFromStore();
+		startFeedLoading();
+	}
 
-        Button settingsButton = (Button) moreContentView.findViewById(R.id.main_more_content_settings);
-        settingsButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                popupWindow.dismiss();
-            }
-        });
+	@Override
+	protected void onResume() {
+		super.onResume();
 
-        Button aboutButton = (Button) moreContentView.findViewById(R.id.main_more_content_about);
-        aboutButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, AboutActivity_.class));
-                popupWindow.dismiss();
-            }
-        });
+		// We want to reload the feed if a new user logged in
+		if (HNCredentials.isInvalidated()
+				|| !mFeed.getUserAcquiredFor().equals(
+						Settings.getUserName(this))) {
+			showFeed(new HNFeed(new ArrayList<HNPost>(), null, ""));
+			startFeedLoading();
+		}
 
-        popupWindow.update(moreContentView.getMeasuredWidth(), moreContentView.getMeasuredHeight());
-    }
+		// refresh if font size changed
+		if (refreshFontSizes())
+			mPostsListAdapter.notifyDataSetChanged();
 
-    @Override
-    public void onTaskFinished(int taskCode, TaskResultCode code, HNFeed result, Object tag) {
-        if (taskCode == TASKCODE_LOAD_FEED) {
-            if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
-                showFeed(result);
+		// restore vertical scrolling position if applicable
+		if (mListState != null)
+			mPostsList.onRestoreInstanceState(mListState);
+		mListState = null;
+	}
+
+	@Click(R.id.actionbar)
+	void actionBarClicked() {
+		mPostsList.smoothScrollToPosition(0);
+	}
+
+	@Click(R.id.actionbar_refresh_container)
+	void refreshClicked() {
+		if (HNFeedTaskMainFeed.isRunning(getApplicationContext()))
+			HNFeedTaskMainFeed.stopCurrent(getApplicationContext());
+		else
+			startFeedLoading();
+	}
+
+	@Click(R.id.actionbar_more)
+	void moreClicked() {
+		mActionbarMore.setSelected(true);
+		LinearLayout moreContentView = (LinearLayout) mInflater.inflate(
+				R.layout.main_more_content, null);
+
+		moreContentView.measure(View.MeasureSpec.UNSPECIFIED,
+				View.MeasureSpec.UNSPECIFIED);
+		final PopupWindow popupWindow = new PopupWindow(this);
+		popupWindow.setBackgroundDrawable(new ColorDrawable(getResources()
+				.getColor(R.color.red_dark_washedout)));
+		popupWindow.setContentView(moreContentView);
+		popupWindow.showAsDropDown(mActionbarMore);
+		popupWindow.setTouchable(true);
+		popupWindow.setFocusable(true);
+		popupWindow.setOutsideTouchable(true);
+		popupWindow.setOnDismissListener(new OnDismissListener() {
+			public void onDismiss() {
+				mActionbarMore.setSelected(false);
+			}
+		});
+
+		Button settingsButton = (Button) moreContentView
+				.findViewById(R.id.main_more_content_settings);
+		settingsButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(MainActivity.this,
+						SettingsActivity.class));
+				popupWindow.dismiss();
+			}
+		});
+
+		Button aboutButton = (Button) moreContentView
+				.findViewById(R.id.main_more_content_about);
+		aboutButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(MainActivity.this,
+						AboutActivity_.class));
+				popupWindow.dismiss();
+			}
+		});
+
+		popupWindow.update(moreContentView.getMeasuredWidth(),
+				moreContentView.getMeasuredHeight());
+	}
+
+	@Override
+	public void onTaskFinished(int taskCode, TaskResultCode code,
+			HNFeed result, Object tag) {
+		if (taskCode == TASKCODE_LOAD_FEED) {
+			if (code.equals(TaskResultCode.Success)
+					&& mPostsListAdapter != null)
+				showFeed(result);
 
 			mActionbarRefreshProgress.setVisibility(View.GONE);
 			mActionbarRefresh.setVisibility(View.VISIBLE);
-        } else if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
-            mFeed.appendLoadMoreFeed(result);
-            mPostsListAdapter.notifyDataSetChanged();
-        }
+		} else if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
+			mFeed.appendLoadMoreFeed(result);
+			mPostsListAdapter.notifyDataSetChanged();
+		}
 
-    }
+	}
 
-    private void showFeed(HNFeed feed) {
-        mFeed = feed;
-        mPostsListAdapter.notifyDataSetChanged();
-    }
+	private void showFeed(HNFeed feed) {
+		mFeed = feed;
+		mPostsListAdapter.notifyDataSetChanged();
+	}
 
-    private void loadIntermediateFeedFromStore() {
-        new GetLastHNFeedTask().execute((Void)null);
-        long start = System.currentTimeMillis();
-        
-        Log.i("", "Loading intermediate feed took ms:" + (System.currentTimeMillis() - start));
-    }
-    
-    class GetLastHNFeedTask extends FileUtil.GetLastHNFeedTask {
-        protected void onPostExecute(HNFeed result) {
-            if (result == null) {
-                // TODO: display "Loading..." instead
-            } else if (result.getUserAcquiredFor().equals(Settings
-                    .getUserName(App.getInstance())))
-                showFeed(result);
-        }
-    }
+	private void loadIntermediateFeedFromStore() {
+		new GetLastHNFeedTask().execute((Void) null);
+		long start = System.currentTimeMillis();
 
-    private void startFeedLoading() {
-        HNFeedTaskMainFeed.startOrReattach(this, this, TASKCODE_LOAD_FEED);
-        mActionbarRefresh.setImageResource(R.drawable.refresh);
-        
-        mActionbarRefreshProgress.setVisibility(View.VISIBLE);
-        mActionbarRefresh.setVisibility(View.GONE);
-    }
+		Log.i("",
+				"Loading intermediate feed took ms:"
+						+ (System.currentTimeMillis() - start));
+	}
 
-    private boolean refreshFontSizes() {
-        final String fontSize = Settings.getFontSize(this);
-        if ((mCurrentFontSize == null) || (!mCurrentFontSize.equals(fontSize))) {
-        	mCurrentFontSize = fontSize;
-	        if (fontSize.equals(getString(R.string.pref_fontsize_small))) {
-	            mFontSizeTitle = 15;
-	            mFontSizeDetails = 11;
-	        } else if (fontSize.equals(getString(R.string.pref_fontsize_normal))) {
-	            mFontSizeTitle = 18;
-	            mFontSizeDetails = 12;
-	        } else {
-	            mFontSizeTitle = 22;
-	            mFontSizeDetails = 15;
-	        }
-	        return true;
-        } else {
-        	return false;
-        }
-    }
+	class GetLastHNFeedTask extends FileUtil.GetLastHNFeedTask {
+		ProgressDialog progress;
 
-    private void vote(String voteURL, HNPost post) {
-        HNVoteTask.start(voteURL, MainActivity.this, new VoteTaskFinishedHandler(), TASKCODE_VOTE, post);
-    }
-    
-    @Override
-    protected void onRestoreInstanceState(Bundle state) {
-        super.onRestoreInstanceState(state);
-        mListState = state.getParcelable(LIST_STATE);
-    }
+		@Override
+		protected void onPreExecute() {
+			progress = new ProgressDialog(MainActivity.this);
+			progress.setMessage("Loading");
+			progress.show();
+		}
 
-    @Override
-    protected void onSaveInstanceState(Bundle state) {
-        super.onSaveInstanceState(state);
-        mListState = mPostsList.onSaveInstanceState();
-        state.putParcelable(LIST_STATE, mListState);
-    }
+		protected void onPostExecute(HNFeed result) {
+			if (progress != null && progress.isShowing())
+				progress.dismiss();
+			if (result != null
+					&& result.getUserAcquiredFor().equals(
+							Settings.getUserName(App.getInstance())))
+				showFeed(result);
+		}
+	}
 
-    class VoteTaskFinishedHandler implements ITaskFinishedHandler<Boolean> {
-        @Override
-        public void onTaskFinished(int taskCode, com.manuelmaly.hn.task.ITaskFinishedHandler.TaskResultCode code,
-            Boolean result, Object tag) {
-            if (taskCode == TASKCODE_VOTE) {
-                if (result != null && result.booleanValue()) {
-                    Toast.makeText(MainActivity.this, R.string.vote_success, Toast.LENGTH_SHORT).show();
-                    HNPost post = (HNPost) tag;
-                    if (post != null)
-                        mUpvotedPosts.add(post);
-                } else
-                    Toast.makeText(MainActivity.this, R.string.vote_error, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
+	private void startFeedLoading() {
+		HNFeedTaskMainFeed.startOrReattach(this, this, TASKCODE_LOAD_FEED);
+		mActionbarRefresh.setImageResource(R.drawable.refresh);
 
-    class PostsAdapter extends BaseAdapter {
+		mActionbarRefreshProgress.setVisibility(View.VISIBLE);
+		mActionbarRefresh.setVisibility(View.GONE);
+	}
 
-        private static final int VIEWTYPE_POST = 0;
-        private static final int VIEWTYPE_LOADMORE = 1;
+	private boolean refreshFontSizes() {
+		final String fontSize = Settings.getFontSize(this);
+		if ((mCurrentFontSize == null) || (!mCurrentFontSize.equals(fontSize))) {
+			mCurrentFontSize = fontSize;
+			if (fontSize.equals(getString(R.string.pref_fontsize_small))) {
+				mFontSizeTitle = 15;
+				mFontSizeDetails = 11;
+			} else if (fontSize
+					.equals(getString(R.string.pref_fontsize_normal))) {
+				mFontSizeTitle = 18;
+				mFontSizeDetails = 12;
+			} else {
+				mFontSizeTitle = 22;
+				mFontSizeDetails = 15;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-        @Override
-        public int getCount() {
-            int posts = mFeed.getPosts().size();
-            if (posts == 0)
-                return 0;
-            else
-                return posts + (mFeed.isLoadedMore() ? 0 : 1);
-        }
+	private void vote(String voteURL, HNPost post) {
+		HNVoteTask.start(voteURL, MainActivity.this,
+				new VoteTaskFinishedHandler(), TASKCODE_VOTE, post);
+	}
 
-        @Override
-        public HNPost getItem(int position) {
-            if (getItemViewType(position) == VIEWTYPE_POST)
-                return mFeed.getPosts().get(position);
-            else
-                return null;
-        }
+	@Override
+	protected void onRestoreInstanceState(Bundle state) {
+		super.onRestoreInstanceState(state);
+		mListState = state.getParcelable(LIST_STATE);
+	}
 
-        @Override
-        public long getItemId(int position) {
-            // Item ID not needed here:
-            return 0;
-        }
+	@Override
+	protected void onSaveInstanceState(Bundle state) {
+		super.onSaveInstanceState(state);
+		mListState = mPostsList.onSaveInstanceState();
+		state.putParcelable(LIST_STATE, mListState);
+	}
 
-        @Override
-        public int getItemViewType(int position) {
-            if (position < mFeed.getPosts().size())
-                return VIEWTYPE_POST;
-            else
-                return VIEWTYPE_LOADMORE;
-        }
+	class VoteTaskFinishedHandler implements ITaskFinishedHandler<Boolean> {
+		@Override
+		public void onTaskFinished(
+				int taskCode,
+				com.manuelmaly.hn.task.ITaskFinishedHandler.TaskResultCode code,
+				Boolean result, Object tag) {
+			if (taskCode == TASKCODE_VOTE) {
+				if (result != null && result.booleanValue()) {
+					Toast.makeText(MainActivity.this, R.string.vote_success,
+							Toast.LENGTH_SHORT).show();
+					HNPost post = (HNPost) tag;
+					if (post != null)
+						mUpvotedPosts.add(post);
+				} else
+					Toast.makeText(MainActivity.this, R.string.vote_error,
+							Toast.LENGTH_LONG).show();
+			}
+		}
+	}
 
-        @Override
-        public int getViewTypeCount() {
-            return 2;
-        }
+	class PostsAdapter extends BaseAdapter {
 
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            switch (getItemViewType(position)) {
-                case VIEWTYPE_POST:
-                    if (convertView == null) {
-                        convertView = (LinearLayout) mInflater.inflate(R.layout.main_list_item, null);
-                        PostViewHolder holder = new PostViewHolder();
-                        holder.titleView = (TextView) convertView.findViewById(R.id.main_list_item_title);
-                        holder.urlView = (TextView) convertView.findViewById(R.id.main_list_item_url);
-                        holder.textContainer = (LinearLayout) convertView
-                            .findViewById(R.id.main_list_item_textcontainer);
-                        holder.commentsButton = (Button) convertView.findViewById(R.id.main_list_item_comments_button);
-                        holder.commentsButton.setTypeface(FontHelper.getComfortaa(MainActivity.this, false));
-                        holder.pointsView = (TextView) convertView.findViewById(R.id.main_list_item_points);
-                        holder.pointsView.setTypeface(FontHelper.getComfortaa(MainActivity.this, true));
-                        convertView.setTag(holder);
-                    }
+		private static final int VIEWTYPE_POST = 0;
+		private static final int VIEWTYPE_LOADMORE = 1;
 
-                    HNPost item = getItem(position);
-                    PostViewHolder holder = (PostViewHolder) convertView.getTag();
-                    holder.titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, mFontSizeTitle);
-                    holder.titleView.setText(item.getTitle());
-                    holder.urlView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, mFontSizeDetails);
-                    holder.urlView.setText(item.getURLDomain());
-                    holder.pointsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, mFontSizeDetails);
-                    if (item.getPoints() != BaseHTMLParser.UNDEFINED)
-                        holder.pointsView.setText(item.getPoints() + "");
-                    else
-                        holder.pointsView.setText("-");
+		@Override
+		public int getCount() {
+			int posts = mFeed.getPosts().size();
+			if (posts == 0)
+				return 0;
+			else
+				return posts + (mFeed.isLoadedMore() ? 0 : 1);
+		}
 
-                    holder.commentsButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, mFontSizeTitle);
-                    if (item.getCommentsCount() != BaseHTMLParser.UNDEFINED) {
-                        holder.commentsButton.setVisibility(View.VISIBLE);
-                        holder.commentsButton.setText(item.getCommentsCount() + "");
-                    } else
-                        holder.commentsButton.setVisibility(View.INVISIBLE);
-                    holder.commentsButton.setOnClickListener(new OnClickListener() {
-                        public void onClick(View v) {
-                            Intent i = new Intent(MainActivity.this, CommentsActivity_.class);
-                            i.putExtra(CommentsActivity.EXTRA_HNPOST, getItem(position));
-                            startActivity(i);
-                        }
-                    });
-                    holder.textContainer.setOnClickListener(new OnClickListener() {
-                        public void onClick(View v) {
-                            if (Settings.getHtmlViewer(MainActivity.this).equals(
-                                getString(R.string.pref_htmlviewer_browser)))
-                                openURLInBrowser(getArticleViewURL(getItem(position)), MainActivity.this);
-                            else
-                                openPostInApp(getItem(position), null, MainActivity.this);
-                        }
-                    });
-                    holder.textContainer.setOnLongClickListener(new OnLongClickListener() {
-                        public boolean onLongClick(View v) {
-                            final HNPost post = getItem(position);
+		@Override
+		public HNPost getItem(int position) {
+			if (getItemViewType(position) == VIEWTYPE_POST)
+				return mFeed.getPosts().get(position);
+			else
+				return null;
+		}
 
-                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(post);
-                            builder.setAdapter(adapter, adapter).show();
-                            return true;
-                        }
-                    });
-                    break;
+		@Override
+		public long getItemId(int position) {
+			// Item ID not needed here:
+			return 0;
+		}
 
-                case VIEWTYPE_LOADMORE:
-                    // I don't use the preloaded convertView here because it's
-                    // only one cell
-                    convertView = (FrameLayout) mInflater.inflate(R.layout.main_list_item_loadmore, null);
-                    final TextView textView = (TextView) convertView.findViewById(R.id.main_list_item_loadmore_text);
-                    textView.setTypeface(FontHelper.getComfortaa(MainActivity.this, true));
-                    final ImageView imageView = (ImageView) convertView
-                        .findViewById(R.id.main_list_item_loadmore_loadingimage);
-                    if (HNFeedTaskLoadMore.isRunning(MainActivity.this, TASKCODE_LOAD_MORE_POSTS)) {
-                        textView.setVisibility(View.INVISIBLE);
-                        imageView.setVisibility(View.VISIBLE);
-                        convertView.setClickable(false);
-                    }
+		@Override
+		public int getItemViewType(int position) {
+			if (position < mFeed.getPosts().size())
+				return VIEWTYPE_POST;
+			else
+				return VIEWTYPE_LOADMORE;
+		}
 
-                    final View convertViewFinal = convertView;
-                    convertView.setOnClickListener(new OnClickListener() {
-                        public void onClick(View v) {
-                            textView.setVisibility(View.INVISIBLE);
-                            imageView.setVisibility(View.VISIBLE);
-                            convertViewFinal.setClickable(false);
-                            HNFeedTaskLoadMore.start(MainActivity.this, MainActivity.this, mFeed,
-                                TASKCODE_LOAD_MORE_POSTS);
-                        }
-                    });
-                    break;
-                default:
-                    break;
-            }
+		@Override
+		public int getViewTypeCount() {
+			return 2;
+		}
 
-            return convertView;
-        }
-    }
+		@Override
+		public View getView(final int position, View convertView,
+				ViewGroup parent) {
+			switch (getItemViewType(position)) {
+			case VIEWTYPE_POST:
+				if (convertView == null) {
+					convertView = (LinearLayout) mInflater.inflate(
+							R.layout.main_list_item, null);
+					PostViewHolder holder = new PostViewHolder();
+					holder.titleView = (TextView) convertView
+							.findViewById(R.id.main_list_item_title);
+					holder.urlView = (TextView) convertView
+							.findViewById(R.id.main_list_item_url);
+					holder.textContainer = (LinearLayout) convertView
+							.findViewById(R.id.main_list_item_textcontainer);
+					holder.commentsButton = (Button) convertView
+							.findViewById(R.id.main_list_item_comments_button);
+					holder.commentsButton.setTypeface(FontHelper.getComfortaa(
+							MainActivity.this, false));
+					holder.pointsView = (TextView) convertView
+							.findViewById(R.id.main_list_item_points);
+					holder.pointsView.setTypeface(FontHelper.getComfortaa(
+							MainActivity.this, true));
+					convertView.setTag(holder);
+				}
 
-    private class LongPressMenuListAdapter implements ListAdapter, DialogInterface.OnClickListener {
+				HNPost item = getItem(position);
+				PostViewHolder holder = (PostViewHolder) convertView.getTag();
+				holder.titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP,
+						mFontSizeTitle);
+				holder.titleView.setText(item.getTitle());
+				holder.urlView.setTextSize(TypedValue.COMPLEX_UNIT_DIP,
+						mFontSizeDetails);
+				holder.urlView.setText(item.getURLDomain());
+				holder.pointsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP,
+						mFontSizeDetails);
+				if (item.getPoints() != BaseHTMLParser.UNDEFINED)
+					holder.pointsView.setText(item.getPoints() + "");
+				else
+					holder.pointsView.setText("-");
 
-        HNPost mPost;
-        boolean mIsLoggedIn;
-        boolean mUpVotingEnabled;
-        ArrayList<CharSequence> mItems;
+				holder.commentsButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP,
+						mFontSizeTitle);
+				if (item.getCommentsCount() != BaseHTMLParser.UNDEFINED) {
+					holder.commentsButton.setVisibility(View.VISIBLE);
+					holder.commentsButton.setText(item.getCommentsCount() + "");
+				} else
+					holder.commentsButton.setVisibility(View.INVISIBLE);
+				holder.commentsButton.setOnClickListener(new OnClickListener() {
+					public void onClick(View v) {
+						Intent i = new Intent(MainActivity.this,
+								CommentsActivity_.class);
+						i.putExtra(CommentsActivity.EXTRA_HNPOST,
+								getItem(position));
+						startActivity(i);
+					}
+				});
+				holder.textContainer.setOnClickListener(new OnClickListener() {
+					public void onClick(View v) {
+						if (Settings.getHtmlViewer(MainActivity.this).equals(
+								getString(R.string.pref_htmlviewer_browser)))
+							openURLInBrowser(
+									getArticleViewURL(getItem(position)),
+									MainActivity.this);
+						else
+							openPostInApp(getItem(position), null,
+									MainActivity.this);
+					}
+				});
+				holder.textContainer
+						.setOnLongClickListener(new OnLongClickListener() {
+							public boolean onLongClick(View v) {
+								final HNPost post = getItem(position);
 
-        public LongPressMenuListAdapter(HNPost post) {
-            mPost = post;
-            mIsLoggedIn = Settings.isUserLoggedIn(MainActivity.this);
-            mUpVotingEnabled = !mIsLoggedIn
-                || (mPost.getUpvoteURL(Settings.getUserName(MainActivity.this)) != null && !mUpvotedPosts
-                    .contains(mPost));
+								AlertDialog.Builder builder = new AlertDialog.Builder(
+										MainActivity.this);
+								LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(
+										post);
+								builder.setAdapter(adapter, adapter).show();
+								return true;
+							}
+						});
+				break;
 
-            mItems = new ArrayList<CharSequence>();
-            if (mUpVotingEnabled)
-                mItems.add(getString(R.string.upvote));
-            else
-                mItems.add(getString(R.string.already_upvoted));
-            mItems.addAll(Arrays.asList(
-                getString(R.string.pref_htmlprovider_original_url),
-                getString(R.string.pref_htmlprovider_viewtext),
-                getString(R.string.pref_htmlprovider_google),
-                getString(R.string.pref_htmlprovider_instapaper),
-                getString(R.string.external_browser)));
-        }
+			case VIEWTYPE_LOADMORE:
+				// I don't use the preloaded convertView here because it's
+				// only one cell
+				convertView = (FrameLayout) mInflater.inflate(
+						R.layout.main_list_item_loadmore, null);
+				final TextView textView = (TextView) convertView
+						.findViewById(R.id.main_list_item_loadmore_text);
+				textView.setTypeface(FontHelper.getComfortaa(MainActivity.this,
+						true));
+				final ImageView imageView = (ImageView) convertView
+						.findViewById(R.id.main_list_item_loadmore_loadingimage);
+				if (HNFeedTaskLoadMore.isRunning(MainActivity.this,
+						TASKCODE_LOAD_MORE_POSTS)) {
+					textView.setVisibility(View.INVISIBLE);
+					imageView.setVisibility(View.VISIBLE);
+					convertView.setClickable(false);
+				}
 
-        @Override
-        public int getCount() {
-            return mItems.size();
-        }
+				final View convertViewFinal = convertView;
+				convertView.setOnClickListener(new OnClickListener() {
+					public void onClick(View v) {
+						textView.setVisibility(View.INVISIBLE);
+						imageView.setVisibility(View.VISIBLE);
+						convertViewFinal.setClickable(false);
+						HNFeedTaskLoadMore.start(MainActivity.this,
+								MainActivity.this, mFeed,
+								TASKCODE_LOAD_MORE_POSTS);
+					}
+				});
+				break;
+			default:
+				break;
+			}
 
-        @Override
-        public CharSequence getItem(int position) {
-            return mItems.get(position);
-        }
+			return convertView;
+		}
+	}
 
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
+	private class LongPressMenuListAdapter implements ListAdapter,
+			DialogInterface.OnClickListener {
 
-        @Override
-        public int getItemViewType(int position) {
-            return 0;
-        }
+		HNPost mPost;
+		boolean mIsLoggedIn;
+		boolean mUpVotingEnabled;
+		ArrayList<CharSequence> mItems;
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            TextView view = (TextView) mInflater.inflate(android.R.layout.simple_list_item_1, null);
-            view.setText(getItem(position));
-            if (!mUpVotingEnabled && position == 0)
-                view.setTextColor(getResources().getColor(android.R.color.darker_gray));
-            return view;
-        }
+		public LongPressMenuListAdapter(HNPost post) {
+			mPost = post;
+			mIsLoggedIn = Settings.isUserLoggedIn(MainActivity.this);
+			mUpVotingEnabled = !mIsLoggedIn
+					|| (mPost.getUpvoteURL(Settings
+							.getUserName(MainActivity.this)) != null && !mUpvotedPosts
+							.contains(mPost));
 
-        @Override
-        public int getViewTypeCount() {
-            return 1;
-        }
+			mItems = new ArrayList<CharSequence>();
+			if (mUpVotingEnabled)
+				mItems.add(getString(R.string.upvote));
+			else
+				mItems.add(getString(R.string.already_upvoted));
+			mItems.addAll(Arrays.asList(
+					getString(R.string.pref_htmlprovider_original_url),
+					getString(R.string.pref_htmlprovider_viewtext),
+					getString(R.string.pref_htmlprovider_google),
+					getString(R.string.pref_htmlprovider_instapaper),
+					getString(R.string.external_browser)));
+		}
 
-        @Override
-        public boolean hasStableIds() {
-            return false;
-        }
+		@Override
+		public int getCount() {
+			return mItems.size();
+		}
 
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
+		@Override
+		public CharSequence getItem(int position) {
+			return mItems.get(position);
+		}
 
-        @Override
-        public void registerDataSetObserver(DataSetObserver observer) {
-        }
+		@Override
+		public long getItemId(int position) {
+			return 0;
+		}
 
-        @Override
-        public void unregisterDataSetObserver(DataSetObserver observer) {
-        }
+		@Override
+		public int getItemViewType(int position) {
+			return 0;
+		}
 
-        @Override
-        public boolean areAllItemsEnabled() {
-            return false;
-        }
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			TextView view = (TextView) mInflater.inflate(
+					android.R.layout.simple_list_item_1, null);
+			view.setText(getItem(position));
+			if (!mUpVotingEnabled && position == 0)
+				view.setTextColor(getResources().getColor(
+						android.R.color.darker_gray));
+			return view;
+		}
 
-        @Override
-        public boolean isEnabled(int position) {
-            if (!mUpVotingEnabled && position == 4)
-                return false;
-            return true;
-        }
+		@Override
+		public int getViewTypeCount() {
+			return 1;
+		}
 
-        @Override
-        public void onClick(DialogInterface dialog, int item) {
-            switch (item) {
-                case 0:
-                    if (!mIsLoggedIn)
-                        Toast.makeText(MainActivity.this, R.string.please_log_in, Toast.LENGTH_LONG).show();
-                    else if (mUpVotingEnabled)
-                        vote(mPost.getUpvoteURL(Settings.getUserName(MainActivity.this)), mPost);
-                    break;
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                    openPostInApp(mPost, getItem(item).toString(), MainActivity.this);
-                    break;
-                case 5:
-                    openURLInBrowser(getArticleViewURL(mPost), MainActivity.this);
-                    break;
-                default:
-                    break;
-            }
-        }
+		@Override
+		public boolean hasStableIds() {
+			return false;
+		}
 
-    }
+		@Override
+		public boolean isEmpty() {
+			return false;
+		}
 
-    private String getArticleViewURL(HNPost post) {
-        return ArticleReaderActivity.getArticleViewURL(post, Settings.getHtmlProvider(this), this);
-    }
+		@Override
+		public void registerDataSetObserver(DataSetObserver observer) {
+		}
 
-    public static void openURLInBrowser(String url, Activity a) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        a.startActivity(browserIntent);
-    }
+		@Override
+		public void unregisterDataSetObserver(DataSetObserver observer) {
+		}
 
-    public static void openPostInApp(HNPost post, String overrideHtmlProvider, Activity a) {
-        Intent i = new Intent(a, ArticleReaderActivity_.class);
-        i.putExtra(ArticleReaderActivity.EXTRA_HNPOST, post);
-        if (overrideHtmlProvider != null)
-            i.putExtra(ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE, overrideHtmlProvider);
-        a.startActivity(i);
-    }
+		@Override
+		public boolean areAllItemsEnabled() {
+			return false;
+		}
 
-    static class PostViewHolder {
-        TextView titleView;
-        TextView urlView;
-        TextView pointsView;
-        TextView commentsCountView;
-        LinearLayout textContainer;
-        Button commentsButton;
-    }
+		@Override
+		public boolean isEnabled(int position) {
+			if (!mUpVotingEnabled && position == 4)
+				return false;
+			return true;
+		}
 
+		@Override
+		public void onClick(DialogInterface dialog, int item) {
+			switch (item) {
+			case 0:
+				if (!mIsLoggedIn)
+					Toast.makeText(MainActivity.this, R.string.please_log_in,
+							Toast.LENGTH_LONG).show();
+				else if (mUpVotingEnabled)
+					vote(mPost.getUpvoteURL(Settings
+							.getUserName(MainActivity.this)), mPost);
+				break;
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+				openPostInApp(mPost, getItem(item).toString(),
+						MainActivity.this);
+				break;
+			case 5:
+				openURLInBrowser(getArticleViewURL(mPost), MainActivity.this);
+				break;
+			default:
+				break;
+			}
+		}
+
+	}
+
+	private String getArticleViewURL(HNPost post) {
+		return ArticleReaderActivity.getArticleViewURL(post,
+				Settings.getHtmlProvider(this), this);
+	}
+
+	public static void openURLInBrowser(String url, Activity a) {
+		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+		a.startActivity(browserIntent);
+	}
+
+	public static void openPostInApp(HNPost post, String overrideHtmlProvider,
+			Activity a) {
+		Intent i = new Intent(a, ArticleReaderActivity_.class);
+		i.putExtra(ArticleReaderActivity.EXTRA_HNPOST, post);
+		if (overrideHtmlProvider != null)
+			i.putExtra(ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE,
+					overrideHtmlProvider);
+		a.startActivity(i);
+	}
+
+	static class PostViewHolder {
+		TextView titleView;
+		TextView urlView;
+		TextView pointsView;
+		TextView commentsCountView;
+		LinearLayout textContainer;
+		Button commentsButton;
+	}
 }
