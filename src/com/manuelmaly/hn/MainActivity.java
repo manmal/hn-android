@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -214,14 +215,24 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     }
     
     class GetLastHNFeedTask extends FileUtil.GetLastHNFeedTask {
-        protected void onPostExecute(HNFeed result) {
-            if (result == null) {
-                // TODO: display "Loading..." instead
-            } else if (result.getUserAcquiredFor().equals(Settings
-                    .getUserName(App.getInstance())))
-                showFeed(result);
-        }
-    }
+		ProgressDialog progress;
+
+		@Override
+		protected void onPreExecute() {
+			progress = new ProgressDialog(MainActivity.this);
+			progress.setMessage("Loading");
+			progress.show();
+		}
+
+		protected void onPostExecute(HNFeed result) {
+			if (progress != null && progress.isShowing())
+				progress.dismiss();
+			if (result != null
+					&& result.getUserAcquiredFor().equals(
+							Settings.getUserName(App.getInstance())))
+				showFeed(result);
+		}
+	}
 
     private void startFeedLoading() {
         HNFeedTaskMainFeed.startOrReattach(this, this, TASKCODE_LOAD_FEED);
