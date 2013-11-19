@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="androidannotations-2.5-api">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/libs/androidannotations-2.5-api.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
