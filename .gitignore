@@ -6,6 +6,7 @@ gen
 .checkstyle
 .settings/
 default.properties
+local.properties
 assets/server.properties
 res/values/maps-key.xml
 tmp/
