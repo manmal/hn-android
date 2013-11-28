@@ -8,7 +8,7 @@
         android:id="@+id/actionbar"
         android:layout_width="fill_parent"
         android:layout_height="48dp"
-        android:background="@drawable/actionbar_bg_bright"
+        android:background="@drawable/actionbar_bg_orange"
         android:gravity="center" >
 
         <ImageView
@@ -31,12 +31,12 @@
             android:background="@drawable/rounded_button"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:shadowColor="@android:color/white"
+            android:shadowColor="@android:color/black"
             android:shadowDx="0"
             android:shadowDy="1"
             android:shadowRadius="1"
             android:text="@string/article"
-            android:textColor="#797979"
+            android:textColor="@android:color/white"
             android:textSize="20sp" />
 
         <ImageView

@@ -2,8 +2,6 @@ package com.manuelmaly.hn;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.regex.Pattern;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,7 +14,6 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +36,7 @@ import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
-import com.manuelmaly.hn.login.LoginActivity_;
+import com.manuelmaly.hn.login.LoginActivity;
 import com.manuelmaly.hn.model.HNComment;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.model.HNPostComments;
@@ -438,7 +435,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             if (clickedText.equals(getApplicationContext().getString(R.string.upvote))) {
                 if (!mIsLoggedIn) {
                     setCommentToUpvote(mComment);
-                    startActivityForResult(new Intent(getApplicationContext(), LoginActivity_.class),
+                    startActivityForResult(new Intent(getApplicationContext(), LoginActivity.class),
                             ACTIVITY_LOGIN);
                 }
                 else
