@@ -31,7 +31,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
@@ -110,6 +109,8 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
     @AfterViews
     public void init() {
+		overridePendingTransition(R.anim.anim_in,R.anim.anim_out);
+
         mPost = (HNPost) getIntent().getSerializableExtra(EXTRA_HNPOST);
         if (mPost == null || mPost.getPostID() == null) {
             Toast.makeText(this, "The belonging post has not been loaded", Toast.LENGTH_LONG).show();
@@ -160,6 +161,8 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         mActionbarBack.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 finish();
+        	    overridePendingTransition(R.anim.anim_in2, R.anim.anim_out2);
+
             }
         });
 
@@ -188,7 +191,14 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         loadIntermediateCommentsFromStore();
         startFeedLoading();
     }
-
+    
+    @Override
+	public void onBackPressed() 
+	{
+	    super.onBackPressed();
+	    overridePendingTransition(R.anim.anim_in2, R.anim.anim_out2);
+	}
+    
     @Override
     protected void onResume() {
         super.onResume();
@@ -318,7 +328,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             mCommentHeader.addView(v);
         }
     }
-
+    
     private void updateEmptyView() {
         if (mHaveLoadedPosts)
             mEmptyView.setText(getString(R.string.no_comments));

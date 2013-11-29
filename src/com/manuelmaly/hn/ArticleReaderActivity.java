@@ -73,6 +73,8 @@ public class ArticleReaderActivity extends Activity {
     @AfterViews
     @SuppressLint("SetJavaScriptEnabled")
     public void init() {
+		overridePendingTransition(R.anim.anim_in,R.anim.anim_out);
+
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
         mActionbarTitle.setText(getString(R.string.article));
         mActionbarTitle.setOnClickListener(new OnClickListener() {
@@ -90,6 +92,8 @@ public class ArticleReaderActivity extends Activity {
         mActionbarBack.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 finish();
+        	    overridePendingTransition(R.anim.anim_in2, R.anim.anim_out2);
+
             }
         });
 
@@ -147,6 +151,8 @@ public class ArticleReaderActivity extends Activity {
         setIsLoading(true);
     }
     
+    
+    
     protected void setIsLoading(boolean loading) {
     	mIsLoading = loading;
 		mActionbarRefreshProgress.setVisibility(loading ? View.VISIBLE
@@ -171,8 +177,11 @@ public class ArticleReaderActivity extends Activity {
     public void onBackPressed() {
         if (mWebView.canGoBack())
             mWebView.goBack();
-        else
+        else{
             super.onBackPressed();
+    	    overridePendingTransition(R.anim.anim_in2, R.anim.anim_out2);
+
+        }
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {

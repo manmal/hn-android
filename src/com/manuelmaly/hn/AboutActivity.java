@@ -6,7 +6,6 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.Click;
 import com.googlecode.androidannotations.annotations.EActivity;
@@ -33,6 +32,8 @@ public class AboutActivity extends Activity {
 
     @AfterViews
     public void init() {
+		overridePendingTransition(R.anim.anim_v_in,R.anim.anim_v_out);
+
         Typeface tf = FontHelper.getComfortaa(this, true);
         mHNView.setTypeface(tf);
         
@@ -42,10 +43,17 @@ public class AboutActivity extends Activity {
         mGithubView.setMovementMethod(LinkMovementMethod.getInstance());
         mGithubView.setText(Html.fromHtml("<a href=\"https://github.com/manmal/hn-android/\">Fork this at Github</a>"));
     }
-
+    @Override
+	public void onBackPressed() 
+	{
+	    super.onBackPressed();
+	    overridePendingTransition(R.anim.anim_v_in2,R.anim.anim_v_out2);
+	}
     @Click(R.id.actionbar_back)
     void backClicked() {
         finish();
+	    overridePendingTransition(R.anim.anim_v_in2,R.anim.anim_v_out2);
+
     }
 
 }
