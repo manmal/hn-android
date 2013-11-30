@@ -70,7 +70,6 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             public void onClick(View v) {
                 finish();
            	    overridePendingTransition(R.anim.anim_v_in2,R.anim.anim_v_out2);
-
             }
         });
 		overridePendingTransition(R.anim.anim_v_in,R.anim.anim_v_out);
@@ -78,8 +77,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     }
     
     @Override
-   	public void onBackPressed() 
-   	{
+   	public void onBackPressed() {
    	    super.onBackPressed();
    	    overridePendingTransition(R.anim.anim_v_in2,R.anim.anim_v_out2);
    	}

@@ -44,8 +44,7 @@ public class AboutActivity extends Activity {
         mGithubView.setText(Html.fromHtml("<a href=\"https://github.com/manmal/hn-android/\">Fork this at Github</a>"));
     }
     @Override
-	public void onBackPressed() 
-	{
+	public void onBackPressed() {
 	    super.onBackPressed();
 	    overridePendingTransition(R.anim.anim_v_in2,R.anim.anim_v_out2);
 	}
@@ -53,7 +52,6 @@ public class AboutActivity extends Activity {
     void backClicked() {
         finish();
 	    overridePendingTransition(R.anim.anim_v_in2,R.anim.anim_v_out2);
-
     }
 
 }

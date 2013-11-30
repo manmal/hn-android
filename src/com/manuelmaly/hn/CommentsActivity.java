@@ -193,8 +193,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     }
     
     @Override
-	public void onBackPressed() 
-	{
+	public void onBackPressed() {
 	    super.onBackPressed();
 	    overridePendingTransition(R.anim.anim_in2, R.anim.anim_out2);
 	}

@@ -93,7 +93,6 @@ public class ArticleReaderActivity extends Activity {
             public void onClick(View v) {
                 finish();
         	    overridePendingTransition(R.anim.anim_in2, R.anim.anim_out2);
-
             }
         });
 
@@ -151,8 +150,6 @@ public class ArticleReaderActivity extends Activity {
         setIsLoading(true);
     }
     
-    
-    
     protected void setIsLoading(boolean loading) {
     	mIsLoading = loading;
 		mActionbarRefreshProgress.setVisibility(loading ? View.VISIBLE
@@ -177,10 +174,9 @@ public class ArticleReaderActivity extends Activity {
     public void onBackPressed() {
         if (mWebView.canGoBack())
             mWebView.goBack();
-        else{
+        else {
             super.onBackPressed();
     	    overridePendingTransition(R.anim.anim_in2, R.anim.anim_out2);
-
         }
     }
     @Override
