@@ -2,8 +2,6 @@ package com.manuelmaly.hn;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.regex.Pattern;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,7 +14,6 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,12 +31,11 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
-import com.manuelmaly.hn.login.LoginActivity_;
+import com.manuelmaly.hn.login.LoginActivity;
 import com.manuelmaly.hn.model.HNComment;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.model.HNPostComments;
@@ -113,6 +109,8 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
     @AfterViews
     public void init() {
+		overridePendingTransition(R.anim.anim_in,R.anim.anim_out);
+
         mPost = (HNPost) getIntent().getSerializableExtra(EXTRA_HNPOST);
         if (mPost == null || mPost.getPostID() == null) {
             Toast.makeText(this, "The belonging post has not been loaded", Toast.LENGTH_LONG).show();
@@ -163,6 +161,8 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         mActionbarBack.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 finish();
+        	    overridePendingTransition(R.anim.anim_in2, R.anim.anim_out2);
+
             }
         });
 
@@ -191,7 +191,13 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         loadIntermediateCommentsFromStore();
         startFeedLoading();
     }
-
+    
+    @Override
+	public void onBackPressed() {
+	    super.onBackPressed();
+	    overridePendingTransition(R.anim.anim_in2, R.anim.anim_out2);
+	}
+    
     @Override
     protected void onResume() {
         super.onResume();
@@ -321,7 +327,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             mCommentHeader.addView(v);
         }
     }
-
+    
     private void updateEmptyView() {
         if (mHaveLoadedPosts)
             mEmptyView.setText(getString(R.string.no_comments));
@@ -438,7 +444,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             if (clickedText.equals(getApplicationContext().getString(R.string.upvote))) {
                 if (!mIsLoggedIn) {
                     setCommentToUpvote(mComment);
-                    startActivityForResult(new Intent(getApplicationContext(), LoginActivity_.class),
+                    startActivityForResult(new Intent(getApplicationContext(), LoginActivity.class),
                             ACTIVITY_LOGIN);
                 }
                 else

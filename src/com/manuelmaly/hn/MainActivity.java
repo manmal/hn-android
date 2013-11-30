@@ -110,6 +110,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         
         loadIntermediateFeedFromStore();
         startFeedLoading();
+
     }
 
     @Override

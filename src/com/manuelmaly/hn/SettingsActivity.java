@@ -69,10 +69,19 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         backView.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 finish();
+           	    overridePendingTransition(R.anim.anim_v_in2,R.anim.anim_v_out2);
             }
         });
-    }
+		overridePendingTransition(R.anim.anim_v_in,R.anim.anim_v_out);
 
+    }
+    
+    @Override
+   	public void onBackPressed() {
+   	    super.onBackPressed();
+   	    overridePendingTransition(R.anim.anim_v_in2,R.anim.anim_v_out2);
+   	}
+    
     @SuppressWarnings("deprecation")
     public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
         Run.onUiThread(new Runnable() {
