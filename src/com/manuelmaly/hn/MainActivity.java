@@ -17,6 +17,7 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -302,6 +303,12 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         }
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+    	moreClicked();
+    	return false;
+    }
+    
     class PostsAdapter extends BaseAdapter {
 
         private static final int VIEWTYPE_POST = 0;
