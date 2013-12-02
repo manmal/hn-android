@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import android.R.bool;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -117,10 +118,11 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     protected void onResume() {
         super.onResume();
         
+        boolean registeredUserChanged = mFeed.getUserAcquiredFor() != null && (!mFeed.getUserAcquiredFor()
+                .equals(Settings.getUserName(this)));
+        
         // We want to reload the feed if a new user logged in
-        if (HNCredentials.isInvalidated() || 
-                !mFeed.getUserAcquiredFor()
-                    .equals(Settings.getUserName(this))) {
+        if (HNCredentials.isInvalidated() || registeredUserChanged) {
             showFeed(new HNFeed(new ArrayList<HNPost>(), null, ""));
             startFeedLoading();
         }
@@ -235,7 +237,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 		protected void onPostExecute(HNFeed result) {
 			if (progress != null && progress.isShowing())
 				progress.dismiss();
-			if (result != null
+			
+			if (result != null && result.getUserAcquiredFor() != null
 					&& result.getUserAcquiredFor().equals(
 							Settings.getUserName(App.getInstance())))
 				showFeed(result);
