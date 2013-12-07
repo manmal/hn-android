@@ -14,3 +14,6 @@ tmp/
 test_servers
 screenshot*
 *.apk
+.gradle/
+build/
+.idea
