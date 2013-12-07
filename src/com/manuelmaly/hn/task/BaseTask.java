@@ -112,18 +112,18 @@ public abstract class BaseTask<T extends Serializable> implements Runnable {
                     IAPICommand.ERROR_NONE);
                 final int errorCode;
                 final T result;
-                if (lowLevelErrorCode == IAPICommand.ERROR_NONE) {
-                    Serializable rawResult = intent.getSerializableExtra(BaseTask.BROADCAST_INTENT_EXTRA_RESULT);
-                    if (resultClazz.isInstance(rawResult)) {
-                        result = resultClazz.cast(rawResult);
-                        errorCode = lowLevelErrorCode;
-                    } else {
-                        result = null;
-                        errorCode = IAPICommand.ERROR_UNKNOWN;
-                    }
-                } else {
-                    result = null;
+                Serializable rawResult = intent.getSerializableExtra(BaseTask.BROADCAST_INTENT_EXTRA_RESULT);
+                if (resultClazz.isInstance(rawResult)) {
+                    result = resultClazz.cast(rawResult);
                     errorCode = lowLevelErrorCode;
+                } else {
+                	result = null;
+                	if (lowLevelErrorCode == IAPICommand.ERROR_NONE) {
+                		// We have no error so far, but cannot cast the result data:
+                		errorCode = IAPICommand.ERROR_UNKNOWN;
+                	} else {
+                		errorCode = lowLevelErrorCode;
+                	}
                 }
 
                 Runnable r = new Runnable() {

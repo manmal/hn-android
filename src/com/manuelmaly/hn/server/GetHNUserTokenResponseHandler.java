@@ -24,18 +24,32 @@ public class GetHNUserTokenResponseHandler implements ResponseHandler<String> {
     @Override
     public String handleResponse(HttpResponse response)
             throws ClientProtocolException, IOException {
-
-        String responseString = "";
-        Header[] headers = response.getHeaders("Set-Cookie");
+    	String responseString = null;
+    	String redirectToLocation = null;
+    	
+    	Header[] headers = response.getHeaders("Location");
         if (headers.length > 0) {
-            HeaderElement[] cookieElements = headers[0].getElements();
-            if (cookieElements.length > 0) {
-                responseString = cookieElements[0].getValue();
+            HeaderElement[] headerElements = headers[0].getElements();
+            if (headerElements.length > 0) {
+            	redirectToLocation = headerElements[0].getName();
             }
-        };
+        }
+    	
+        if (redirectToLocation != null && redirectToLocation.equals("/")) {
+        	responseString = getUserID(response);
+        }
         
         mCommand.responseHandlingFinished(responseString, response.getStatusLine().getStatusCode());
         return responseString;
     }
-
+    
+    private String getUserID(HttpResponse response) {
+    	for (Header header : response.getHeaders("Set-Cookie")) {
+    		HeaderElement[] elements = header.getElements();
+    		if (elements.length > 0 && elements[0].getName().equals("user")) {
+    			return elements[0].getValue();
+    		}
+    	}
+    	return null;
+    }
 }
