@@ -2,14 +2,19 @@ package com.manuelmaly.hn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-import android.R.bool;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.DataSetObserver;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -37,6 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.androidannotations.annotations.AfterViews;
+import com.googlecode.androidannotations.annotations.Background;
 import com.googlecode.androidannotations.annotations.Click;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
@@ -82,17 +88,21 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     TextView mEmptyListPlaceholder;
     HNFeed mFeed;
     PostsAdapter mPostsListAdapter;
-    HashSet<HNPost> mUpvotedPosts;
+    Set<HNPost> mUpvotedPosts;
+    Set<Integer> mAlreadyRead; 
 
     String mCurrentFontSize = null;
     int mFontSizeTitle;
     int mFontSizeDetails;
+    int mTitleColor;
+    int mTitleReadColor;
 
     private static final int TASKCODE_LOAD_FEED = 10;
     private static final int TASKCODE_LOAD_MORE_POSTS = 20;
     private static final int TASKCODE_VOTE = 100;
 
     private static final String LIST_STATE = "listState";
+    private static final String ALREADY_READ_ARTICLES_KEY = "HN_ALREADY_READ";
     private Parcelable mListState = null;
 
     @AfterViews
@@ -110,6 +120,10 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
         mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
         
+        mTitleColor = getResources().getColor(R.color.dark_gray_post_title);
+        mTitleReadColor = getResources().getColor(R.color.gray_post_title_read);
+        
+        loadAlreadyReadCache();
         loadIntermediateFeedFromStore();
         startFeedLoading();
     }
@@ -210,6 +224,38 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             mPostsListAdapter.notifyDataSetChanged();
         }
 
+    }
+    
+    @Background
+    void loadAlreadyReadCache() {
+      if (mAlreadyRead == null)
+        mAlreadyRead = new HashSet<Integer>();
+      
+      SharedPreferences sharedPref = getSharedPreferences(ALREADY_READ_ARTICLES_KEY, Context.MODE_PRIVATE);
+      Editor editor = sharedPref.edit();
+      Map<String, ?> read = sharedPref.getAll();
+      Long now = new Date().getTime();
+      
+      for(Map.Entry<String, ?> entry : read.entrySet()) {
+          Long readAt = (Long) entry.getValue();
+          Long diff = (now - readAt) / (24 * 60 * 60 * 1000);
+          if (diff >= 2)
+              editor.remove(entry.getKey());
+          else
+              mAlreadyRead.add(entry.getKey().hashCode());          
+      }
+      editor.commit();
+    }
+    
+    @Background
+    void markAsRead(HNPost post) {
+      Long now = new Date().getTime();
+      String title = post.getTitle();
+      Editor editor = getSharedPreferences(ALREADY_READ_ARTICLES_KEY, Context.MODE_PRIVATE).edit();
+      editor.putLong(title, now);
+      editor.commit();
+      
+      mAlreadyRead.add(title.hashCode());
     }
 
     private void showFeed(HNFeed feed) {
@@ -371,10 +417,11 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                         convertView.setTag(holder);
                     }
 
-                    HNPost item = getItem(position);
+                    final HNPost item = getItem(position);
                     PostViewHolder holder = (PostViewHolder) convertView.getTag();
                     holder.titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, mFontSizeTitle);
                     holder.titleView.setText(item.getTitle());
+                    holder.titleView.setTextColor(isRead(item) ? mTitleReadColor : mTitleColor);
                     holder.urlView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, mFontSizeDetails);
                     holder.urlView.setText(item.getURLDomain());
                     holder.pointsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, mFontSizeDetails);
@@ -398,6 +445,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                     });
                     holder.textContainer.setOnClickListener(new OnClickListener() {
                         public void onClick(View v) {
+                            markAsRead(item);
+                            
                             if (Settings.getHtmlViewer(MainActivity.this).equals(
                                 getString(R.string.pref_htmlviewer_browser)))
                                 openURLInBrowser(getArticleViewURL(getItem(position)), MainActivity.this);
@@ -447,6 +496,10 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             }
 
             return convertView;
+        }
+        
+        private boolean isRead(HNPost post) {
+            return mAlreadyRead.contains(post.getTitle().hashCode());
         }
     }
 
