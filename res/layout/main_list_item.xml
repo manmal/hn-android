@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_topic"
-            android:textColor="#262321"
+            android:textColor="@color/dark_gray_post_title"
             android:textSize="18sp"
             android:textStyle="bold" />
 
