@@ -7,4 +7,11 @@
         <item name="actionOverflowButtonStyle">@style/OverflowIconStyle</item>
     </style>
 
+    <style name="ActionBar.Orange.Back">
+        <item name="android:actionBarStyle">@style/ActionBarStyle.Back</item>
+        <item name="actionBarStyle">@style/ActionBarStyle.Back</item>
+        <item name="android:homeAsUpIndicator">@drawable/back</item>
+        <item name="homeAsUpIndicator">@drawable/back</item>
+    </style>
+
 </resources>

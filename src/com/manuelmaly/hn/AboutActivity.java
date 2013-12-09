@@ -2,6 +2,8 @@ package com.manuelmaly.hn;
 
 import android.app.Activity;
 import android.graphics.Typeface;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.widget.ImageView;
@@ -14,10 +16,7 @@ import com.googlecode.androidannotations.annotations.ViewById;
 import com.manuelmaly.hn.util.FontHelper;
 
 @EActivity(R.layout.about)
-public class AboutActivity extends Activity {
-
-    @ViewById(R.id.actionbar_back)
-    ImageView mActionbarBack;
+public class AboutActivity extends ActionBarActivity {
     
     @ViewById(R.id.about_hn)
     TextView mHNView;
@@ -41,11 +40,10 @@ public class AboutActivity extends Activity {
         
         mGithubView.setMovementMethod(LinkMovementMethod.getInstance());
         mGithubView.setText(Html.fromHtml("<a href=\"https://github.com/manmal/hn-android/\">Fork this at Github</a>"));
-    }
 
-    @Click(R.id.actionbar_back)
-    void backClicked() {
-        finish();
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_HOME_AS_UP);
+        getSupportActionBar().setIcon(null);
+        getSupportActionBar().setLogo(null);
     }
 
 }
