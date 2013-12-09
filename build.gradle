@@ -8,7 +8,12 @@ buildscript {
 }
 apply plugin: 'android'
 
+configurations {
+    apt
+}
+
 dependencies {
+    apt  files('androidannotations-2.5.jar')
     compile fileTree(dir: 'libs', include: '*.jar')
 }
 
@@ -19,14 +24,33 @@ android {
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src','.apt_generated']
-            resources.srcDirs = ['src','.apt_generated']
-            aidl.srcDirs = ['src','.apt_generated']
-            renderscript.srcDirs = ['src','.apt_generated']
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
         }
 
         instrumentTest.setRoot('tests')
     }
+}
+
+android.applicationVariants.all { variant ->
+        aptOutput = file("${project.buildDir}/source/apt_generated/${variant.dirName}")
+        println "****************************"
+        println "variant: ${variant.name}"
+        println "manifest:  ${variant.processResources.manifestFile}"
+        println "aptOutput:  ${aptOutput}"
+        println "****************************"
+
+        variant.javaCompile.doFirst {
+            println "*** compile doFirst ${variant.name}"
+            aptOutput.mkdirs()
+            variant.javaCompile.options.compilerArgs += [
+                    '-processorpath', configurations.apt.getAsPath(),
+                    '-AandroidManifestFile=' + variant.processResources.manifestFile,
+                    '-s', aptOutput
+            ]
+        }
 }
