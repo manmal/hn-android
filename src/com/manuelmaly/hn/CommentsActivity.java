@@ -240,9 +240,10 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
     class GetLastHNPostCommentsTask extends FileUtil.GetLastHNPostCommentsTask {
         protected void onPostExecute(HNPostComments result) {
-            if (result != null && result.getUserAcquiredFor().equals(Settings
-                    .getUserName(CommentsActivity.this)))
+        	boolean registeredUserChanged = result != null && result.getUserAcquiredFor() != null && (!result.getUserAcquiredFor().equals(Settings.getUserName(CommentsActivity.this)));
+            if (registeredUserChanged) {
                 showComments(result);
+            }
             else {
                 updateEmptyView();
             }
