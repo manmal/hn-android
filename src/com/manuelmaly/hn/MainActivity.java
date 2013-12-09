@@ -1,5 +1,6 @@
 package com.manuelmaly.hn;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -24,9 +25,11 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -122,7 +125,21 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         
         mTitleColor = getResources().getColor(R.color.dark_gray_post_title);
         mTitleReadColor = getResources().getColor(R.color.gray_post_title_read);
-        
+
+        // Make sure that we show the overflow menu icon
+        try {
+            ViewConfiguration config = ViewConfiguration.get(this);
+            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+
+            if (menuKeyField != null) {
+                menuKeyField.setAccessible(true);
+                menuKeyField.setBoolean(config, false);
+            }
+        }
+        catch (Exception e) {
+            // presumably, not relevant
+        }
+
         loadAlreadyReadCache();
         loadIntermediateFeedFromStore();
         startFeedLoading();
@@ -149,6 +166,13 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         if (mListState != null)
             mPostsList.onRestoreInstanceState(mListState);
         mListState = null;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.e("MALTZ", "creating the options menu");
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
     
     //@Click(R.id.actionbar)
@@ -350,12 +374,6 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                     Toast.makeText(MainActivity.this, R.string.vote_error, Toast.LENGTH_LONG).show();
             }
         }
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-    	moreClicked();
-    	return false;
     }
     
     class PostsAdapter extends BaseAdapter {
