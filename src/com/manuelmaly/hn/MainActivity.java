@@ -17,7 +17,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.DataSetObserver;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -26,7 +25,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,15 +38,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.PopupWindow.OnDismissListener;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.Background;
-import com.googlecode.androidannotations.annotations.Click;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
@@ -110,7 +104,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     private static final String ALREADY_READ_ARTICLES_KEY = "HN_ALREADY_READ";
     private Parcelable mListState = null;
 
-    boolean mTest = false;
+    boolean mCanRefresh = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -188,11 +182,10 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mTest) {
-            Log.e("MALTZ", "into here??");
-            MenuItem item = menu.findItem(R.id.menu_refresh);
+        MenuItem item = menu.findItem(R.id.menu_refresh);
+        if (!mCanRefresh && item.getActionView() != null) {
             MenuItemCompat.setActionView(item, null);
-            mTest = false;
+            mCanRefresh = true;
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -211,7 +204,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             case R.id.menu_refresh:
                 View v =  mInflater.inflate(
                         R.layout.refresh_icon, null);
-                if (!mTest) {
+                if (mCanRefresh) {
                     MenuItemCompat.setActionView(item, v);
                     startFeedLoading();
                 }
@@ -279,16 +272,13 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         if (taskCode == TASKCODE_LOAD_FEED) {
             if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null) {
                 showFeed(result);
-                Log.e("MALTZ", "do we ever call this??");
-                mTest = true;
-                supportInvalidateOptionsMenu();
             }
             else if (!code.equals(TaskResultCode.Success))
                 Toast.makeText(this, getString(R.string.
                         error_unable_to_retrieve_feed), Toast.LENGTH_SHORT).show();
 
-            // mActionbarRefreshProgress.setVisibility(View.GONE);
-            // mActionbarRefresh.setVisibility(View.VISIBLE);
+            mCanRefresh = true;
+            supportInvalidateOptionsMenu();
         } else if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
             if (!code.equals(TaskResultCode.Success))
                 Toast.makeText(this, getString(R.string.
@@ -296,6 +286,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
             mFeed.appendLoadMoreFeed(result);
             mPostsListAdapter.notifyDataSetChanged();
+            mCanRefresh = true;
+            supportInvalidateOptionsMenu();
         }
 
     }
@@ -367,6 +359,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 	}
 
     private void startFeedLoading() {
+        mCanRefresh = false;
         HNFeedTaskMainFeed.startOrReattach(this, this, TASKCODE_LOAD_FEED);
         // mActionbarRefresh.setImageResource(R.drawable.refresh);
         
