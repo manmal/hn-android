@@ -14,7 +14,11 @@ configurations {
 
 dependencies {
     apt  files('androidannotations-2.5.jar')
-    compile fileTree(dir: 'libs', include: '*.jar')
+    compile 'com.android.support:support-v4:18.0.+'
+    compile "com.android.support:appcompat-v7:18.0.+"
+    compile files('libs' + File.separator + 'androidannotations-2.5-api.jar',
+        'libs' + File.separator + 'jsoup-1.7.2.jar',
+        'libs' + File.separator + 'libGoogleAnalytics.jar')
 }
 
 android {
