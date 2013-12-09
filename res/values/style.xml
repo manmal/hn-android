@@ -17,6 +17,11 @@
         <item name="customNavigationLayout">@layout/actionbar_center_title</item>
     </style>
 
+    <style name="ActionBarStyle.Back">
+        <item name="android:displayOptions">showCustom|showHome|homeAsUp</item>
+        <item name="displayOptions">showCustom|showHome|homeAsUp</item>
+    </style>
+
     <style name="OverflowIconStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:src">@drawable/more</item>
     </style>

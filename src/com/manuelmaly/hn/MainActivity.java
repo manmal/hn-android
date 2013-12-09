@@ -133,10 +133,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         mFeed = new HNFeed(new ArrayList<HNPost>(), null, "");
         mPostsListAdapter = new PostsAdapter();
         mUpvotedPosts = new HashSet<HNPost>();
-        // mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
-        //mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
-        
-        // mActionbarRefreshProgress.setVisibility(View.GONE);
+
         mEmptyListPlaceholder = getEmptyTextView(mRootView);
         mPostsList.setEmptyView(mEmptyListPlaceholder);
         mPostsList.setAdapter(mPostsListAdapter);
@@ -225,46 +222,6 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             HNFeedTaskMainFeed.stopCurrent(getApplicationContext());
         else
             startFeedLoading();
-    }
-
-    //@Click(R.id.actionbar_more)
-    void moreClicked() {
-        /*// mActionbarMore.setSelected(true);
-        LinearLayout moreContentView = (LinearLayout) mInflater.inflate(R.layout.main_more_content, null);
-
-        moreContentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        final PopupWindow popupWindow = new PopupWindow(this);
-        popupWindow.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.red_dark_washedout)));
-        popupWindow.setContentView(moreContentView);
-        // popupWindow.showAsDropDown(mActionbarMore);
-        popupWindow.setTouchable(true);
-        popupWindow.setFocusable(true);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setOnDismissListener(new OnDismissListener() {
-            public void onDismiss() {
-                // mActionbarMore.setSelected(false);
-            }
-        });
-
-        Button settingsButton = (Button) moreContentView.findViewById(R.id.main_more_content_settings);
-        settingsButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                popupWindow.dismiss();
-            }
-        });
-
-        Button aboutButton = (Button) moreContentView.findViewById(R.id.main_more_content_about);
-        aboutButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, AboutActivity_.class));
-                popupWindow.dismiss();
-            }
-        });
-
-        popupWindow.update(moreContentView.getMeasuredWidth(), moreContentView.getMeasuredHeight());*/
     }
 
     @Override
