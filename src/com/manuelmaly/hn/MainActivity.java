@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -84,7 +85,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
     @ViewById(R.id.actionbar_more)
     ImageView mActionbarMore;*/
-    
+
     @SystemService
     LayoutInflater mInflater;
 
@@ -108,23 +109,9 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     private static final String ALREADY_READ_ARTICLES_KEY = "HN_ALREADY_READ";
     private Parcelable mListState = null;
 
-    @AfterViews
-    public void init() {
-        mFeed = new HNFeed(new ArrayList<HNPost>(), null, "");
-        mPostsListAdapter = new PostsAdapter();
-        mUpvotedPosts = new HashSet<HNPost>();
-        // mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
-        // mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
-        
-        // mActionbarRefreshProgress.setVisibility(View.GONE);
-        mEmptyListPlaceholder = getEmptyTextView(mRootView);
-        mPostsList.setEmptyView(mEmptyListPlaceholder);
-        mPostsList.setAdapter(mPostsListAdapter);
-
-        mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
-        
-        mTitleColor = getResources().getColor(R.color.dark_gray_post_title);
-        mTitleReadColor = getResources().getColor(R.color.gray_post_title_read);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         // Make sure that we show the overflow menu icon
         try {
@@ -139,6 +126,28 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         catch (Exception e) {
             // presumably, not relevant
         }
+
+        TextView tv = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.actionbar_title);
+        tv.setTypeface(FontHelper.getComfortaa(this, true));
+    }
+
+    @AfterViews
+    public void init() {
+        mFeed = new HNFeed(new ArrayList<HNPost>(), null, "");
+        mPostsListAdapter = new PostsAdapter();
+        mUpvotedPosts = new HashSet<HNPost>();
+        // mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
+        //mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
+        
+        // mActionbarRefreshProgress.setVisibility(View.GONE);
+        mEmptyListPlaceholder = getEmptyTextView(mRootView);
+        mPostsList.setEmptyView(mEmptyListPlaceholder);
+        mPostsList.setAdapter(mPostsListAdapter);
+
+        mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
+        
+        mTitleColor = getResources().getColor(R.color.dark_gray_post_title);
+        mTitleReadColor = getResources().getColor(R.color.gray_post_title_read);
 
         loadAlreadyReadCache();
         loadIntermediateFeedFromStore();
