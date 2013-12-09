@@ -40,12 +40,10 @@
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/.apt_generated" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/assets" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/.apt_generated" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/tests/aidl" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/tests/assets" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/tests/java" isTestSource="true" />
@@ -53,7 +51,7 @@
       <sourceFolder url="file://$MODULE_DIR$/tests/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/tests/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/tests/resources" type="java-test-resource" />
-      <excludeFolder url="file://$MODULE_DIR$/.apt_generated" />
+      <sourceFolder url="file://$MODULE_DIR$/build/source/apt_generated/debug" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.git" />
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
