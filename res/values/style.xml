@@ -11,7 +11,9 @@
     <style name="ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@drawable/actionbar_bg_orange</item>
         <item name="background">@drawable/actionbar_bg_orange</item>
-        <item name="android:displayOptions">showTitle</item>
-        <item name="displayOptions">showTitle</item>
+        <item name="android:displayOptions">showCustom</item>
+        <item name="displayOptions">showCustom</item>
+        <item name="android:customNavigationLayout">@layout/actionbar_center_title</item>
+        <item name="customNavigationLayout">@layout/actionbar_center_title</item>
     </style>
 </resources>
