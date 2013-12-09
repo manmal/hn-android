@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -27,6 +26,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -179,9 +179,24 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.e("MALTZ", "creating the options menu");
         getMenuInflater().inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_settings:
+                startActivity(new Intent(MainActivity.this,
+                        SettingsActivity.class));
+                return true;
+            case R.id.menu_about:
+                startActivity(new Intent(MainActivity.this,
+                        AboutActivity_.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
     
     //@Click(R.id.actionbar)
