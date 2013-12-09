@@ -21,6 +21,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -109,6 +110,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     private static final String ALREADY_READ_ARTICLES_KEY = "HN_ALREADY_READ";
     private Parcelable mListState = null;
 
+    boolean mTest = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -184,6 +187,17 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mTest) {
+            Log.e("MALTZ", "into here??");
+            MenuItem item = menu.findItem(R.id.menu_refresh);
+            MenuItemCompat.setActionView(item, null);
+            mTest = false;
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.menu_settings:
@@ -193,6 +207,14 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             case R.id.menu_about:
                 startActivity(new Intent(MainActivity.this,
                         AboutActivity_.class));
+                return true;
+            case R.id.menu_refresh:
+                View v =  mInflater.inflate(
+                        R.layout.refresh_icon, null);
+                if (!mTest) {
+                    MenuItemCompat.setActionView(item, v);
+                    startFeedLoading();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -255,8 +277,12 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     @Override
     public void onTaskFinished(int taskCode, TaskResultCode code, HNFeed result, Object tag) {
         if (taskCode == TASKCODE_LOAD_FEED) {
-            if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
+            if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null) {
                 showFeed(result);
+                Log.e("MALTZ", "do we ever call this??");
+                mTest = true;
+                supportInvalidateOptionsMenu();
+            }
             else if (!code.equals(TaskResultCode.Success))
                 Toast.makeText(this, getString(R.string.
                         error_unable_to_retrieve_feed), Toast.LENGTH_SHORT).show();
@@ -329,8 +355,9 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 		}
 
 		protected void onPostExecute(HNFeed result) {
-			if (progress != null && progress.isShowing())
+			if (progress != null && progress.isShowing()) {
 				progress.dismiss();
+            }
 			
 			if (result != null && result.getUserAcquiredFor() != null
 					&& result.getUserAcquiredFor().equals(
