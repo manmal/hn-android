@@ -6,7 +6,7 @@
     android:contentDescription="@string/more"
     android:orientation="vertical" >
 
-    <FrameLayout
+    <!--<FrameLayout
         android:id="@+id/actionbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -59,7 +59,7 @@
                 android:id="@+id/actionbar_refresh_progress"
                 style="@style/MenubarRefresh" />
         </LinearLayout>
-    </FrameLayout>
+    </FrameLayout> -->
 
     <ListView
         android:id="@+id/main_list"

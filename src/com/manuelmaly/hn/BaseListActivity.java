@@ -1,13 +1,13 @@
 package com.manuelmaly.hn;
 
-import com.manuelmaly.hn.util.FontHelper;
-
-import android.app.Activity;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class BaseListActivity extends Activity{
+import com.manuelmaly.hn.util.FontHelper;
+
+public class BaseListActivity extends ActionBarActivity {
 
     private TextView mLoadingView;
 

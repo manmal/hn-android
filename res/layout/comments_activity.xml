@@ -9,7 +9,7 @@
         android:id="@+id/actionbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@drawable/actionbar_bg_orange"
+        android:background="@null"
         android:gravity="center" >
 
         <ImageView
