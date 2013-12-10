@@ -2,7 +2,6 @@ package com.manuelmaly.hn;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.regex.Pattern;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -12,13 +11,16 @@ import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -204,6 +206,20 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         if (mListState != null)
             mCommentsList.onRestoreInstanceState(mListState);
         mListState = null;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_comments, menu);
+        MenuItem shareItem = menu.findItem(R.id.menu_share);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, mPost.getTitle() + " | Hacker News");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://news.ycombinator.com/item?id=" + mPost.getPostID());
+
+        ShareActionProvider shareProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+        shareProvider.setShareIntent(shareIntent);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
