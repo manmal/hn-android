@@ -218,6 +218,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         shareIntent.putExtra(Intent.EXTRA_TEXT, "https://news.ycombinator.com/item?id=" + mPost.getPostID());
 
         ShareActionProvider shareProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+        shareProvider.setShareHistoryFileName(null);
         shareProvider.setShareIntent(shareIntent);
         return super.onCreateOptionsMenu(menu);
     }
