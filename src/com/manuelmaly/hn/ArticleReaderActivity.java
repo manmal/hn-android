@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,7 +28,7 @@ import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.util.FontHelper;
 
 @EActivity(R.layout.article_activity)
-public class ArticleReaderActivity extends Activity {
+public class ArticleReaderActivity extends ActionBarActivity {
 
     private static final String WEB_VIEW_SAVED_STATE_KEY = "webViewSavedState";
     public static final String EXTRA_HNPOST = "HNPOST";

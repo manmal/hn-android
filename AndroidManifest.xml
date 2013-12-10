@@ -30,7 +30,7 @@
             android:name="ArticleReaderActivity_"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
-            android:theme="@android:style/Theme.Light.NoTitleBar">
+            android:theme="@style/ActionBar.White">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <data android:mimeType="text/plain" />
