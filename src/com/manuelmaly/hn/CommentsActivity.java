@@ -124,6 +124,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             }
         });
 
+        getSupportActionBar().setHomeButtonEnabled(false);
         mActionbarTitle = (TextView) getSupportActionBar().getCustomView().
                 findViewById(R.id.actionbar_title);
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));

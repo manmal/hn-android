@@ -24,6 +24,11 @@
         <item name="icon">@android:color/transparent</item>
     </style>
 
+    <style name="ActionBarStyle.Back.White">
+        <item name="android:background">@drawable/actionbar_bg_bright</item>
+        <item name="background">@drawable/actionbar_bg_bright</item>
+    </style>
+
     <style name="OverflowIconStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:src">@drawable/more</item>
     </style>
