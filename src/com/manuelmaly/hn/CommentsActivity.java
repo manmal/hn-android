@@ -65,27 +65,6 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     @ViewById(R.id.comments_list)
     ListView mCommentsList;
 
-    @ViewById(R.id.actionbar)
-    FrameLayout mActionbarContainer;
-
-    @ViewById(R.id.actionbar_title_button)
-    Button mActionbarTitle;
-
-    @ViewById(R.id.actionbar_refresh)
-    ImageView mActionbarRefresh;
-
-    @ViewById(R.id.actionbar_refresh_container)
-    LinearLayout mActionbarRefreshContainer;
-
-    @ViewById(R.id.actionbar_refresh_progress)
-    ProgressBar mActionbarRefreshProgress;
-
-    @ViewById(R.id.actionbar_share)
-    ImageView mActionbarShare;
-
-    @ViewById(R.id.actionbar_back)
-    ImageView mActionbarBack;
-
     @ViewById(R.id.comments_root)
     LinearLayout mRootView;
 
@@ -95,6 +74,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     LinearLayout mCommentHeader;
     TextView mCommentHeaderText;
     TextView mEmptyView;
+    TextView mActionbarTitle;
 
     HNPost mPost;
     HNPostComments mComments;
@@ -138,12 +118,14 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         mCommentsList.addHeaderView(mCommentHeader, null, false);
         mCommentsList.setAdapter(mCommentsListAdapter);
 
-        mActionbarContainer.setOnClickListener(new OnClickListener() {
+        getSupportActionBar().getCustomView().setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 mCommentsList.smoothScrollToPosition(0);
             }
         });
 
+        mActionbarTitle = (TextView) getSupportActionBar().getCustomView().
+                findViewById(R.id.actionbar_title);
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
         mActionbarTitle.setText(getString(R.string.comments));
         mActionbarTitle.setOnClickListener(new OnClickListener() {
@@ -165,34 +147,6 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
                 }
             }
         });
-
-        mActionbarBack.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        mActionbarShare.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, mPost.getTitle() + " | Hacker News");
-                i.putExtra(Intent.EXTRA_TEXT, "https://news.ycombinator.com/item?id=" + mPost.getPostID());
-                startActivity(Intent.createChooser(i, getString(R.string.share_comments_url)));
-            }
-        });
-
-        mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
-        mActionbarRefreshContainer.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                if (HNPostCommentsTask.isRunning(mPost.getPostID()))
-                    HNPostCommentsTask.stopCurrent(mPost.getPostID());
-                else
-                    startFeedLoading();
-            }
-        });
-
-        mActionbarRefreshProgress.setVisibility(View.GONE);
 
         loadIntermediateCommentsFromStore();
         startFeedLoading();
@@ -234,11 +188,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
 
-        Log.e("MALTZ", "mCanRefresh is " + mCanRefresh + " and action view is " + MenuItemCompat.getActionView(refreshItem));
-        if (!mCanRefresh && MenuItemCompat.getActionView(refreshItem) != null) {
-            MenuItemCompat.setActionView(refreshItem, null);
-            mCanRefresh = true;
-        } else if (!mCanRefresh) {
+        if (!mCanRefresh) {
             View refreshView = mInflater.inflate(R.layout.refresh_icon, null);
             MenuItemCompat.setActionView(refreshItem, refreshView);
         }
@@ -251,14 +201,17 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         switch (item.getItemId()) {
             case R.id.menu_refresh:
                 triggerShowRefresh();
+                startFeedLoading();
                 return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void triggerShowRefresh() {
-
         mCanRefresh = false;
         supportInvalidateOptionsMenu();
     }

@@ -6,7 +6,10 @@
         <item name="android:actionOverflowButtonStyle">@style/OverflowIconStyle</item>
         <item name="actionOverflowButtonStyle">@style/OverflowIconStyle</item>
         <item name="actionModeShareDrawable">@drawable/share</item>
+        <!-- This removes the box around the share item -->
         <item name="activityChooserViewStyle">@null</item>
+        <!--<item name="android:actionButtonStyle">@style/HN.ActionButton</item>
+        <item name="actionButtonStyle">@style/HN.ActionButton</item> -->
     </style>
 
     <style name="ActionBar.Orange.Back">
