@@ -17,6 +17,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -72,10 +73,10 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
     @ViewById(R.id.actionbar_refresh)
     ImageView mActionbarRefresh;
-    
+
     @ViewById(R.id.actionbar_refresh_container)
     LinearLayout mActionbarRefreshContainer;
-    
+
     @ViewById(R.id.actionbar_refresh_progress)
     ProgressBar mActionbarRefreshProgress;
 
@@ -112,6 +113,9 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
     HNComment mPendingVote;
     HashSet<HNComment> mVotedComments;
+
+    boolean mCanRefresh = false;
+    MenuItem mRefreshItem;
 
     @AfterViews
     public void init() {
@@ -218,9 +222,45 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         shareIntent.putExtra(Intent.EXTRA_TEXT, "https://news.ycombinator.com/item?id=" + mPost.getPostID());
 
         ShareActionProvider shareProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+        // Don't show any additional share history
         shareProvider.setShareHistoryFileName(null);
         shareProvider.setShareIntent(shareIntent);
+
+        mRefreshItem = menu.findItem(R.id.menu_refresh);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
+
+        Log.e("MALTZ", "mCanRefresh is " + mCanRefresh + " and action view is " + MenuItemCompat.getActionView(refreshItem));
+        if (!mCanRefresh && MenuItemCompat.getActionView(refreshItem) != null) {
+            MenuItemCompat.setActionView(refreshItem, null);
+            mCanRefresh = true;
+        } else if (!mCanRefresh) {
+            View refreshView = mInflater.inflate(R.layout.refresh_icon, null);
+            MenuItemCompat.setActionView(refreshItem, refreshView);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_refresh:
+                triggerShowRefresh();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void triggerShowRefresh() {
+
+        mCanRefresh = false;
+        supportInvalidateOptionsMenu();
     }
 
     @Override
@@ -267,20 +307,16 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         }
     }
 
-    private void updateStatusIndicatorOnLoadingStarted() {
-        mActionbarRefreshProgress.setVisibility(View.VISIBLE);
-        mActionbarRefresh.setVisibility(View.GONE);
-    }
-
     private void updateStatusIndicatorOnLoadingFinished(TaskResultCode code) {
-    	mActionbarRefreshProgress.setVisibility(View.GONE);
-    	mActionbarRefresh.setVisibility(View.VISIBLE);
+    	mCanRefresh = true;
+        supportInvalidateOptionsMenu();
     }
 
     private void startFeedLoading() {
         mHaveLoadedPosts = false;
+        mCanRefresh = false;
         HNPostCommentsTask.startOrReattach(this, this, mPost.getPostID(), 0);
-        updateStatusIndicatorOnLoadingStarted();
+        triggerShowRefresh();
     }
 
     private boolean refreshFontSizes() {
