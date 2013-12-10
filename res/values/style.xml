@@ -20,6 +20,8 @@
     <style name="ActionBarStyle.Back">
         <item name="android:displayOptions">showCustom|showHome|homeAsUp</item>
         <item name="displayOptions">showCustom|showHome|homeAsUp</item>
+        <item name="android:icon">@android:color/transparent</item>
+        <item name="icon">@android:color/transparent</item>
     </style>
 
     <style name="OverflowIconStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
