@@ -3,22 +3,21 @@ package com.manuelmaly.hn;
 import java.net.URLEncoder;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.EActivity;
@@ -41,26 +40,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
     @ViewById(R.id.article_webview)
     WebView mWebView;
 
-    @ViewById(R.id.actionbar)
-    FrameLayout mActionbarContainer;
-
-    @ViewById(R.id.actionbar_title_button)
-    Button mActionbarTitle;
-
-    @ViewById(R.id.actionbar_share)
-    ImageView mActionbarShare;
-
-    @ViewById(R.id.actionbar_back)
-    ImageView mActionbarBack;
-
-    @ViewById(R.id.actionbar_refresh)
-    ImageView mActionbarRefresh;
-    
-    @ViewById(R.id.actionbar_refresh_container)
-    LinearLayout mActionbarRefreshContainer;
-    
-    @ViewById(R.id.actionbar_refresh_progress)
-    ProgressBar mActionbarRefreshProgress;
+    TextView mActionbarTitle;
     
     @SystemService
     LayoutInflater mInflater;
@@ -68,12 +48,18 @@ public class ArticleReaderActivity extends ActionBarActivity {
     HNPost mPost;
     String mHtmlProvider;
 
-    boolean mIsLoading;
+    boolean mShouldShowRefreshing;
 	private Bundle mWebViewSavedState;
 
     @AfterViews
     @SuppressLint("SetJavaScriptEnabled")
     public void init() {
+        mActionbarTitle = (TextView) getSupportActionBar().getCustomView().
+                findViewById(R.id.actionbar_title);
+        mActionbarTitle.setTextColor(getResources().getColor(
+                R.color.gray_article_title));
+        mActionbarTitle.setShadowLayer(1, 1, 0, getResources().getColor(
+                android.R.color.white));
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
         mActionbarTitle.setText(getString(R.string.article));
         mActionbarTitle.setOnClickListener(new OnClickListener() {
@@ -85,34 +71,6 @@ public class ArticleReaderActivity extends ActionBarActivity {
                 startActivity(i);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 finish();
-            }
-        });
-
-        mActionbarBack.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        mActionbarRefresh.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                if (mWebView.getProgress() < 100 && mIsLoading) {
-                    mWebView.stopLoading();
-                    setIsLoading(false);
-                } else {
-                	setIsLoading(true);
-                    mWebView.loadUrl(getArticleViewURL(mPost, mHtmlProvider, ArticleReaderActivity.this));
-                }
-            }
-        });
-
-        mActionbarShare.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, mPost.getTitle());
-                i.putExtra(Intent.EXTRA_TEXT, mPost.getURL());
-                startActivity(Intent.createChooser(i, getString(R.string.share_article_url)));
             }
         });
 
@@ -132,12 +90,14 @@ public class ArticleReaderActivity extends ActionBarActivity {
         mWebView.setWebViewClient(new HNReaderWebViewClient());
         mWebView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
-                if (progress == 100 && mIsLoading) {
-                	setIsLoading(false);
-                } else if (!mIsLoading) {
+                if (progress == 100 && mShouldShowRefreshing) {
+                	mShouldShowRefreshing = false;
+                    supportInvalidateOptionsMenu();
+                } else if (!mShouldShowRefreshing) {
                     // Most probably, user tapped on a link in the webview -
                     // let's spin the refresh icon:
-                	setIsLoading(true);
+                	mShouldShowRefreshing = true;
+                    supportInvalidateOptionsMenu();
                 }
             }
         });
@@ -145,14 +105,60 @@ public class ArticleReaderActivity extends ActionBarActivity {
             mWebView.restoreState(mWebViewSavedState);
         }
 
-        setIsLoading(true);
+        mShouldShowRefreshing = true;
     }
-    
-    protected void setIsLoading(boolean loading) {
-    	mIsLoading = loading;
-		mActionbarRefreshProgress.setVisibility(loading ? View.VISIBLE
-				: View.GONE);
-		mActionbarRefresh.setVisibility(loading ? View.GONE : View.VISIBLE);
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_share_refresh, menu);
+        MenuItem shareItem = menu.findItem(R.id.menu_share);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, mPost.getTitle());
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mPost.getURL());
+        ShareActionProvider shareProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+
+        // Don't show any additional share history
+        shareProvider.setShareHistoryFileName(null);
+        shareProvider.setShareIntent(shareIntent);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
+
+        if (!mShouldShowRefreshing) {
+            MenuItemCompat.setActionView(refreshItem, null);
+            mWebView.stopLoading();
+        } else {
+            View refreshView = mInflater.inflate(R.layout.refresh_icon, null);
+            MenuItemCompat.setActionView(refreshItem, refreshView);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            case R.id.menu_refresh:
+                if (mShouldShowRefreshing) {
+                    mShouldShowRefreshing = false;
+                } else {
+                    mShouldShowRefreshing = true;
+                    mWebView.loadUrl(getArticleViewURL(mPost, mHtmlProvider,
+                            ArticleReaderActivity.this));
+                }
+                supportInvalidateOptionsMenu();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @SuppressWarnings("deprecation")
