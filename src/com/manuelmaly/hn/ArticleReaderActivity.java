@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -112,15 +111,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_share_refresh, menu);
         MenuItem shareItem = menu.findItem(R.id.menu_share);
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, mPost.getTitle());
-        shareIntent.putExtra(Intent.EXTRA_TEXT, mPost.getURL());
-        ShareActionProvider shareProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
 
-        // Don't show any additional share history
-        shareProvider.setShareHistoryFileName(null);
-        shareProvider.setShareIntent(shareIntent);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -155,6 +146,14 @@ public class ArticleReaderActivity extends ActionBarActivity {
                             ArticleReaderActivity.this));
                 }
                 supportInvalidateOptionsMenu();
+                return true;
+            case R.id.menu_share:
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, mPost.getTitle());
+                shareIntent.putExtra(Intent.EXTRA_TEXT, mPost.getURL());
+                startActivity(Intent.createChooser(shareIntent,
+                        getString(R.string.share_article_url)));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

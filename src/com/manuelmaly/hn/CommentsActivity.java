@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.ShareActionProvider;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -52,7 +51,8 @@ import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
 
 @EActivity(R.layout.comments_activity)
-public class CommentsActivity extends BaseListActivity implements ITaskFinishedHandler<HNPostComments> {
+public class CommentsActivity extends BaseListActivity implements
+        ITaskFinishedHandler<HNPostComments> {
 
     public static final String EXTRA_HNPOST = "HNPOST";
     private static final int TASKCODE_VOTE = 100;
@@ -166,17 +166,6 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_share_refresh, menu);
-        MenuItem shareItem = menu.findItem(R.id.menu_share);
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, mPost.getTitle() + " | Hacker News");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://news.ycombinator.com/item?id=" + mPost.getPostID());
-
-        ShareActionProvider shareProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
-        // Don't show any additional share history
-        shareProvider.setShareHistoryFileName(null);
-        shareProvider.setShareIntent(shareIntent);
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -204,6 +193,13 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.menu_share:
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, mPost.getTitle() + " | Hacker News");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "https://news.ycombinator.com/item?id=" + mPost.getPostID());
+                startActivity(Intent.createChooser(shareIntent,
+                        getString(R.string.share_comments_url)));
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -603,5 +599,4 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             }
         }
     }
-
 }

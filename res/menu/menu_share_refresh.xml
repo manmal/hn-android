@@ -6,7 +6,6 @@
     <item android:id="@+id/menu_share"
         android:icon="@drawable/share"
         android:title="@string/share_comments_url"
-        hn:actionProviderClass="android.support.v7.widget.ShareActionProvider"
         hn:showAsAction="ifRoom" />
 
     <item android:id="@+id/menu_refresh"
