@@ -17,7 +17,6 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,13 +27,11 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -94,8 +91,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     HNComment mPendingVote;
     HashSet<HNComment> mVotedComments;
 
-    boolean mCanRefresh = false;
-    MenuItem mRefreshItem;
+    boolean mShouldShowRefreshing = false;
 
     @AfterViews
     public void init() {
@@ -169,7 +165,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_comments, menu);
+        getMenuInflater().inflate(R.menu.menu_share_refresh, menu);
         MenuItem shareItem = menu.findItem(R.id.menu_share);
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
@@ -181,7 +177,6 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         shareProvider.setShareHistoryFileName(null);
         shareProvider.setShareIntent(shareIntent);
 
-        mRefreshItem = menu.findItem(R.id.menu_refresh);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -189,9 +184,11 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
 
-        if (!mCanRefresh) {
+        if (mShouldShowRefreshing) {
             View refreshView = mInflater.inflate(R.layout.refresh_icon, null);
             MenuItemCompat.setActionView(refreshItem, refreshView);
+        } else {
+            MenuItemCompat.setActionView(refreshItem, null);
         }
 
         return super.onPrepareOptionsMenu(menu);
@@ -213,7 +210,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     }
 
     private void triggerShowRefresh() {
-        mCanRefresh = false;
+        mShouldShowRefreshing = true;
         supportInvalidateOptionsMenu();
     }
 
@@ -262,13 +259,13 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     }
 
     private void updateStatusIndicatorOnLoadingFinished(TaskResultCode code) {
-    	mCanRefresh = true;
+    	mShouldShowRefreshing = false;
         supportInvalidateOptionsMenu();
     }
 
     private void startFeedLoading() {
         mHaveLoadedPosts = false;
-        mCanRefresh = false;
+        mShouldShowRefreshing = true;
         HNPostCommentsTask.startOrReattach(this, this, mPost.getPostID(), 0);
         triggerShowRefresh();
     }
