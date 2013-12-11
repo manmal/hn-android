@@ -62,11 +62,13 @@ public class ArticleReaderActivity extends ActionBarActivity {
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
         mActionbarTitle.setText(getString(R.string.article));
         mActionbarTitle.setOnClickListener(new OnClickListener() {
+            @Override
             public void onClick(View v) {
                 Intent i = new Intent(ArticleReaderActivity.this, CommentsActivity_.class);
                 i.putExtra(CommentsActivity.EXTRA_HNPOST, mPost);
-                if (getIntent().getStringExtra(EXTRA_HTMLPROVIDER_OVERRIDE) != null)
+                if (getIntent().getStringExtra(EXTRA_HTMLPROVIDER_OVERRIDE) != null) {
                     i.putExtra(EXTRA_HTMLPROVIDER_OVERRIDE, getIntent().getStringExtra(EXTRA_HTMLPROVIDER_OVERRIDE));
+                }
                 startActivity(i);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 finish();
@@ -76,10 +78,11 @@ public class ArticleReaderActivity extends ActionBarActivity {
         mPost = (HNPost) getIntent().getSerializableExtra(EXTRA_HNPOST);
         if (mPost != null && mPost.getURL() != null) {
             String htmlProviderOverride = getIntent().getStringExtra(EXTRA_HTMLPROVIDER_OVERRIDE);
-            if (htmlProviderOverride != null)
+            if (htmlProviderOverride != null) {
                 mHtmlProvider = htmlProviderOverride;
-            else
+            } else {
                 mHtmlProvider = Settings.getHtmlProvider(this);
+            }
             mWebView.loadUrl(getArticleViewURL(mPost, mHtmlProvider, this));
         }
         mWebView.getSettings().setBuiltInZoomControls(true);
@@ -88,6 +91,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.setWebViewClient(new HNReaderWebViewClient());
         mWebView.setWebChromeClient(new WebChromeClient() {
+            @Override
             public void onProgressChanged(WebView view, int progress) {
                 if (progress == 100 && mShouldShowRefreshing) {
                 	mShouldShowRefreshing = false;
@@ -110,9 +114,6 @@ public class ArticleReaderActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_share_refresh, menu);
-        MenuItem shareItem = menu.findItem(R.id.menu_share);
-
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -163,22 +164,24 @@ public class ArticleReaderActivity extends ActionBarActivity {
     @SuppressWarnings("deprecation")
     public static String getArticleViewURL(HNPost post, String htmlProvider, Context c) {
         String encodedURL = URLEncoder.encode(post.getURL());
-        if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_viewtext)))
+        if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_viewtext))) {
             return HTMLPROVIDER_PREFIX_VIEWTEXT + encodedURL;
-        else if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_google)))
+        } else if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_google))) {
             return HTMLPROVIDER_PREFIX_GOOGLE + encodedURL;
-        else if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_instapaper)))
+        } else if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_instapaper))) {
             return HTMLPROVIDER_PREFIX_INSTAPAPER + encodedURL;
-        else
+        } else {
             return post.getURL();
+        }
     }
 
     @Override
     public void onBackPressed() {
-        if (mWebView.canGoBack())
+        if (mWebView.canGoBack()) {
             mWebView.goBack();
-        else
+        } else {
             super.onBackPressed();
+        }
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
