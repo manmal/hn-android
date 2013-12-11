@@ -5,8 +5,6 @@
         <item name="actionOverflowButtonStyle">@style/OverflowIconStyle</item>
         <item name="android:homeAsUpIndicator">@drawable/back</item>
         <item name="homeAsUpIndicator">@drawable/back</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownMenuStyle</item>
-        <item name="dropDownListViewStyle">@style/DropDownMenuStyle</item>
     </style>
 
     <style name="ActionBar.Orange">
