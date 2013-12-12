@@ -5,6 +5,7 @@
         <item name="actionOverflowButtonStyle">@style/OverflowIconStyle</item>
         <item name="android:homeAsUpIndicator">@drawable/back</item>
         <item name="homeAsUpIndicator">@drawable/back</item>
+        <item name="android:buttonStyle">@null</item>
     </style>
 
     <style name="ActionBar.Orange">
