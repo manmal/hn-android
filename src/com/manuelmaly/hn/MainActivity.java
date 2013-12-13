@@ -91,6 +91,9 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     private static final int TASKCODE_LOAD_FEED = 10;
     private static final int TASKCODE_LOAD_MORE_POSTS = 20;
     private static final int TASKCODE_VOTE = 100;
+    
+    private static final int NEXTPAGE = 0;
+    public static final String ARTICAL_POSITION = "NEXT_POSITION";
 
     private static final String LIST_STATE = "listState";
     private Parcelable mListState = null;
@@ -402,7 +405,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                                 getString(R.string.pref_htmlviewer_browser)))
                                 openURLInBrowser(getArticleViewURL(getItem(position)), MainActivity.this);
                             else
-                                openPostInApp(getItem(position), null, MainActivity.this);
+                                //openPostInApp(getItem(position), null, MainActivity.this);
+                            	openPostInApp(position,getItem(position), null, MainActivity.this);
                         }
                     });
                     holder.textContainer.setOnLongClickListener(new OnLongClickListener() {
@@ -410,7 +414,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                             final HNPost post = getItem(position);
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(post);
+                            LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(post,position);
                             builder.setAdapter(adapter, adapter).show();
                             return true;
                         }
@@ -452,12 +456,14 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
     private class LongPressMenuListAdapter implements ListAdapter, DialogInterface.OnClickListener {
 
+    	int pos;
         HNPost mPost;
         boolean mIsLoggedIn;
         boolean mUpVotingEnabled;
         ArrayList<CharSequence> mItems;
 
-        public LongPressMenuListAdapter(HNPost post) {
+        public LongPressMenuListAdapter(HNPost post,int position) {
+        	pos=position;
             mPost = post;
             mIsLoggedIn = Settings.isUserLoggedIn(MainActivity.this);
             mUpVotingEnabled = !mIsLoggedIn
@@ -554,7 +560,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                 case 2:
                 case 3:
                 case 4:
-                    openPostInApp(mPost, getItem(item).toString(), MainActivity.this);
+                    openPostInApp( pos , mPost, getItem(item).toString(), MainActivity.this);
                     break;
                 case 5:
                     openURLInBrowser(getArticleViewURL(mPost), MainActivity.this);
@@ -575,14 +581,25 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         a.startActivity(browserIntent);
     }
 
-    public static void openPostInApp(HNPost post, String overrideHtmlProvider, Activity a) {
+    public static void openPostInApp(int position, HNPost post, String overrideHtmlProvider, Activity a) {
+
         Intent i = new Intent(a, ArticleReaderActivity_.class);
+        i.putExtra(ArticleReaderActivity.EXTRA_POSITION, position);
         i.putExtra(ArticleReaderActivity.EXTRA_HNPOST, post);
         if (overrideHtmlProvider != null)
             i.putExtra(ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE, overrideHtmlProvider);
-        a.startActivity(i);
+        a.startActivityForResult(i,NEXTPAGE);
+       // a.startActivity(i);
     }
-
+    @Override 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) 
+    {	
+    	if(requestCode == NEXTPAGE && resultCode == RESULT_OK){
+    		int position = (int) data.getIntExtra(ARTICAL_POSITION,-1);  		
+    		HNPost post = mFeed.getPosts().get(position);
+    		openPostInApp( position, post, null, MainActivity.this );
+    	}
+    }
     static class PostViewHolder {
         TextView titleView;
         TextView urlView;
