@@ -59,6 +59,41 @@
                 android:id="@+id/actionbar_refresh_progress"
                 style="@style/MenubarRefresh" />
         </LinearLayout>
+
+          <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+             <ImageView
+         	   android:id="@+id/Magnifier"
+         	   android:paddingBottom="8dp"
+               android:paddingTop="8dp"
+         	   android:layout_width="wrap_content"
+         	   android:layout_height="wrap_content"
+         	   android:layout_gravity="left"
+         	   android:src="@drawable/magnifying" />
+
+            <EditText
+                android:id="@+id/main_search_text"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.72"
+                android:inputType="text"
+                android:visibility="invisible"  >
+
+                <requestFocus />
+            </EditText>
+
+            <Button
+                android:id="@+id/main_search"
+                style="?android:attr/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search"
+                android:visibility="invisible"  />
+
+        </LinearLayout>>
+
     </FrameLayout>
 
     <ListView

@@ -61,4 +61,22 @@ public class HNFeed implements Serializable {
     public String getUserAcquiredFor() {
         return mUserAcquiredFor;
     }
+    
+    public void search(String text) {
+    	if(text == "")
+         return;
+    	else{
+    		int i =0;
+    		while(i<mPosts.size())
+    		{
+    			if(mPosts.get(i) == null)
+    				break;
+    			else if(!mPosts.get(i).getTitle().toLowerCase().contains(text.toLowerCase()))
+    				mPosts.remove(i);
+    			else
+    				i++;
+    		}
+    	}
+    	
+    }
 }
