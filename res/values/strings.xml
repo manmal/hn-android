@@ -30,6 +30,7 @@
     <string name="settings_password">Password</string>
     <string name="refresh">Refresh</string>
     <string name="back_to_main">Back To Main</string>
+    <string name="translate">Translate</string>
     <string name="more">More</string>
     <string name="deleted">[deleted]</string>
     <string name="expand_comment">Expand Comment</string>

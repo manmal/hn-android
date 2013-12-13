@@ -36,6 +36,9 @@ public class ArticleReaderActivity extends Activity {
     private static final String HTMLPROVIDER_PREFIX_VIEWTEXT = "http://viewtext.org/article?url=";
     private static final String HTMLPROVIDER_PREFIX_GOOGLE = "http://www.google.com/gwt/x?u=";
     private static final String HTMLPROVIDER_PREFIX_INSTAPAPER = "http://www.instapaper.com/text?u=";
+    
+    private static boolean translateFlag;
+    private static final String HTMLTRANSLATE_PREFIX = "http://translate.google.com.tw/translate?sl=en&tl=zh-TW&prev=_t&hl=zh-TW&ie=UTF-8&u=";
 
     @ViewById(R.id.article_webview)
     WebView mWebView;
@@ -51,6 +54,9 @@ public class ArticleReaderActivity extends Activity {
 
     @ViewById(R.id.actionbar_back)
     ImageView mActionbarBack;
+    
+    @ViewById(R.id.actionbar_translate)
+    ImageView mActionbarTranslate;
 
     @ViewById(R.id.actionbar_refresh)
     ImageView mActionbarRefresh;
@@ -73,6 +79,8 @@ public class ArticleReaderActivity extends Activity {
     @AfterViews
     @SuppressLint("SetJavaScriptEnabled")
     public void init() {
+        translateFlag = false;
+        
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
         mActionbarTitle.setText(getString(R.string.article));
         mActionbarTitle.setOnClickListener(new OnClickListener() {
@@ -90,6 +98,13 @@ public class ArticleReaderActivity extends Activity {
         mActionbarBack.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 finish();
+            }
+        });
+        
+        mActionbarTranslate.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+            	translateFlag = !translateFlag;
+            	mWebView.loadUrl(getArticleViewURL(mPost, mHtmlProvider, ArticleReaderActivity.this));
             }
         });
 
@@ -143,7 +158,7 @@ public class ArticleReaderActivity extends Activity {
         if(mWebViewSavedState != null) {
             mWebView.restoreState(mWebViewSavedState);
         }
-
+        
         setIsLoading(true);
     }
     
@@ -164,7 +179,7 @@ public class ArticleReaderActivity extends Activity {
         else if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_instapaper)))
             return HTMLPROVIDER_PREFIX_INSTAPAPER + encodedURL;
         else
-            return post.getURL();
+            return (translateFlag?HTMLTRANSLATE_PREFIX:"") + post.getURL();
     }
 
     @Override
