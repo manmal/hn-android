@@ -46,5 +46,13 @@
     <string name="error_unable_to_retrieve_comments">We were unable to retrieve the latest comments for this post.</string>
     <string name="error_unable_to_retrieve_feed">We were unable to update the posts feed</string>
     <string name="error_unable_to_load_more">We were unable to load more articles</string>
+
     <string name="search">Go</string>
+    <string name="sFilter">Order By</string>
+    <string name="sTime">Time</string>
+    <string name="sReader">Reader Number</string>
+    <string name="sComment">Comment Number</string>
+    <string name="sFavorite">Favorite</string>
+    <string name="sSetting">Settings</string>
+    <string name="sAbout">About</string>
 </resources>

@@ -7,4 +7,36 @@
         <item name="android:padding">16dp</item>
         <item name="android:gravity">left</item>
     </style>
+    <style name="leftBehindMenuScroll">
+        <item name="android:layout_width">150dp</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:background">@color/gray_comments_divider</item>
+    </style>
+    <style name="rightBehindMenuScroll">
+        <item name="android:layout_width">300dp</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:background">@color/gray_comments_divider</item>
+    </style>
+    <style name="behindMenuScrollContent">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">8dp</item>
+    </style>
+    <style name="behindMenuItemTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:textColor">#376951</item>
+    </style>
+    <style name="behindMenuItemLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
 </resources>

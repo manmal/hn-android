@@ -1,0 +1,50 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/leftBehindMenuScroll" >
+
+    <LinearLayout
+        style="@style/behindMenuScrollContent"
+        android:paddingTop="25dp" >
+
+        <TextView
+            style="@style/behindMenuItemTitle"
+            android:text="@string/sFilter" />
+
+        <TextView
+            android:id="@+id/orderByTime"
+            style="@style/behindMenuItemLabel"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:text="@string/sTime" />
+
+        <TextView
+            android:id="@+id/orderByReader"
+            style="@style/behindMenuItemLabel"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/sReader" />
+
+        <TextView
+            android:id="@+id/orderByComment"
+            style="@style/behindMenuItemLabel"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:text="@string/sComment" />
+
+        <TextView
+            android:id="@+id/mFavorite"
+            style="@style/behindMenuItemTitle"
+            android:text="@string/sFavorite" />
+
+        <TextView
+            android:id="@+id/mSettings"
+            style="@style/behindMenuItemTitle"
+            android:text="@string/sSetting" />
+
+        <TextView
+            android:id="@+id/mAbout"
+            style="@style/behindMenuItemTitle"
+            android:text="@string/sAbout" />
+
+    </LinearLayout>
+
+</ScrollView>

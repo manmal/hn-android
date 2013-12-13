@@ -14,5 +14,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/libGoogleAnalytics.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jsoup-1.7.2.jar"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
+	<classpathentry kind="lib" path="libs/simple-side-drawer2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -17,11 +17,17 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.DragEvent;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnDragListener;
 import android.view.View.OnLongClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -52,9 +58,16 @@ import com.manuelmaly.hn.task.HNVoteTask;
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
+import com.navdrawer.SimpleSideDrawer;
 
 @EActivity(R.layout.main)
+
 public class MainActivity extends BaseListActivity implements ITaskFinishedHandler<HNFeed> {
+
+	float drag_Sx = 0, drag_Sy = 0;
+	float drag_Ex = 0, drag_Ey = 0;
+	boolean startSlide = false;
+	boolean longClick = false;
 
     @ViewById(R.id.main_list)
     ListView mPostsList;
@@ -80,6 +93,14 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     @SystemService
     LayoutInflater mInflater;
     
+	
+	TextView orderByTime;
+	TextView orderByReader;
+	TextView orderByComment;
+	TextView mSettings;
+	TextView mAbout;
+	TextView mFavorite;
+	
     //------------- new add -----------------
     @ViewById(R.id.main_search)
     Button main_search;
@@ -114,6 +135,9 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
     private static final String LIST_STATE = "listState";
     private Parcelable mListState = null;
+	
+	// SlideMenu
+	private SimpleSideDrawer mNav;
 
     @AfterViews
     public void init() {
@@ -131,6 +155,75 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
           mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
           compare_text ="";
+		  
+		  mNav = new SimpleSideDrawer(this);
+		mNav.setLeftBehindContentView(R.layout.slide_menu_drawer);
+
+		orderByTime = (TextView) findViewById(R.id.orderByTime);
+		orderByReader = (TextView) findViewById(R.id.orderByReader);
+		orderByComment = (TextView) findViewById(R.id.orderByComment);
+		mSettings = (TextView) findViewById(R.id.mSettings);
+		mAbout = (TextView) findViewById(R.id.mAbout);
+		mFavorite = (TextView) findViewById(R.id.mFavorite);
+
+		orderByTime.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Toast.makeText(MainActivity.this, "orderByTime",
+						Toast.LENGTH_SHORT).show();
+			}
+		});
+
+		orderByReader.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Toast.makeText(MainActivity.this, "orderByReader",
+						Toast.LENGTH_SHORT).show();
+			}
+		});
+		
+		orderByComment.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Toast.makeText(MainActivity.this, "orderByComment",
+						Toast.LENGTH_SHORT).show();
+			}
+		});
+		mSettings.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Toast.makeText(MainActivity.this, "mSettings",
+						Toast.LENGTH_SHORT).show();
+			}
+		});
+		mAbout.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Toast.makeText(MainActivity.this, "mAbout",
+						Toast.LENGTH_SHORT).show();
+			}
+		});
+		mFavorite.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Toast.makeText(MainActivity.this, "mFavorite",
+						Toast.LENGTH_SHORT).show();
+			}
+		});
+		  
+		  
           loadIntermediateFeedFromStore();
           startFeedLoading();
     }
@@ -296,13 +389,15 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 		protected void onPostExecute(HNFeed result) {
 			if (progress != null && progress.isShowing())
 				progress.dismiss();
-			
-			if (result != null && result.getUserAcquiredFor() != null
+
+			if (result != null
+					&& result.getUserAcquiredFor() != null
 					&& result.getUserAcquiredFor().equals(
 							Settings.getUserName(App.getInstance())))
 				showFeed(result);
 		}
 	}
+
 
     private void startFeedLoading() {
         HNFeedTaskMainFeed.startOrReattach(this, this, TASKCODE_LOAD_FEED);
@@ -455,27 +550,78 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                             startActivity(i);
                         }
                     });
-                    holder.textContainer.setOnClickListener(new OnClickListener() {
-                        public void onClick(View v) {
-                            if (Settings.getHtmlViewer(MainActivity.this).equals(
-                                getString(R.string.pref_htmlviewer_browser)))
-                                openURLInBrowser(getArticleViewURL(getItem(position)), MainActivity.this);
-                            else
-                                //openPostInApp(getItem(position), null, MainActivity.this);
-                            	openPostInApp(position,getItem(position), null, MainActivity.this);
-                        }
-                    });
-                    holder.textContainer.setOnLongClickListener(new OnLongClickListener() {
-                        public boolean onLongClick(View v) {
-                            final HNPost post = getItem(position);
+				holder.textContainer.setOnTouchListener(new OnTouchListener() {
 
-                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(post,position);
-                            builder.setAdapter(adapter, adapter).show();
-                            return true;
-                        }
-                    });
-                    break;
+					@Override
+					public boolean onTouch(View v, MotionEvent event) {
+						// TODO Auto-generated method stub
+
+						if (event.getAction() == MotionEvent.ACTION_UP) {
+							System.out.println("up");
+							if (!startSlide && !longClick) {
+								if (Settings
+										.getHtmlViewer(MainActivity.this)
+										.equals(getString(R.string.pref_htmlviewer_browser)))
+									openURLInBrowser(
+											getArticleViewURL(getItem(position)),
+											MainActivity.this);
+								else
+									openPostInApp(position,getItem(position), null, MainActivity.this);
+
+							} else {
+								drag_Ex = event.getX();
+								drag_Ey = event.getY();
+								if (drag_Ex - drag_Sx >= 100) {
+									mNav.toggleLeftDrawer();
+								}
+							}
+							if (longClick)
+								longClick = false;
+							return false;
+						}
+						if (event.getAction() == MotionEvent.ACTION_MOVE) {
+							System.out.println("move");
+							if (!startSlide) {
+								if (Math.sqrt(Math.pow(event.getX() - drag_Sx,
+										2)
+										+ Math.pow(event.getY() - drag_Sy, 2)) >= 10.0) {
+									drag_Sx = event.getX();
+									drag_Sy = event.getY();
+									startSlide = true;
+								}
+							}
+							return false;
+
+						}
+						if (event.getAction() == MotionEvent.ACTION_DOWN) {
+							System.out.println("down");
+							startSlide = false;
+							drag_Sx = event.getX();
+							drag_Sy = event.getY();
+							return false;
+						}
+
+						return false;
+					}
+				});
+				holder.textContainer
+						.setOnLongClickListener(new OnLongClickListener() {
+							public boolean onLongClick(View v) {
+								System.out.println("onLongClick");
+								if (!startSlide) {
+									longClick = true;
+									final HNPost post = getItem(position);
+
+									AlertDialog.Builder builder = new AlertDialog.Builder(
+											MainActivity.this);
+		                            LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(post,position);
+									builder.setAdapter(adapter, adapter).show();
+
+								}
+								return true;
+							}
+						});
+				break;
 
                 case VIEWTYPE_LOADMORE:
                     // I don't use the preloaded convertView here because it's
@@ -664,5 +810,4 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         LinearLayout textContainer;
         Button commentsButton;
     }
-
 }
