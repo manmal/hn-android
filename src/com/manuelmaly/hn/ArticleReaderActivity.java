@@ -7,9 +7,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -25,32 +28,33 @@ import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.util.FontHelper;
+import com.manuelmaly.hn.model.HNFeed;
 
 @EActivity(R.layout.article_activity)
 public class ArticleReaderActivity extends Activity {
 
-    private static final String WEB_VIEW_SAVED_STATE_KEY = "webViewSavedState";
-    public static final String EXTRA_HNPOST = "HNPOST";
-    public static final String EXTRA_HTMLPROVIDER_OVERRIDE = "HTMLPROVIDER_OVERRIDE";
+	private static final String WEB_VIEW_SAVED_STATE_KEY = "webViewSavedState";
+	public static final String EXTRA_HNPOST = "HNPOST";
+	public static final String EXTRA_HTMLPROVIDER_OVERRIDE = "HTMLPROVIDER_OVERRIDE";
+	public static final String EXTRA_POSITION = "NEXT_POSITION";
 
     private static final String HTMLPROVIDER_PREFIX_VIEWTEXT = "http://viewtext.org/article?url=";
     private static final String HTMLPROVIDER_PREFIX_GOOGLE = "http://www.google.com/gwt/x?u=";
     private static final String HTMLPROVIDER_PREFIX_INSTAPAPER = "http://www.instapaper.com/text?u=";
     
+	public static final int FEEDNUM = 30;
+    
     private static boolean translateFlag;
     private static final String HTMLTRANSLATE_PREFIX = "http://translate.google.com.tw/translate?sl=en&tl=zh-TW&prev=_t&hl=zh-TW&ie=UTF-8&u=";
 
-    @ViewById(R.id.article_webview)
-    WebView mWebView;
+	@ViewById(R.id.article_webview)
+	WebView mWebView;
 
-    @ViewById(R.id.actionbar)
-    FrameLayout mActionbarContainer;
+	@ViewById(R.id.actionbar)
+	FrameLayout mActionbarContainer;
 
-    @ViewById(R.id.actionbar_title_button)
-    Button mActionbarTitle;
-
-    @ViewById(R.id.actionbar_share)
-    ImageView mActionbarShare;
+	@ViewById(R.id.actionbar_title_button)
+	Button mActionbarTitle;
 
     @ViewById(R.id.actionbar_back)
     ImageView mActionbarBack;
@@ -58,29 +62,34 @@ public class ArticleReaderActivity extends Activity {
     @ViewById(R.id.actionbar_translate)
     ImageView mActionbarTranslate;
 
-    @ViewById(R.id.actionbar_refresh)
-    ImageView mActionbarRefresh;
-    
-    @ViewById(R.id.actionbar_refresh_container)
-    LinearLayout mActionbarRefreshContainer;
-    
-    @ViewById(R.id.actionbar_refresh_progress)
-    ProgressBar mActionbarRefreshProgress;
-    
-    @SystemService
-    LayoutInflater mInflater;
+	@ViewById(R.id.actionbar_share)
+	ImageView mActionbarShare;
 
-    HNPost mPost;
-    String mHtmlProvider;
+	@ViewById(R.id.actionbar_refresh)
+	ImageView mActionbarRefresh;
 
-    boolean mIsLoading;
+	@ViewById(R.id.actionbar_refresh_container)
+	LinearLayout mActionbarRefreshContainer;
+
+	@ViewById(R.id.actionbar_refresh_progress)
+	ProgressBar mActionbarRefreshProgress;
+
+	@SystemService
+	LayoutInflater mInflater;
+
+	float up_x, down_x;
+
+	int position;
+	HNPost mPost;
+	String mHtmlProvider;
+
+	boolean mIsLoading;
 	private Bundle mWebViewSavedState;
+	private boolean multiF = false;
 
     @AfterViews
     @SuppressLint("SetJavaScriptEnabled")
     public void init() {
-        translateFlag = false;
-        
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
         mActionbarTitle.setText(getString(R.string.article));
         mActionbarTitle.setOnClickListener(new OnClickListener() {
@@ -129,6 +138,12 @@ public class ArticleReaderActivity extends Activity {
                 startActivity(Intent.createChooser(i, getString(R.string.share_article_url)));
             }
         });
+        
+        translateFlag = false;
+        
+		position = (int) getIntent().getIntExtra(EXTRA_POSITION, -1);
+		if (position == -1) {
+		}
 
         mPost = (HNPost) getIntent().getSerializableExtra(EXTRA_HNPOST);
         if (mPost != null && mPost.getURL() != null) {
@@ -161,7 +176,7 @@ public class ArticleReaderActivity extends Activity {
         
         setIsLoading(true);
     }
-    
+    //------------------------------------------------------------------------------------------------------------------
     protected void setIsLoading(boolean loading) {
     	mIsLoading = loading;
 		mActionbarRefreshProgress.setVisibility(loading ? View.VISIBLE
@@ -219,5 +234,53 @@ public class ArticleReaderActivity extends Activity {
             return true;
         }
     }
+
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		// Log.d("ddd",String.valueOf(ev.getAction()));
+		boolean result = onTouch(ev);
+		if (!result)
+			return super.dispatchTouchEvent(ev);
+		return result;
+	}
+
+	public boolean onTouch(MotionEvent event) {
+		float dx;
+
+		if (event.getAction() == MotionEvent.ACTION_POINTER_2_DOWN) {
+			multiF = true;
+		}
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			Log.d("ddd", "DOWN");
+			down_x = event.getX();
+			return false;
+		}
+		if (event.getAction() == MotionEvent.ACTION_UP) {
+			Log.d("ddd", "UP");
+			if (multiF) {
+				multiF = false;
+				return false;
+			}
+
+			up_x = event.getX();
+			dx = down_x - up_x;
+			Intent intent = new Intent(ArticleReaderActivity.this,
+					MainActivity.class);
+			if (Math.abs(dx) > 200) {
+				if (dx > 0)
+					position = (position + 1) % (FEEDNUM); // next page
+				else
+					position = (position + FEEDNUM - 1) % (FEEDNUM); // previous
+																		// page
+
+				intent.putExtra(MainActivity.ARTICAL_POSITION, position);
+				setResult(RESULT_OK, intent);
+				finish();
+				return false;
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
 
 }
