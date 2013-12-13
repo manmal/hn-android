@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import android.R.bool;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -35,6 +35,7 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageButton;
 
 import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.Click;
@@ -78,6 +79,21 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     
     @SystemService
     LayoutInflater mInflater;
+    
+    //------------- new add -----------------
+    @ViewById(R.id.main_search)
+    Button main_search;
+    
+    @ViewById(R.id.main_search_text)
+    TextView main_search_text;
+    
+    @ViewById(R.id.Magnifier)
+    ImageView Magnifier;
+    
+    boolean turn =false;
+    HNFeed save;
+    //---------------------------------------
+    
 
     TextView mEmptyListPlaceholder;
     HNFeed mFeed;
@@ -87,6 +103,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     String mCurrentFontSize = null;
     int mFontSizeTitle;
     int mFontSizeDetails;
+    String compare_text;
 
     private static final int TASKCODE_LOAD_FEED = 10;
     private static final int TASKCODE_LOAD_MORE_POSTS = 20;
@@ -97,6 +114,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
     @AfterViews
     public void init() {
+    	save = new HNFeed(new ArrayList<HNPost>(), null, "");
         mFeed = new HNFeed(new ArrayList<HNPost>(), null, "");
         mPostsListAdapter = new PostsAdapter();
         mUpvotedPosts = new HashSet<HNPost>();
@@ -108,12 +126,30 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         mPostsList.setEmptyView(mEmptyListPlaceholder);
         mPostsList.setAdapter(mPostsListAdapter);
 
-        mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
-        
-        loadIntermediateFeedFromStore();
-        startFeedLoading();
+          mEmptyListPlaceholder.setTypeface(FontHelper.getComfortaa(this, true));
+          compare_text ="";
+          loadIntermediateFeedFromStore();
+          startFeedLoading();
     }
 
+    @Click(R.id.main_search)
+    void main_search() {
+    	if( main_search_text.getText().toString() == ""){
+    	   compare_text ="";
+     	   startFeedLoading();
+    	   showFeed(mFeed);}
+    	else if(  compare_text != main_search_text.getText().toString())
+    	{
+     	   startFeedLoading();
+     	   compare_text = main_search_text.getText().toString();
+     	   mFeed.search(compare_text);
+     	   showFeed(mFeed);
+    	}
+    	else{}
+      	open_search();
+    }
+    
+    
     @Override
     protected void onResume() {
         super.onResume();
@@ -144,10 +180,27 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
     @Click(R.id.actionbar_refresh_container)
     void refreshClicked() {
+    	compare_text ="";
         if (HNFeedTaskMainFeed.isRunning(getApplicationContext()))
             HNFeedTaskMainFeed.stopCurrent(getApplicationContext());
         else
             startFeedLoading();
+    }
+    @Click(R.id.Magnifier)
+    void open_search() {
+    	turn = !turn;
+    	search_appear(turn);
+    }
+    
+    void search_appear(boolean turn)
+    {
+    	if(turn){
+    	  main_search_text.setVisibility(View.VISIBLE);
+    	  main_search.setVisibility(View.VISIBLE);}
+    	else{
+      	  main_search_text.setVisibility(View.INVISIBLE);
+      	  main_search.setVisibility(View.INVISIBLE);}
+    		
     }
 
     @Click(R.id.actionbar_more)
@@ -193,8 +246,9 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     @Override
     public void onTaskFinished(int taskCode, TaskResultCode code, HNFeed result, Object tag) {
         if (taskCode == TASKCODE_LOAD_FEED) {
-            if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
-                showFeed(result);
+            if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null){
+            	result.search(compare_text);
+                showFeed(result);}
             else if (!code.equals(TaskResultCode.Success))
                 Toast.makeText(this, getString(R.string.
                         error_unable_to_retrieve_feed), Toast.LENGTH_SHORT).show();
@@ -207,7 +261,9 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                         error_unable_to_load_more), Toast.LENGTH_SHORT).show();
 
             mFeed.appendLoadMoreFeed(result);
+            mFeed.search(compare_text);
             mPostsListAdapter.notifyDataSetChanged();
+ 
         }
 
     }
