@@ -550,7 +550,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                             startActivity(i);
                         }
                     });
-				holder.textContainer.setOnTouchListener(new OnTouchListener() {
+/*				holder.textContainer.setOnTouchListener(new OnTouchListener() {
 
 					@Override
 					public boolean onTouch(View v, MotionEvent event) {
@@ -603,12 +603,21 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
 						return false;
 					}
-				});
+				});*/
+                holder.textContainer.setOnClickListener(new OnClickListener() {
+                    public void onClick(View v) {
+                        if (Settings.getHtmlViewer(MainActivity.this).equals(
+                            getString(R.string.pref_htmlviewer_browser)))
+                            openURLInBrowser(getArticleViewURL(getItem(position)), MainActivity.this);
+                        else
+                        	openPostInApp(position,getItem(position), null, MainActivity.this);
+                    }
+                });
 				holder.textContainer
 						.setOnLongClickListener(new OnLongClickListener() {
 							public boolean onLongClick(View v) {
 								System.out.println("onLongClick");
-								if (!startSlide) {
+								if(!startSlide){
 									longClick = true;
 									final HNPost post = getItem(position);
 
@@ -616,9 +625,9 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 											MainActivity.this);
 		                            LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(post,position);
 									builder.setAdapter(adapter, adapter).show();
-
+									return true;
 								}
-								return true;
+								return false;
 							}
 						});
 				break;
@@ -810,4 +819,53 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         LinearLayout textContainer;
         Button commentsButton;
     }
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		// Log.d("ddd",String.valueOf(ev.getAction()));
+		boolean result = onTouch(ev);
+		if (!result)
+			return super.dispatchTouchEvent(ev);
+		return result;
+	}
+	public boolean onTouch(MotionEvent event) {
+
+		if (event.getAction() == MotionEvent.ACTION_UP) {
+			if (longClick){
+				longClick = false;
+				return false;
+			}
+			
+			if (startSlide) {
+				drag_Ex = event.getX();
+				drag_Ey = event.getY();
+				if (Math.abs(drag_Ey-drag_Sy)<=40&&drag_Ex - drag_Sx >= 100) {
+					mNav.toggleLeftDrawer();
+					return true;
+				}
+				startSlide = false;
+			}
+
+			return false;
+		}
+		if (event.getAction() == MotionEvent.ACTION_MOVE) {
+			if (!startSlide) {
+				if (Math.sqrt(Math.pow(event.getX() - drag_Sx,2)
+						+ Math.pow(event.getY() - drag_Sy, 2)) >= 10.0) {
+					drag_Sx = event.getX();
+					drag_Sy = event.getY();
+					startSlide = true;
+				}
+			}
+			return false;
+
+		}
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			startSlide = false;
+			drag_Sx = event.getX();
+			drag_Sy = event.getY();
+			return false;
+		}
+
+		return false;
+
+	}
 }
