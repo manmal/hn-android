@@ -4,6 +4,8 @@
         <item name="android:actionOverflowButtonStyle">@style/OverflowIconStyle</item>
         <item name="actionOverflowButtonStyle">@style/OverflowIconStyle</item>
         <item name="android:homeAsUpIndicator">@drawable/back</item>
+        <item name="android:actionBarItemBackground">@drawable/actionbar_button_bg</item>
+        <item name="actionBarItemBackground">@drawable/actionbar_button_bg</item>
         <item name="homeAsUpIndicator">@drawable/back</item>
         <item name="android:buttonStyle">@null</item>
     </style>
