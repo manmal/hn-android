@@ -69,6 +69,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bubble"
             android:minWidth="50dp"
+            android:gravity="center_horizontal"
             android:text="0"
             android:textColor="#716961"
             android:textSize="18sp" />

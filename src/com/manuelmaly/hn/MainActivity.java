@@ -1,5 +1,6 @@
 package com.manuelmaly.hn;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -16,17 +17,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.DataSetObserver;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -35,15 +38,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.PopupWindow.OnDismissListener;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.Background;
-import com.googlecode.androidannotations.annotations.Click;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
@@ -67,21 +66,6 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     @ViewById(R.id.main_root)
     LinearLayout mRootView;
 
-    @ViewById(R.id.actionbar_title)
-    TextView mActionbarTitle;
-
-    @ViewById(R.id.actionbar_refresh)
-    ImageView mActionbarRefresh;
-    
-    @ViewById(R.id.actionbar_refresh_container)
-    LinearLayout mActionbarRefreshContainer;
-    
-    @ViewById(R.id.actionbar_refresh_progress)
-    ProgressBar mActionbarRefreshProgress;
-
-    @ViewById(R.id.actionbar_more)
-    ImageView mActionbarMore;
-    
     @SystemService
     LayoutInflater mInflater;
 
@@ -105,15 +89,36 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     private static final String ALREADY_READ_ARTICLES_KEY = "HN_ALREADY_READ";
     private Parcelable mListState = null;
 
+    boolean mShouldShowRefreshing = true;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Make sure that we show the overflow menu icon
+        try {
+            ViewConfiguration config = ViewConfiguration.get(this);
+            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+
+            if (menuKeyField != null) {
+                menuKeyField.setAccessible(true);
+                menuKeyField.setBoolean(config, false);
+            }
+        }
+        catch (Exception e) {
+            // presumably, not relevant
+        }
+
+        TextView tv = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.actionbar_title);
+        tv.setTypeface(FontHelper.getComfortaa(this, true));
+    }
+
     @AfterViews
     public void init() {
         mFeed = new HNFeed(new ArrayList<HNPost>(), null, "");
         mPostsListAdapter = new PostsAdapter();
         mUpvotedPosts = new HashSet<HNPost>();
-        mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
-        mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
-        
-        mActionbarRefreshProgress.setVisibility(View.GONE);
+
         mEmptyListPlaceholder = getEmptyTextView(mRootView);
         mPostsList.setEmptyView(mEmptyListPlaceholder);
         mPostsList.setAdapter(mPostsListAdapter);
@@ -122,7 +127,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         
         mTitleColor = getResources().getColor(R.color.dark_gray_post_title);
         mTitleReadColor = getResources().getColor(R.color.gray_post_title_read);
-        
+
         loadAlreadyReadCache();
         loadIntermediateFeedFromStore();
         startFeedLoading();
@@ -150,71 +155,59 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             mPostsList.onRestoreInstanceState(mListState);
         mListState = null;
     }
-    
-    @Click(R.id.actionbar)
-    void actionBarClicked() {
-        mPostsList.smoothScrollToPosition(0);
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
-    @Click(R.id.actionbar_refresh_container)
-    void refreshClicked() {
-        if (HNFeedTaskMainFeed.isRunning(getApplicationContext()))
-            HNFeedTaskMainFeed.stopCurrent(getApplicationContext());
-        else
-            startFeedLoading();
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.menu_refresh);
+
+        if (!mShouldShowRefreshing) {
+            MenuItemCompat.setActionView(item, null);
+        } else {
+            View v =  mInflater.inflate(
+                    R.layout.refresh_icon, null);
+            MenuItemCompat.setActionView(item, v);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
-    @Click(R.id.actionbar_more)
-    void moreClicked() {
-        mActionbarMore.setSelected(true);
-        LinearLayout moreContentView = (LinearLayout) mInflater.inflate(R.layout.main_more_content, null);
-
-        moreContentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        final PopupWindow popupWindow = new PopupWindow(this);
-        popupWindow.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.red_dark_washedout)));
-        popupWindow.setContentView(moreContentView);
-        popupWindow.showAsDropDown(mActionbarMore);
-        popupWindow.setTouchable(true);
-        popupWindow.setFocusable(true);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setOnDismissListener(new OnDismissListener() {
-            public void onDismiss() {
-                mActionbarMore.setSelected(false);
-            }
-        });
-
-        Button settingsButton = (Button) moreContentView.findViewById(R.id.main_more_content_settings);
-        settingsButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                popupWindow.dismiss();
-            }
-        });
-
-        Button aboutButton = (Button) moreContentView.findViewById(R.id.main_more_content_about);
-        aboutButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, AboutActivity_.class));
-                popupWindow.dismiss();
-            }
-        });
-
-        popupWindow.update(moreContentView.getMeasuredWidth(), moreContentView.getMeasuredHeight());
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_settings:
+                startActivity(new Intent(MainActivity.this,
+                        SettingsActivity.class));
+                return true;
+            case R.id.menu_about:
+                startActivity(new Intent(MainActivity.this,
+                        AboutActivity_.class));
+                return true;
+            case R.id.menu_refresh:
+                startFeedLoading();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
     public void onTaskFinished(int taskCode, TaskResultCode code, HNFeed result, Object tag) {
         if (taskCode == TASKCODE_LOAD_FEED) {
-            if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null)
+            if (code.equals(TaskResultCode.Success) && mPostsListAdapter != null) {
                 showFeed(result);
+            }
             else if (!code.equals(TaskResultCode.Success))
                 Toast.makeText(this, getString(R.string.
                         error_unable_to_retrieve_feed), Toast.LENGTH_SHORT).show();
 
-            mActionbarRefreshProgress.setVisibility(View.GONE);
-            mActionbarRefresh.setVisibility(View.VISIBLE);
+            mShouldShowRefreshing = false;
+            supportInvalidateOptionsMenu();
         } else if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
             if (!code.equals(TaskResultCode.Success))
                 Toast.makeText(this, getString(R.string.
@@ -222,6 +215,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
             mFeed.appendLoadMoreFeed(result);
             mPostsListAdapter.notifyDataSetChanged();
+            mShouldShowRefreshing = false;
+            supportInvalidateOptionsMenu();
         }
 
     }
@@ -264,7 +259,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     }
 
     private void loadIntermediateFeedFromStore() {
-        new GetLastHNFeedTask().execute((Void)null);
+        new GetLastHNFeedTask().execute((Void) null);
         long start = System.currentTimeMillis();
         
         Log.i("", "Loading intermediate feed took ms:" + (System.currentTimeMillis() - start));
@@ -281,8 +276,9 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 		}
 
 		protected void onPostExecute(HNFeed result) {
-			if (progress != null && progress.isShowing())
+			if (progress != null && progress.isShowing()) {
 				progress.dismiss();
+            }
 			
 			if (result != null && result.getUserAcquiredFor() != null
 					&& result.getUserAcquiredFor().equals(
@@ -292,11 +288,9 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 	}
 
     private void startFeedLoading() {
+        mShouldShowRefreshing = true;
         HNFeedTaskMainFeed.startOrReattach(this, this, TASKCODE_LOAD_FEED);
-        mActionbarRefresh.setImageResource(R.drawable.refresh);
-        
-        mActionbarRefreshProgress.setVisibility(View.VISIBLE);
-        mActionbarRefresh.setVisibility(View.GONE);
+        supportInvalidateOptionsMenu();
     }
 
     private boolean refreshFontSizes() {
@@ -350,12 +344,6 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                     Toast.makeText(MainActivity.this, R.string.vote_error, Toast.LENGTH_LONG).show();
             }
         }
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-    	moreClicked();
-    	return false;
     }
     
     class PostsAdapter extends BaseAdapter {
@@ -488,6 +476,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                             convertViewFinal.setClickable(false);
                             HNFeedTaskLoadMore.start(MainActivity.this, MainActivity.this, mFeed,
                                 TASKCODE_LOAD_MORE_POSTS);
+                            mShouldShowRefreshing = true;
+                            supportInvalidateOptionsMenu();
                         }
                     });
                     break;

@@ -6,61 +6,6 @@
     android:contentDescription="@string/more"
     android:orientation="vertical" >
 
-    <FrameLayout
-        android:id="@+id/actionbar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@drawable/actionbar_bg_orange"
-        android:gravity="center" >
-
-        <TextView
-            android:id="@+id/actionbar_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="@string/app_name"
-            android:shadowColor="@android:color/black"
-            android:shadowDx="0"
-            android:shadowDy="-1"
-            android:shadowRadius="1"
-            android:text="@string/app_name"
-            android:textColor="@android:color/white"
-            android:textSize="24sp" />
-
-        <ImageView
-            android:id="@+id/actionbar_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_marginRight="48dp"
-            android:background="@drawable/actionbar_button_bg"
-            android:contentDescription="@string/more"
-            android:paddingBottom="8dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingTop="8dp"
-            android:src="@drawable/more" />
-
-        <LinearLayout
-            android:id="@+id/actionbar_refresh_container"
-            android:layout_width="56dp"
-            android:layout_height="fill_parent"
-            android:layout_gravity="right"
-            android:gravity="center" >
-
-            <ImageView
-                android:id="@+id/actionbar_refresh"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:contentDescription="@string/refresh"
-                android:src="@drawable/refresh" />
-
-            <ProgressBar
-                android:id="@+id/actionbar_refresh_progress"
-                style="@style/MenubarRefresh" />
-        </LinearLayout>
-    </FrameLayout>
-
     <ListView
         android:id="@+id/main_list"
         android:layout_width="match_parent"

@@ -2,7 +2,6 @@ package com.manuelmaly.hn;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.regex.Pattern;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -12,26 +11,26 @@ import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.view.MenuItemCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +51,8 @@ import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
 
 @EActivity(R.layout.comments_activity)
-public class CommentsActivity extends BaseListActivity implements ITaskFinishedHandler<HNPostComments> {
+public class CommentsActivity extends BaseListActivity implements
+        ITaskFinishedHandler<HNPostComments> {
 
     public static final String EXTRA_HNPOST = "HNPOST";
     private static final int TASKCODE_VOTE = 100;
@@ -61,27 +61,6 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
     @ViewById(R.id.comments_list)
     ListView mCommentsList;
-
-    @ViewById(R.id.actionbar)
-    FrameLayout mActionbarContainer;
-
-    @ViewById(R.id.actionbar_title_button)
-    Button mActionbarTitle;
-
-    @ViewById(R.id.actionbar_refresh)
-    ImageView mActionbarRefresh;
-    
-    @ViewById(R.id.actionbar_refresh_container)
-    LinearLayout mActionbarRefreshContainer;
-    
-    @ViewById(R.id.actionbar_refresh_progress)
-    ProgressBar mActionbarRefreshProgress;
-
-    @ViewById(R.id.actionbar_share)
-    ImageView mActionbarShare;
-
-    @ViewById(R.id.actionbar_back)
-    ImageView mActionbarBack;
 
     @ViewById(R.id.comments_root)
     LinearLayout mRootView;
@@ -92,6 +71,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     LinearLayout mCommentHeader;
     TextView mCommentHeaderText;
     TextView mEmptyView;
+    TextView mActionbarTitle;
 
     HNPost mPost;
     HNPostComments mComments;
@@ -110,6 +90,8 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
     HNComment mPendingVote;
     HashSet<HNComment> mVotedComments;
+
+    boolean mShouldShowRefreshing = false;
 
     @AfterViews
     public void init() {
@@ -132,12 +114,15 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         mCommentsList.addHeaderView(mCommentHeader, null, false);
         mCommentsList.setAdapter(mCommentsListAdapter);
 
-        mActionbarContainer.setOnClickListener(new OnClickListener() {
+        getSupportActionBar().getCustomView().setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 mCommentsList.smoothScrollToPosition(0);
             }
         });
 
+        getSupportActionBar().setHomeButtonEnabled(false);
+        mActionbarTitle = (TextView) getSupportActionBar().getCustomView().
+                findViewById(R.id.actionbar_title);
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
         mActionbarTitle.setText(getString(R.string.comments));
         mActionbarTitle.setOnClickListener(new OnClickListener() {
@@ -160,34 +145,6 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             }
         });
 
-        mActionbarBack.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        mActionbarShare.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, mPost.getTitle() + " | Hacker News");
-                i.putExtra(Intent.EXTRA_TEXT, "https://news.ycombinator.com/item?id=" + mPost.getPostID());
-                startActivity(Intent.createChooser(i, getString(R.string.share_comments_url)));
-            }
-        });
-
-        mActionbarRefresh.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
-        mActionbarRefreshContainer.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                if (HNPostCommentsTask.isRunning(mPost.getPostID()))
-                    HNPostCommentsTask.stopCurrent(mPost.getPostID());
-                else
-                    startFeedLoading();
-            }
-        });
-
-        mActionbarRefreshProgress.setVisibility(View.GONE);
-
         loadIntermediateCommentsFromStore();
         startFeedLoading();
     }
@@ -204,6 +161,53 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         if (mListState != null)
             mCommentsList.onRestoreInstanceState(mListState);
         mListState = null;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_share_refresh, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
+
+        if (mShouldShowRefreshing) {
+            View refreshView = mInflater.inflate(R.layout.refresh_icon, null);
+            MenuItemCompat.setActionView(refreshItem, refreshView);
+        } else {
+            MenuItemCompat.setActionView(refreshItem, null);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_refresh:
+                triggerShowRefresh();
+                startFeedLoading();
+                return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.menu_share:
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, mPost.getTitle() + " | Hacker News");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "https://news.ycombinator.com/item?id=" + mPost.getPostID());
+                startActivity(Intent.createChooser(shareIntent,
+                        getString(R.string.share_comments_url)));
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void triggerShowRefresh() {
+        mShouldShowRefreshing = true;
+        supportInvalidateOptionsMenu();
     }
 
     @Override
@@ -250,20 +254,16 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         }
     }
 
-    private void updateStatusIndicatorOnLoadingStarted() {
-        mActionbarRefreshProgress.setVisibility(View.VISIBLE);
-        mActionbarRefresh.setVisibility(View.GONE);
-    }
-
     private void updateStatusIndicatorOnLoadingFinished(TaskResultCode code) {
-    	mActionbarRefreshProgress.setVisibility(View.GONE);
-    	mActionbarRefresh.setVisibility(View.VISIBLE);
+    	mShouldShowRefreshing = false;
+        supportInvalidateOptionsMenu();
     }
 
     private void startFeedLoading() {
         mHaveLoadedPosts = false;
+        mShouldShowRefreshing = true;
         HNPostCommentsTask.startOrReattach(this, this, mPost.getPostID(), 0);
-        updateStatusIndicatorOnLoadingStarted();
+        triggerShowRefresh();
     }
 
     private boolean refreshFontSizes() {
@@ -599,5 +599,4 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
             }
         }
     }
-
 }
