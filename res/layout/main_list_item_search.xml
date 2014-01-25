@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#c3b5a7"
-    android:minHeight="64dp" >
+    android:layout_height="50dp"
+    android:background="@color/peach"
+    android:maxHeight="50dp"
+    android:paddingBottom="8dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="8dp" >
 
     <EditText
+        android:id="@+id/search_edt_txt"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:background="@drawable/search_bg_edt_txt"
         android:hint="@string/search"
         android:imeOptions="actionSearch"
         android:inputType="text"
-        android:layout_margin="10dp" />
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="5dp" />
 
 </FrameLayout>
