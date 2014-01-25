@@ -1,5 +1,6 @@
 package com.manuelmaly.hn;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -22,14 +23,20 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,6 +46,7 @@ import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.googlecode.androidannotations.annotations.AfterViews;
@@ -82,8 +90,13 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
   @ViewById(R.id.actionbar_more)
   ImageView mActionbarMore;
 
+  EditText mSearchField;
+
   @SystemService
   LayoutInflater mInflater;
+
+  @SystemService
+  InputMethodManager mInputMethodManager;
 
   TextView mEmptyListPlaceholder;
   HNFeed mFeed;
@@ -96,6 +109,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
   int mFontSizeDetails;
   int mTitleColor;
   int mTitleReadColor;
+  boolean mActivityStart;
 
   private static final int TASKCODE_LOAD_FEED = 10;
   private static final int TASKCODE_LOAD_MORE_POSTS = 20;
@@ -107,6 +121,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
   @AfterViews
   public void init() {
+    mActivityStart = true;
     mFeed = new HNFeed( new ArrayList<HNPost>(), null, "" );
     mPostsListAdapter = new PostsAdapter();
     mUpvotedPosts = new HashSet<HNPost>();
@@ -117,6 +132,44 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     mEmptyListPlaceholder = getEmptyTextView( mRootView );
     mPostsList.setEmptyView( mEmptyListPlaceholder );
     mPostsList.setAdapter( mPostsListAdapter );
+    mPostsList.setOnScrollListener( new OnScrollListener() {
+
+      private boolean searchIsVisible = false;
+      private boolean searchWasVisible = false;
+
+      @Override
+      public void onScrollStateChanged( AbsListView view, int scrollState ) {
+
+      }
+
+      @Override
+      public void onScroll( AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount ) {
+        if (firstVisibleItem == 0 && mSearchField != null) {
+          searchIsVisible = true;
+
+        }
+
+        if (firstVisibleItem > 0 && mSearchField != null) {
+          searchIsVisible = false;
+        }
+
+        toggle();
+      }
+
+      private void toggle() {
+        if (searchIsVisible != searchWasVisible) {
+          if (searchIsVisible) {
+            mSearchField.requestFocus();
+            mInputMethodManager.showSoftInput( mSearchField, 0 );
+          } else {
+            mInputMethodManager.hideSoftInputFromWindow( mSearchField.getWindowToken(), 0 );
+            mSearchField.clearFocus();
+          }
+        }
+
+        searchWasVisible = searchIsVisible;
+      }
+    } );
 
     mEmptyListPlaceholder.setTypeface( FontHelper.getComfortaa( this, true ) );
 
@@ -153,7 +206,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
   @Click(R.id.actionbar)
   void actionBarClicked() {
-    mPostsList.smoothScrollToPosition( 0 );
+    adjustScrollTopPositionIfNecessary( true );
   }
 
   @Click(R.id.actionbar_refresh_container)
@@ -259,6 +312,31 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
   private void showFeed( HNFeed feed ) {
     mFeed = feed;
     mPostsListAdapter.notifyDataSetChanged();
+    adjustScrollTopPositionIfNecessary( false );
+  }
+
+  private void adjustScrollTopPositionIfNecessary( boolean forceToTop ) {
+    if (mPostsList.getFirstVisiblePosition() == 0 || forceToTop) {
+      if (mActivityStart) {
+        mPostsList.setSelectionFromTop( 1, 0 );
+      } else {
+        // This hack is needed because smoothScrollToPosition does not align the
+        // first post item view with the action bar.
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+          Method m;
+          try {
+            m = ListView.class.getMethod( "smoothScrollToPositionFromTop", Integer.TYPE, Integer.TYPE );
+            m.invoke( mPostsList, 1, 0 );
+          } catch (Exception e) {
+            mPostsList.setSelectionFromTop( 1, 0 );
+          }
+        } else {
+          mPostsList.setSelectionFromTop( 1, 0 );
+        }
+      }
+    }
+
   }
 
   private void loadIntermediateFeedFromStore() {
@@ -285,6 +363,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
       if (result != null && result.getUserAcquiredFor() != null
           && result.getUserAcquiredFor().equals( Settings.getUserName( App.getInstance() ) ))
         showFeed( result );
+
+      mActivityStart = false;
     }
   }
 
@@ -374,7 +454,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     @Override
     public HNPost getItem( int position ) {
       if (getItemViewType( position ) == VIEWTYPE_POST)
-        return mFeed.getPosts().get( position - 1 ); // because of the search field
+        return mFeed.getPosts().get( position - 1 ); // because of the search
+                                                     // field
       else
         return null;
     }
@@ -490,7 +571,21 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
         } );
         break;
       case VIEWTYPE_SEARCH:
-        convertView = (FrameLayout) mInflater.inflate( R.layout.main_list_item_search, null );
+        if (convertView == null) {
+          convertView = (FrameLayout) mInflater.inflate( R.layout.main_list_item_search, null );
+          mSearchField = (EditText) convertView.findViewById( R.id.search_edt_txt );
+          mSearchField.setOnEditorActionListener( new OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction( TextView v, int actionId, KeyEvent event ) {
+              if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                System.out.println( "Searching for: " + mSearchField.getText() );
+              }
+              return false;
+            }
+          } );
+        }
+
         break;
       default:
         break;
