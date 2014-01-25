@@ -36,6 +36,7 @@
     <string name="collapse_comment">Collapse Comment</string>
     <string name="no_comments">No Comments</string>
     <string name="login_success_reloading">Login successful: reloading the comments to get proper upvote links.</string>
+    <string name="search">Search</string>
     
     <!-- Error messages -->
     <string name="error_login_device_offline">Your device has no network connection at the moment.</string>
