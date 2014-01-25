@@ -20,7 +20,10 @@ import android.database.DataSetObserver;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -61,6 +64,7 @@ import com.manuelmaly.hn.parser.BaseHTMLParser;
 import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.task.HNFeedTaskLoadMore;
 import com.manuelmaly.hn.task.HNFeedTaskMainFeed;
+import com.manuelmaly.hn.task.HNSearchTask;
 import com.manuelmaly.hn.task.HNVoteTask;
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
 import com.manuelmaly.hn.util.FileUtil;
@@ -100,6 +104,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
   TextView mEmptyListPlaceholder;
   HNFeed mFeed;
+  HNFeed mFeedBackup;
   PostsAdapter mPostsListAdapter;
   Set<HNPost> mUpvotedPosts;
   Set<Integer> mAlreadyRead;
@@ -113,6 +118,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
   private static final int TASKCODE_LOAD_FEED = 10;
   private static final int TASKCODE_LOAD_MORE_POSTS = 20;
+  private static final int TASKCODE_SEARCH_RESULTS = 30;
   private static final int TASKCODE_VOTE = 100;
 
   private static final String LIST_STATE = "listState";
@@ -273,6 +279,9 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
       mFeed.appendLoadMoreFeed( result );
       mPostsListAdapter.notifyDataSetChanged();
+    } else if (taskCode == TASKCODE_SEARCH_RESULTS) {
+      System.out.println( "SEARCH COMPLETE" );
+      showSearchResults( result );
     }
 
   }
@@ -310,9 +319,26 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
   }
 
   private void showFeed( HNFeed feed ) {
+    System.out.println( "Showing feed with posts: " + feed.getPosts().size() );
     mFeed = feed;
     mPostsListAdapter.notifyDataSetChanged();
     adjustScrollTopPositionIfNecessary( false );
+  }
+
+  private void showSearchResults( HNFeed feed ) {
+    if (mFeedBackup == null) {
+      mFeedBackup = mFeed;
+    }
+    showFeed( feed );
+  }
+
+  private void clearSearchResults() {
+    if (mFeedBackup == null) {
+      refreshClicked();
+    } else {
+      showFeed( mFeedBackup );
+      mFeedBackup = null;
+    }
   }
 
   private void adjustScrollTopPositionIfNecessary( boolean forceToTop ) {
@@ -445,10 +471,10 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     public int getCount() {
       int posts = mFeed.getPosts().size();
       if (posts == 0)
-        return 0;
+        return 1; // for the search cell...
       else
-        return posts + (mFeed.isLoadedMore() ? 0 : 1) + 1; // + 1 for the hidden
-                                                           // search cell
+        // + 2 for the hidden search cell and the load more cell.
+        return posts + 2;
     }
 
     @Override
@@ -579,10 +605,41 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             @Override
             public boolean onEditorAction( TextView v, int actionId, KeyEvent event ) {
               if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                System.out.println( "Searching for: " + mSearchField.getText() );
+                String query = mSearchField.getText().toString();
+                if (query.length() > 0)
+                  HNSearchTask.startOrReattach( query, MainActivity.this, MainActivity.this, TASKCODE_SEARCH_RESULTS );
+                else
+                  adjustScrollTopPositionIfNecessary( true );
               }
               return false;
             }
+          } );
+
+          // necessary, because the textwatcher has a bug and sometimes
+          // reports a change with an empty string on backspace, even
+          // if the change is not resulting in an empty string.
+          // http://stackoverflow.com/questions/14766422/textwatcher-aftertextchanged-has-incorrect-string-after-backspace
+          final Handler handler = new Handler();
+          final Runnable r = new Runnable() {
+            @Override
+            public void run() {
+              if (mSearchField.getText().toString().matches( "" )) {
+                clearSearchResults();
+              }
+            }
+          };
+          mSearchField.addTextChangedListener( new TextWatcher() {
+
+            @Override
+            public void onTextChanged( CharSequence s, int start, int before, int count ) {
+              handler.postDelayed( r, 100 );
+            }
+
+            @Override
+            public void beforeTextChanged( CharSequence s, int start, int count, int after ) { }
+
+            @Override
+            public void afterTextChanged( Editable s ) { }
           } );
         }
 
