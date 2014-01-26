@@ -1,6 +1,5 @@
 package com.manuelmaly.hn;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -193,6 +192,11 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
   @Click(R.id.actionbar_refresh_container)
   void refreshClicked() {
+    if (mSearchMode) {
+      mSearchField.setText( "" ); // this will render Feed mode..
+      return;
+    }
+
     if (HNFeedTaskMainFeed.isRunning( getApplicationContext() ))
       HNFeedTaskMainFeed.stopCurrent( getApplicationContext() );
     else
@@ -261,6 +265,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
       } else {
         Toast.makeText( this, getString( R.string.error_search_error ), Toast.LENGTH_SHORT ).show();
       }
+      mActionbarRefreshProgress.setVisibility( View.GONE );
+      mActionbarRefresh.setVisibility( View.VISIBLE );
     } else if (taskCode == TASKCODE_LOAD_MORE_SEARCH_RESULTS) {
       if (code.equals( TaskResultCode.Success )) {
         mFeed.appendLoadMoreFeed( result );
@@ -315,16 +321,18 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
       mFeedBackup = mFeed;
     }
     showFeed( feed );
+    mPostsList.setSelectionFromTop( 1, 0 );
   }
 
   private void renderFeedMode() {
+    mSearchMode = false;
     if (mFeedBackup == null) {
       refreshClicked();
     } else {
       showFeed( mFeedBackup );
       mFeedBackup = null;
     }
-    mSearchMode = false;
+
   }
 
   private void adjustScrollTopPositionIfNecessary( boolean forceToTop ) {
@@ -332,20 +340,9 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
       if (mActivityStart) {
         mPostsList.setSelectionFromTop( 1, 0 );
       } else {
-        // This hack is needed because smoothScrollToPosition does not align the
-        // first post item view with the action bar.
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-          Method m;
-          try {
-            m = ListView.class.getMethod( "smoothScrollToPositionFromTop", Integer.TYPE, Integer.TYPE );
-            m.invoke( mPostsList, 1, 0 );
-          } catch (Exception e) {
-            mPostsList.setSelectionFromTop( 1, 0 );
-          }
-        } else {
-          mPostsList.setSelectionFromTop( 1, 0 );
-        }
+        // we can scroll to 0, as the scroll listener will take
+        // care of snapping to 1
+        mPostsList.smoothScrollToPosition( 0 );
       }
     }
 
@@ -580,7 +577,8 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             convertViewFinal.setClickable( false );
             if (mSearchMode) {
               String query = mSearchField.getText().toString();
-              HNSearchTask.startOrReattach( query, false, MainActivity.this, MainActivity.this, TASKCODE_LOAD_MORE_SEARCH_RESULTS );
+              HNSearchTask.startOrReattach( query, false, MainActivity.this, MainActivity.this,
+                  TASKCODE_LOAD_MORE_SEARCH_RESULTS );
             } else {
               HNFeedTaskLoadMore.start( MainActivity.this, MainActivity.this, mFeed, TASKCODE_LOAD_MORE_POSTS );
             }
@@ -599,7 +597,12 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                 String query = mSearchField.getText().toString();
                 if (query.length() > 0) {
                   mSearchMode = true;
-                  HNSearchTask.startOrReattach( query, true, MainActivity.this, MainActivity.this, TASKCODE_SEARCH_RESULTS );
+                  HNSearchTask.startOrReattach( query, true, MainActivity.this, MainActivity.this,
+                      TASKCODE_SEARCH_RESULTS );
+                  mActionbarRefresh.setImageResource( R.drawable.refresh );
+
+                  mActionbarRefreshProgress.setVisibility( View.VISIBLE );
+                  mActionbarRefresh.setVisibility( View.GONE );
                 } else {
                   adjustScrollTopPositionIfNecessary( true );
                 }
@@ -607,7 +610,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
               return false;
             }
           } );
-          
+
           // necessary, because the textwatcher has a bug and sometimes
           // reports a change with an empty string on backspace, even
           // if the change is not resulting in an empty string.
@@ -637,11 +640,12 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             }
           } );
         }
-        
+
         if (mActivityStart) {
           convertView.setVisibility( View.GONE );
         } else {
           convertView.setVisibility( View.VISIBLE );
+          mSearchField.requestFocus();
         }
 
         break;
