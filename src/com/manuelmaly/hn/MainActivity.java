@@ -138,44 +138,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     mEmptyListPlaceholder = getEmptyTextView( mRootView );
     mPostsList.setEmptyView( mEmptyListPlaceholder );
     mPostsList.setAdapter( mPostsListAdapter );
-    mPostsList.setOnScrollListener( new OnScrollListener() {
-
-      private boolean searchIsVisible = false;
-      private boolean searchWasVisible = false;
-
-      @Override
-      public void onScrollStateChanged( AbsListView view, int scrollState ) {
-
-      }
-
-      @Override
-      public void onScroll( AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount ) {
-        if (firstVisibleItem == 0 && mSearchField != null) {
-          searchIsVisible = true;
-
-        }
-
-        if (firstVisibleItem > 0 && mSearchField != null) {
-          searchIsVisible = false;
-        }
-
-        toggle();
-      }
-
-      private void toggle() {
-        if (searchIsVisible != searchWasVisible) {
-          if (searchIsVisible) {
-            mSearchField.requestFocus();
-            mInputMethodManager.showSoftInput( mSearchField, 0 );
-          } else {
-            mInputMethodManager.hideSoftInputFromWindow( mSearchField.getWindowToken(), 0 );
-            mSearchField.clearFocus();
-          }
-        }
-
-        searchWasVisible = searchIsVisible;
-      }
-    } );
+    mPostsList.setOnScrollListener( new HNFeedScrollListener() );
 
     mEmptyListPlaceholder.setTypeface( FontHelper.getComfortaa( this, true ) );
 
@@ -215,8 +178,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     if (mPostsList.getFirstVisiblePosition() == 0 && mSearchField != null
         && !mSearchField.getText().toString().matches( "" )) {
       mSearchField.setText( "" );
-      adjustScrollTopPositionIfNecessary( true );
-      
+
     } else {
       super.onBackPressed();
     }
@@ -625,7 +587,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
               return false;
             }
           } );
-
+          
           // necessary, because the textwatcher has a bug and sometimes
           // reports a change with an empty string on backspace, even
           // if the change is not resulting in an empty string.
@@ -655,6 +617,12 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             }
           } );
         }
+        
+        if (mActivityStart) {
+          convertView.setVisibility( View.GONE );
+        } else {
+          convertView.setVisibility( View.VISIBLE );
+        }
 
         break;
       default:
@@ -666,6 +634,51 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
 
     private boolean isRead( HNPost post ) {
       return mAlreadyRead.contains( post.getTitle().hashCode() );
+    }
+  }
+
+  private class HNFeedScrollListener implements OnScrollListener {
+
+    private boolean searchIsVisible = false;
+    private boolean searchWasVisible = false;
+    private boolean isAutoScrolling = false;
+
+    @Override
+    public void onScrollStateChanged( AbsListView view, int scrollState ) {
+      isAutoScrolling = (scrollState == SCROLL_STATE_FLING) ? true : false;
+    }
+
+    @Override
+    public void onScroll( AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount ) {
+      if (isAutoScrolling && firstVisibleItem == 0) {
+        view.setSelection( 1 );
+        return;
+      }
+
+      if (firstVisibleItem == 0 && mSearchField != null) {
+        searchIsVisible = true;
+
+      }
+
+      if (firstVisibleItem > 0 && mSearchField != null) {
+        searchIsVisible = false;
+      }
+
+      toggle();
+    }
+
+    private void toggle() {
+      if (searchIsVisible != searchWasVisible) {
+        if (searchIsVisible) {
+          mSearchField.requestFocus();
+          mInputMethodManager.showSoftInput( mSearchField, 0 );
+        } else {
+          mSearchField.clearFocus();
+          mInputMethodManager.hideSoftInputFromWindow( mSearchField.getWindowToken(), 0 );
+        }
+      }
+
+      searchWasVisible = searchIsVisible;
     }
   }
 
