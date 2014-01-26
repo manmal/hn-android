@@ -11,6 +11,7 @@
     <string name="please_log_in">Please log in first via \'Settings\' -> \'User\'.</string>
     <string name="already_upvoted">Upvoted by you</string>
     <string name="already_voted_on">Already voted on</string>
+    <string name="search_upvote_not_possible">Can\'t upvote search result</string>
     <string name="credentials">Enter your HN credentials:</string>
     <string name="check_and_save">Save</string>
     <string name="checking">Checking&#8230;</string>
@@ -36,6 +37,7 @@
     <string name="collapse_comment">Collapse Comment</string>
     <string name="no_comments">No Comments</string>
     <string name="login_success_reloading">Login successful: reloading the comments to get proper upvote links.</string>
+    <string name="search">Search</string>
     
     <!-- Error messages -->
     <string name="error_login_device_offline">Your device has no network connection at the moment.</string>
@@ -45,4 +47,5 @@
     <string name="error_unable_to_retrieve_comments">We were unable to retrieve the latest comments for this post.</string>
     <string name="error_unable_to_retrieve_feed">We were unable to update the posts feed</string>
     <string name="error_unable_to_load_more">We were unable to load more articles</string>
+    <string name="error_search_error">We were unable to find any articles</string>
 </resources>
