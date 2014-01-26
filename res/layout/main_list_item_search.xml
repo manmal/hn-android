@@ -16,7 +16,7 @@
         android:layout_gravity="center"
         android:background="@drawable/search_bg_edt_txt"
         android:hint="@string/search"
-        android:imeOptions="actionSearch"
+        android:imeOptions="actionSearch|flagNoExtractUi"
         android:inputType="text"
         android:paddingBottom="5dp"
         android:paddingLeft="10dp"

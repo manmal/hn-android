@@ -210,6 +210,18 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     mListState = null;
   }
 
+  @Override
+  public void onBackPressed() {
+    if (mPostsList.getFirstVisiblePosition() == 0 && mSearchField != null
+        && !mSearchField.getText().toString().matches( "" )) {
+      mSearchField.setText( "" );
+      adjustScrollTopPositionIfNecessary( true );
+      
+    } else {
+      super.onBackPressed();
+    }
+  }
+
   @Click(R.id.actionbar)
   void actionBarClicked() {
     adjustScrollTopPositionIfNecessary( true );
@@ -319,7 +331,6 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
   }
 
   private void showFeed( HNFeed feed ) {
-    System.out.println( "Showing feed with posts: " + feed.getPosts().size() );
     mFeed = feed;
     mPostsListAdapter.notifyDataSetChanged();
     adjustScrollTopPositionIfNecessary( false );
@@ -636,10 +647,12 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             }
 
             @Override
-            public void beforeTextChanged( CharSequence s, int start, int count, int after ) { }
+            public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
+            }
 
             @Override
-            public void afterTextChanged( Editable s ) { }
+            public void afterTextChanged( Editable s ) {
+            }
           } );
         }
 
