@@ -46,4 +46,5 @@
     <string name="error_unable_to_retrieve_comments">We were unable to retrieve the latest comments for this post.</string>
     <string name="error_unable_to_retrieve_feed">We were unable to update the posts feed</string>
     <string name="error_unable_to_load_more">We were unable to load more articles</string>
+    <string name="error_search_error">We were unable to find any articles</string>
 </resources>

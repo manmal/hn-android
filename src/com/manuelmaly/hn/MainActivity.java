@@ -115,10 +115,12 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
   int mTitleColor;
   int mTitleReadColor;
   boolean mActivityStart;
+  boolean mSearchMode;
 
   private static final int TASKCODE_LOAD_FEED = 10;
   private static final int TASKCODE_LOAD_MORE_POSTS = 20;
   private static final int TASKCODE_SEARCH_RESULTS = 30;
+  private static final int TASKCODE_LOAD_MORE_SEARCH_RESULTS = 40;
   private static final int TASKCODE_VOTE = 100;
 
   private static final String LIST_STATE = "listState";
@@ -254,8 +256,18 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
       mFeed.appendLoadMoreFeed( result );
       mPostsListAdapter.notifyDataSetChanged();
     } else if (taskCode == TASKCODE_SEARCH_RESULTS) {
-      System.out.println( "SEARCH COMPLETE" );
-      showSearchResults( result );
+      if (code.equals( TaskResultCode.Success )) {
+        renderSearchMode( result );
+      } else {
+        Toast.makeText( this, getString( R.string.error_search_error ), Toast.LENGTH_SHORT ).show();
+      }
+    } else if (taskCode == TASKCODE_LOAD_MORE_SEARCH_RESULTS) {
+      if (code.equals( TaskResultCode.Success )) {
+        mFeed.appendLoadMoreFeed( result );
+        mPostsListAdapter.notifyDataSetChanged();
+      } else {
+        Toast.makeText( this, getString( R.string.error_search_error ), Toast.LENGTH_SHORT ).show();
+      }
     }
 
   }
@@ -298,20 +310,21 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
     adjustScrollTopPositionIfNecessary( false );
   }
 
-  private void showSearchResults( HNFeed feed ) {
+  private void renderSearchMode( HNFeed feed ) {
     if (mFeedBackup == null) {
       mFeedBackup = mFeed;
     }
     showFeed( feed );
   }
 
-  private void clearSearchResults() {
+  private void renderFeedMode() {
     if (mFeedBackup == null) {
       refreshClicked();
     } else {
       showFeed( mFeedBackup );
       mFeedBackup = null;
     }
+    mSearchMode = false;
   }
 
   private void adjustScrollTopPositionIfNecessary( boolean forceToTop ) {
@@ -565,7 +578,12 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             textView.setVisibility( View.INVISIBLE );
             imageView.setVisibility( View.VISIBLE );
             convertViewFinal.setClickable( false );
-            HNFeedTaskLoadMore.start( MainActivity.this, MainActivity.this, mFeed, TASKCODE_LOAD_MORE_POSTS );
+            if (mSearchMode) {
+              String query = mSearchField.getText().toString();
+              HNSearchTask.startOrReattach( query, false, MainActivity.this, MainActivity.this, TASKCODE_LOAD_MORE_SEARCH_RESULTS );
+            } else {
+              HNFeedTaskLoadMore.start( MainActivity.this, MainActivity.this, mFeed, TASKCODE_LOAD_MORE_POSTS );
+            }
           }
         } );
         break;
@@ -579,10 +597,12 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             public boolean onEditorAction( TextView v, int actionId, KeyEvent event ) {
               if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 String query = mSearchField.getText().toString();
-                if (query.length() > 0)
-                  HNSearchTask.startOrReattach( query, MainActivity.this, MainActivity.this, TASKCODE_SEARCH_RESULTS );
-                else
+                if (query.length() > 0) {
+                  mSearchMode = true;
+                  HNSearchTask.startOrReattach( query, true, MainActivity.this, MainActivity.this, TASKCODE_SEARCH_RESULTS );
+                } else {
                   adjustScrollTopPositionIfNecessary( true );
+                }
               }
               return false;
             }
@@ -597,7 +617,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
             @Override
             public void run() {
               if (mSearchField.getText().toString().matches( "" )) {
-                clearSearchResults();
+                renderFeedMode();
               }
             }
           };
