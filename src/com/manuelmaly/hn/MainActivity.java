@@ -194,6 +194,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
   void refreshClicked() {
     if (mSearchMode) {
       mSearchField.setText( "" ); // this will render Feed mode..
+      adjustScrollTopPositionIfNecessary( true );
       return;
     }
 
@@ -723,8 +724,10 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
       mItems = new ArrayList<CharSequence>();
       if (mUpVotingEnabled)
         mItems.add( getString( R.string.upvote ) );
-      else
-        mItems.add( getString( R.string.already_upvoted ) );
+      else {
+        String upvotedLbl = mSearchMode ? getString( R.string.search_upvote_not_possible ) : getString( R.string.already_upvoted );
+        mItems.add( upvotedLbl );
+      }
       mItems.addAll( Arrays.asList( getString( R.string.pref_htmlprovider_original_url ),
           getString( R.string.pref_htmlprovider_viewtext ), getString( R.string.pref_htmlprovider_google ),
           getString( R.string.pref_htmlprovider_instapaper ), getString( R.string.external_browser ) ) );

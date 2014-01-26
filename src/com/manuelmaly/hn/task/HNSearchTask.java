@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 
 import com.manuelmaly.hn.App;
+import com.manuelmaly.hn.Settings;
 import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.parser.BaseHTMLParser;
@@ -95,7 +96,7 @@ public class HNSearchTask extends BaseTask<HNFeed> {
               String postID = postResult.getString( "objectID" );
               int commentsCount = postResult.getInt( "num_comments" );
               int points = postResult.getInt( "points" );
-              HNPost post = new HNPost( url, title, urlDomain, author, postID, commentsCount, points, "" );
+              HNPost post = new HNPost( url, title, urlDomain, author, postID, commentsCount, points, null );
               postResults.add( post );
             }
           } catch (JSONException e) {
@@ -105,7 +106,7 @@ public class HNSearchTask extends BaseTask<HNFeed> {
             mErrorCode = IAPICommand.ERROR_UNKNOWN;
           }
 
-          mResult = new HNFeed( postResults, "", "" );
+          mResult = new HNFeed( postResults, "", Settings.getUserName( App.getInstance() ) );
 
         }
 

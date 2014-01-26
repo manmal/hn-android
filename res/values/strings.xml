@@ -11,6 +11,7 @@
     <string name="please_log_in">Please log in first via \'Settings\' -> \'User\'.</string>
     <string name="already_upvoted">Upvoted by you</string>
     <string name="already_voted_on">Already voted on</string>
+    <string name="search_upvote_not_possible">Can\'t upvote search result</string>
     <string name="credentials">Enter your HN credentials:</string>
     <string name="check_and_save">Save</string>
     <string name="checking">Checking&#8230;</string>
