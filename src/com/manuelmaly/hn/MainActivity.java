@@ -696,7 +696,7 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
       if (searchIsVisible != searchWasVisible) {
         if (searchIsVisible) {
           mSearchField.requestFocus();
-          mInputMethodManager.showSoftInput( mSearchField, 0 );
+          mInputMethodManager.toggleSoftInput( InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY );
         } else {
           mSearchField.clearFocus();
           mInputMethodManager.hideSoftInputFromWindow( mSearchField.getWindowToken(), 0 );
