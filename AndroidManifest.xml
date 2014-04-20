@@ -52,6 +52,8 @@
         <activity android:name=".AboutActivity_"
             android:theme="@style/ActionBar.Orange.Back">
         </activity>
+        <activity android:name=".util.SpotlightActivity"
+            android:theme="@android:style/Theme.Translucent" />
         <activity
             android:name=".ExternalIntentActivity"
             android:exported="true" >
@@ -65,8 +67,7 @@
                 </data>
             </intent-filter>
         </activity>
-        <activity android:name=".login.LoginActivity_" android:label="@string/credentials" android:theme="@android:style/Theme.Dialog">
-        </activity>
+        <activity android:name=".login.LoginActivity_" android:label="@string/credentials" android:theme="@android:style/Theme.Dialog" />
     </application>
 
 </manifest>
