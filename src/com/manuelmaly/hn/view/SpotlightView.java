@@ -29,6 +29,8 @@ public class SpotlightView extends View {
     private final Paint mClearPaint;
     private Paint mGradientPaint;
 
+    private Rect mClearRect;
+
     public SpotlightView(Context ctx, AttributeSet attrs) {
         super(ctx, attrs);
         mClearPaint = new Paint();
@@ -47,25 +49,21 @@ public class SpotlightView extends View {
 
         float xCenter = mXStart + (mXEnd - mXStart)/2;
         float yCenter = mYStart + (mYEnd - mYStart)/2;
-        float gradientRadius = getResources().getDisplayMetrics().density * 270 + .5f;
-        mRadialGradient = new RadialGradient(xCenter, yCenter, gradientRadius, 0x80000000, 0xD0000000, TileMode.CLAMP);
-        
+        // I want to basically make everything 0xFF000000 and I don't know how
+        // to properly do that.  This solves that problem.
+        mRadialGradient = new RadialGradient(xCenter, yCenter, 1,
+                0xFF000000, 0xFF000000, TileMode.CLAMP);
+
         mGradientPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         mGradientPaint.setShader(mRadialGradient);
+
+        mClearRect = new Rect((int)mXStart, (int)mYEnd, (int)mXEnd, (int)mYStart);
     }
 
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        /*Bitmap bmp = Bitmap.createBitmap((int)Math.ceil(mXEnd - mXStart), (int)
-                Math.ceil(mYEnd - mYStart), Bitmap.Config.ALPHA_8);*/
-
-        float highlightRadius = Math.max((mXEnd - mXStart)/2, (mYStart - mYEnd)/2);
         canvas.drawPaint(mGradientPaint);
-        Rect r = new Rect((int)mXStart, (int)mYEnd, (int)mXEnd, (int)mYStart);
-        float xCenter = mXStart + (mXEnd - mXStart)/2;
-        float yCenter = mYStart + (mYEnd - mYStart)/2;
-        //canvas.drawCircle(xCenter, mYStart, highlightRadius, mClearPaint);
-        canvas.drawRect(r, mClearPaint);
+        canvas.drawRect(mClearRect, mClearPaint);
     }
 }
