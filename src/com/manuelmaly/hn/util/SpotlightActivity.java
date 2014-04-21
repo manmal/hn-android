@@ -19,7 +19,6 @@ public class SpotlightActivity extends Activity {
         float xSize = getIntent().getIntExtra("x_size", -1);
         float ySize = getIntent().getIntExtra("y_size", -1);
         SpotlightView view = new SpotlightView(this, null);
-        view.setAlpha(.33f);
         view.setCoords(xStart, 0, xStart + xSize, ySize);
         setContentView(view);
     }
