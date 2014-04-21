@@ -23,5 +23,7 @@
     <style name="ActionBar.White">
         <item name="android:actionBarStyle">@style/ActionBarStyle.Back.White</item>
         <item name="actionBarStyle">@style/ActionBarStyle.Back.White</item>
+        <item name="android:actionBarItemBackground">@drawable/actionbar_button_bg_gray</item>
+        <item name="actionBarItemBackground">@drawable/actionbar_button_bg_gray</item>
     </style>
 </resources>
