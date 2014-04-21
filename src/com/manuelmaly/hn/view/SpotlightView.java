@@ -9,9 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.RadialGradient;
 import android.graphics.Rect;
-import android.graphics.Shader.TileMode;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -28,10 +26,8 @@ public class SpotlightView extends View {
     private float mXEnd;
     private float mYEnd;
 
-    private RadialGradient mRadialGradient;
-
     private final Paint mClearPaint;
-    private Paint mGradientPaint;
+    private Paint mBackgroundPaint;
     private final TextPaint mTextPaint;
 
     private Rect mClearRect;
@@ -62,14 +58,10 @@ public class SpotlightView extends View {
 
         float xCenter = mXStart + (mXEnd - mXStart)/2;
         float yCenter = mYStart + (mYEnd - mYStart)/2;
-        // I want to basically make everything 0xFF000000 and I don't know how
-        // to properly do that.  This solves that problem.
-        mRadialGradient = new RadialGradient(xCenter, yCenter, 1,
-                0xFF000000, 0xFF000000, TileMode.CLAMP);
 
-        mGradientPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        mGradientPaint.setColor(Color.BLACK);
-        mGradientPaint.setAlpha(200);
+        mBackgroundPaint = new Paint();
+        mBackgroundPaint.setColor(Color.BLACK);
+        mBackgroundPaint.setAlpha(200);
 
         mClearRect = new Rect((int)mXStart, (int)mYEnd, (int)mXEnd, (int)mYStart);
     }
@@ -87,7 +79,7 @@ public class SpotlightView extends View {
                 Layout.Alignment.ALIGN_CENTER, 1, 0, false);
         mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(mBitmap);
-        canvas.drawRect(new Rect(0, 0, w, h), mGradientPaint);
+        canvas.drawRect(new Rect(0, 0, w, h), mBackgroundPaint);
         canvas.drawRect(mClearRect, mClearPaint);
         canvas.translate(0, mYEnd + (int)(density * 10 + .5));
         mTextLayout.draw(canvas);
