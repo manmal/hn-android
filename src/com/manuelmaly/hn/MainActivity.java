@@ -608,9 +608,11 @@ public class MainActivity extends BaseListActivity implements ITaskFinishedHandl
                 case 3:
                 case 4:
                     openPostInApp(mPost, getItem(item).toString(), MainActivity.this);
+                    markAsRead(mPost);
                     break;
                 case 5:
                     openURLInBrowser(getArticleViewURL(mPost), MainActivity.this);
+                    markAsRead(mPost);
                     break;
                 default:
                     break;
