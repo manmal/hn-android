@@ -11,6 +11,8 @@ import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.support.v4.view.MenuItemCompat;
 import android.text.Html;
@@ -49,6 +51,7 @@ import com.manuelmaly.hn.util.DisplayHelper;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.SpotlightActivity;
+import com.manuelmaly.hn.util.ViewedUtils;
 
 @EActivity(R.layout.comments_activity)
 public class CommentsActivity extends BaseListActivity implements ITaskFinishedHandler<HNPostComments> {
@@ -133,14 +136,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
               Settings.getHtmlProvider( CommentsActivity.this ), CommentsActivity.this );
           MainActivity.openURLInBrowser( articleURL, CommentsActivity.this );
         } else {
-          int[] posArray = new int[2];
-          mActionbarTitle.getLocationInWindow( posArray );
-          Rect r = new Rect();
-          mActionbarTitle.getDrawingRect( r );
-          Intent intent = SpotlightActivity.intentForSpotlightActivity( CommentsActivity.this, posArray[0],
-              mActionbarTitle.getWidth(), 0, getSupportActionBar().getHeight() );
-          startActivity( intent );
-          overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
+          // TODO: ACTUALLY LAUNCH THE ACTIVITY NOW
           // finish();
         }
       }
@@ -164,6 +160,18 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
       mCommentsList.onRestoreInstanceState( mListState );
     }
     mListState = null;
+
+    if (!ViewedUtils.getActivityViewed( this )) {
+      Handler handler = new Handler( Looper.getMainLooper() );
+      handler.postDelayed( new Runnable() {
+        @Override
+        public void run() {
+          showCommentsSpotlight();
+          ViewedUtils.setActivityViewed( CommentsActivity.this );
+        }
+      }, 250 );
+    }
+
   }
 
   @Override
@@ -334,6 +342,17 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     mHaveLoadedPosts = true;
   }
 
+  private void showCommentsSpotlight() {
+    int[] posArray = new int[2];
+    mActionbarTitle.getLocationInWindow( posArray );
+    Rect r = new Rect();
+    mActionbarTitle.getDrawingRect( r );
+    Intent intent = SpotlightActivity.intentForSpotlightActivity( CommentsActivity.this, posArray[0],
+        mActionbarTitle.getWidth(), 0, getSupportActionBar().getHeight() );
+    startActivity( intent );
+    overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
+  }
+
   private class LongPressMenuListAdapter implements ListAdapter, DialogInterface.OnClickListener {
 
     HNComment mComment;
@@ -464,7 +483,6 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         mCommentsListAdapter.notifyDataSetChanged();
       }
     }
-
   }
 
   class VoteTaskFinishedHandler implements ITaskFinishedHandler<Boolean> {

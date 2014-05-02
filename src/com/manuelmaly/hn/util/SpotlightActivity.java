@@ -25,6 +25,10 @@ public class SpotlightActivity extends Activity {
     intent.putExtra( KEY_X_SIZE, xSize );
     intent.putExtra( KEY_Y_START, yStart );
     intent.putExtra( KEY_Y_SIZE, ySize );
+    Log.e( "MALTZ", xStart + "" );
+    Log.e( "MALTZ", xSize + "" );
+    Log.e( "MALTZ", yStart + "" );
+    Log.e( "MALTZ", ySize + "" );
     return intent;
   }
 
@@ -36,10 +40,6 @@ public class SpotlightActivity extends Activity {
     float xSize = getIntent().getFloatExtra( KEY_X_SIZE, -1 );
     float yStart = getIntent().getFloatExtra( KEY_Y_START, -1 );
     float ySize = getIntent().getFloatExtra( KEY_Y_SIZE, -1 );
-    Log.e( "MALTZ", "xstart is " + xStart );
-    Log.e( "MALTZ", "ystart is " + yStart );
-    Log.e( "MALTZ", "xSize is " + xSize );
-    Log.e( "MALTZ", "ySize is " + ySize );
     SpotlightView view = new SpotlightView( this, null, xStart, yStart, xStart + xSize, ySize );
     setContentView( view );
   }
