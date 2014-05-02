@@ -21,67 +21,69 @@ import android.view.View;
  */
 public class SpotlightView extends View {
 
-    private float mXStart;
-    private float mYStart;
-    private float mXEnd;
-    private float mYEnd;
+  private final float mXStart;
+  private final float mYStart;
+  private final float mXEnd;
+  private final float mYEnd;
 
-    private final Paint mClearPaint;
-    private Paint mBackgroundPaint;
-    private final TextPaint mTextPaint;
+  private final Paint mClearPaint;
+  private final Paint mBackgroundPaint;
+  private final TextPaint mTextPaint;
 
-    private Rect mClearRect;
-    Bitmap mBitmap;
+  private final Rect mClearRect;
+  Bitmap mBitmap;
 
-    private StaticLayout mTextLayout;
+  private StaticLayout mTextLayout;
 
-    public SpotlightView(Context ctx, AttributeSet attrs) {
-        super(ctx, attrs);
-        mClearPaint = new Paint();
-        mClearPaint.setColor(Color.TRANSPARENT);
-        mClearPaint.setAntiAlias(true);
-        mClearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        mClearPaint.setMaskFilter(new BlurMaskFilter(2 * getResources().getDisplayMetrics().density , Blur.NORMAL));
+  public SpotlightView( Context ctx, AttributeSet attrs ) {
+    this( ctx, attrs, 0, 0, 0, 0 );
+  }
 
-        mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setColor(Color.WHITE);
-        mTextPaint.setTextSize((float)(getResources().getDisplayMetrics().density * 20 + .5));
-        mTextPaint.setShadowLayer(1.5f, 1, 1, Color.BLACK);
-        // TODO make this better and actually read in the start and end attributes
-    }
+  public SpotlightView( Context ctx, AttributeSet attrs, float xStart, float yStart, float xEnd, float yEnd ) {
+    super( ctx, attrs );
+    mXStart = xStart;
+    mYStart = yStart;
+    mXEnd = xEnd;
+    mYEnd = yEnd;
 
-    public void setCoords(float xStart, float yStart, float xEnd, float yEnd) {
-        mXStart = xStart;
-        mYStart = yStart;
-        mXEnd = xEnd;
-        mYEnd = yEnd;
+    mClearPaint = new Paint();
+    mClearPaint.setColor( Color.TRANSPARENT );
+    mClearPaint.setAntiAlias( true );
+    mClearPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.CLEAR ) );
+    mClearPaint.setMaskFilter( new BlurMaskFilter( 2 * getResources().getDisplayMetrics().density, Blur.NORMAL ) );
 
-        float xCenter = mXStart + (mXEnd - mXStart)/2;
-        float yCenter = mYStart + (mYEnd - mYStart)/2;
+    mTextPaint = new TextPaint( Paint.ANTI_ALIAS_FLAG );
+    mTextPaint.setColor( Color.WHITE );
+    mTextPaint.setTextSize( (float) (getResources().getDisplayMetrics().density * 20 + .5) );
+    mTextPaint.setShadowLayer( 1.5f, 1, 1, Color.BLACK );
 
-        mBackgroundPaint = new Paint();
-        mBackgroundPaint.setColor(Color.BLACK);
-        mBackgroundPaint.setAlpha(200);
+    mBackgroundPaint = new Paint();
+    mBackgroundPaint.setColor( Color.BLACK );
+    mBackgroundPaint.setAlpha( 200 );
 
-        mClearRect = new Rect((int)mXStart, (int)mYEnd, (int)mXEnd, (int)mYStart);
-    }
+    mClearRect = new Rect( (int) mXStart, (int) mYEnd, (int) mXEnd, (int) mYStart );
+    // TODO make this better and actually read in the start and end attributes
+  }
 
-    @Override
-    public void onDraw(Canvas canvas) {
-        canvas.drawBitmap(mBitmap, 0, 0, null);
-    }
+  public void setCoords( float xStart, float yStart, float xEnd, float yEnd ) {
 
-    @Override
-    public void onSizeChanged(int w, int h, int oldw, int oldh) {
-        float density = getResources().getDisplayMetrics().density;
-        mTextLayout = new StaticLayout("Clicking on the word \"comments\" will take you to the article viewer",
-                mTextPaint, w - (int)(density * 20 + .5),
-                Layout.Alignment.ALIGN_CENTER, 1, 0, false);
-        mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(mBitmap);
-        canvas.drawRect(new Rect(0, 0, w, h), mBackgroundPaint);
-        canvas.drawRect(mClearRect, mClearPaint);
-        canvas.translate(0, mYEnd + (int)(density * 10 + .5));
-        mTextLayout.draw(canvas);
-    }
+  }
+
+  @Override
+  public void onDraw( Canvas canvas ) {
+    canvas.drawBitmap( mBitmap, 0, 0, null );
+  }
+
+  @Override
+  public void onSizeChanged( int w, int h, int oldw, int oldh ) {
+    float density = getResources().getDisplayMetrics().density;
+    mTextLayout = new StaticLayout( "Clicking on comments will take you to the article viewer", mTextPaint, w
+        - (int) (density * 20 + .5), Layout.Alignment.ALIGN_CENTER, 1, 0, false );
+    mBitmap = Bitmap.createBitmap( w, h, Bitmap.Config.ARGB_8888 );
+    Canvas canvas = new Canvas( mBitmap );
+    canvas.drawRect( new Rect( 0, 0, w, h ), mBackgroundPaint );
+    canvas.drawRect( mClearRect, mClearPaint );
+    canvas.translate( 0, mYEnd + (int) (density * 10 + .5) );
+    mTextLayout.draw( canvas );
+  }
 }

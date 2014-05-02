@@ -133,28 +133,14 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
               Settings.getHtmlProvider( CommentsActivity.this ), CommentsActivity.this );
           MainActivity.openURLInBrowser( articleURL, CommentsActivity.this );
         } else {
-          Intent i = new Intent( CommentsActivity.this, SpotlightActivity.class );
           int[] posArray = new int[2];
           mActionbarTitle.getLocationInWindow( posArray );
           Rect r = new Rect();
           mActionbarTitle.getDrawingRect( r );
-          i.putExtra( "x_pos", posArray[0] );
-          i.putExtra( "x_size", mActionbarTitle.getWidth() );
-          i.putExtra( "y_size", getSupportActionBar().getHeight() );
-          startActivity( i );
-          /*
-           * Intent i = new Intent(CommentsActivity.this,
-           * ArticleReaderActivity_.class);
-           * i.putExtra(CommentsActivity.EXTRA_HNPOST, mPost); if
-           * (getIntent().getStringExtra
-           * (ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE) != null)
-           * i.putExtra(ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE,
-           * getIntent
-           * ().getStringExtra(ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE
-           * )); startActivity(i);
-           * overridePendingTransition(android.R.anim.fade_in,
-           * android.R.anim.fade_out);
-           */
+          Intent intent = SpotlightActivity.intentForSpotlightActivity( CommentsActivity.this, posArray[0],
+              mActionbarTitle.getWidth(), 0, getSupportActionBar().getHeight() );
+          startActivity( intent );
+          overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
           // finish();
         }
       }
