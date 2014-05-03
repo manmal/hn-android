@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -136,8 +135,15 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
               Settings.getHtmlProvider( CommentsActivity.this ), CommentsActivity.this );
           MainActivity.openURLInBrowser( articleURL, CommentsActivity.this );
         } else {
-          // TODO: ACTUALLY LAUNCH THE ACTIVITY NOW
-          // finish();
+          Intent i = new Intent( CommentsActivity.this, ArticleReaderActivity_.class );
+          i.putExtra( CommentsActivity.EXTRA_HNPOST, mPost );
+          if (getIntent().getStringExtra( ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE ) != null) {
+            i.putExtra( ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE,
+                getIntent().getStringExtra( ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE ) );
+          }
+          startActivity( i );
+          overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
+          finish();
         }
       }
     } );
@@ -161,8 +167,10 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     }
     mListState = null;
 
+    // Only show the spotlight effect the first time
     if (!ViewedUtils.getActivityViewed( this )) {
       Handler handler = new Handler( Looper.getMainLooper() );
+      // If we don't delay this there are weird race conditions
       handler.postDelayed( new Runnable() {
         @Override
         public void run() {
@@ -345,8 +353,6 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
   private void showCommentsSpotlight() {
     int[] posArray = new int[2];
     mActionbarTitle.getLocationInWindow( posArray );
-    Rect r = new Rect();
-    mActionbarTitle.getDrawingRect( r );
     Intent intent = SpotlightActivity.intentForSpotlightActivity( CommentsActivity.this, posArray[0],
         mActionbarTitle.getWidth(), 0, getSupportActionBar().getHeight() );
     startActivity( intent );
