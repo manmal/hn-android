@@ -126,7 +126,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
           int[] posArray = new int[2];
           mActionbarTitle.getLocationInWindow( posArray );
           Intent intent = SpotlightActivity.intentForSpotlightActivity( ArticleReaderActivity.this, posArray[0],
-              mActionbarTitle.getWidth(), 0, getSupportActionBar().getHeight() );
+              mActionbarTitle.getWidth(), 0, getSupportActionBar().getHeight(), getString( R.string.click_on_article ) );
           startActivity( intent );
           overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
         }

@@ -34,12 +34,13 @@ public class SpotlightView extends View {
   Bitmap mBitmap;
 
   private StaticLayout mTextLayout;
+  String mText;
 
   public SpotlightView( Context ctx, AttributeSet attrs ) {
-    this( ctx, attrs, 0, 0, 0, 0 );
+    this( ctx, attrs, 0, 0, 0, 0, "" );
   }
 
-  public SpotlightView( Context ctx, AttributeSet attrs, float xStart, float yStart, float xEnd, float yEnd ) {
+  public SpotlightView( Context ctx, AttributeSet attrs, float xStart, float yStart, float xEnd, float yEnd, String text ) {
     super( ctx, attrs );
     mXStart = xStart;
     mYStart = yStart;
@@ -62,7 +63,7 @@ public class SpotlightView extends View {
     mBackgroundPaint.setAlpha( 200 );
 
     mClearRect = new Rect( (int) mXStart, (int) mYEnd, (int) mXEnd, (int) mYStart );
-    // TODO make this better and actually read in the start and end attributes
+    mText = text;
   }
 
   public void setCoords( float xStart, float yStart, float xEnd, float yEnd ) {
@@ -77,8 +78,8 @@ public class SpotlightView extends View {
   @Override
   public void onSizeChanged( int w, int h, int oldw, int oldh ) {
     float density = getResources().getDisplayMetrics().density;
-    mTextLayout = new StaticLayout( "Clicking on comments will take you to the article viewer", mTextPaint, w
-        - (int) (density * 20 + .5), Layout.Alignment.ALIGN_CENTER, 1, 0, false );
+    mTextLayout = new StaticLayout( mText, mTextPaint, w - (int) (density * 20 + .5), Layout.Alignment.ALIGN_CENTER, 1,
+        0, false );
     mBitmap = Bitmap.createBitmap( w, h, Bitmap.Config.ARGB_8888 );
     Canvas canvas = new Canvas( mBitmap );
     canvas.drawRect( new Rect( 0, 0, w, h ), mBackgroundPaint );

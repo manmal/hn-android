@@ -354,7 +354,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     int[] posArray = new int[2];
     mActionbarTitle.getLocationInWindow( posArray );
     Intent intent = SpotlightActivity.intentForSpotlightActivity( CommentsActivity.this, posArray[0],
-        mActionbarTitle.getWidth(), 0, getSupportActionBar().getHeight() );
+        mActionbarTitle.getWidth(), 0, getSupportActionBar().getHeight(), getString( R.string.click_on_comments ) );
     startActivity( intent );
     overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
   }
