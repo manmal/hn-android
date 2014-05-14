@@ -59,6 +59,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
   private static final int TASKCODE_VOTE = 100;
 
   private static final int ACTIVITY_LOGIN = 136;
+  private static final int ACTIVITY_SPOTLIGHT = 137;
 
   @ViewById(R.id.comments_list)
   ListView mCommentsList;
@@ -132,15 +133,7 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
               Settings.getHtmlProvider( CommentsActivity.this ), CommentsActivity.this );
           MainActivity.openURLInBrowser( articleURL, CommentsActivity.this );
         } else {
-          Intent i = new Intent( CommentsActivity.this, ArticleReaderActivity_.class );
-          i.putExtra( CommentsActivity.EXTRA_HNPOST, mPost );
-          if (getIntent().getStringExtra( ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE ) != null) {
-            i.putExtra( ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE,
-                getIntent().getStringExtra( ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE ) );
-          }
-          startActivity( i );
-          overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
-          finish();
+          openArticleReader();
         }
       }
     } );
@@ -332,8 +325,21 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     mActionbarTitle.getLocationInWindow( posArray );
     Intent intent = SpotlightActivity.intentForSpotlightActivity( CommentsActivity.this, posArray[0],
         mActionbarTitle.getWidth(), 0, getSupportActionBar().getHeight(), getString( R.string.click_on_comments ) );
+    startActivityForResult( intent, ACTIVITY_SPOTLIGHT );
+    overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
+  }
+
+  private void openArticleReader() {
+    Intent intent = new Intent( this, ArticleReaderActivity_.class );
+    intent.putExtra( CommentsActivity.EXTRA_HNPOST, mPost );
+    if (getIntent().getStringExtra( ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE ) != null) {
+      intent.putExtra( ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE,
+          getIntent().getStringExtra( ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE ) );
+    }
+
     startActivity( intent );
     overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
+    finish();
   }
 
   private class LongPressMenuListAdapter implements ListAdapter, DialogInterface.OnClickListener {
@@ -610,6 +616,11 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
         }
       } else if (resultCode == RESULT_CANCELED) {
         Toast.makeText( this, getString( R.string.error_login_to_vote ), Toast.LENGTH_LONG ).show();
+      }
+    case ACTIVITY_SPOTLIGHT:
+      // The user tapped in the spotlight area
+      if (resultCode == RESULT_OK) {
+        openArticleReader();
       }
     }
   }

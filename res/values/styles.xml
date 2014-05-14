@@ -27,6 +27,8 @@
     <style name="ActionBarStyle.Back.White">
         <item name="android:background">@drawable/actionbar_bg_bright</item>
         <item name="background">@drawable/actionbar_bg_bright</item>
+        <item name="android:customNavigationLayout">@layout/action_bar_center_title_gray</item>
+        <item name="customNavigationLayout">@layout/action_bar_center_title_gray</item>
     </style>
 
     <style name="OverflowIconStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">

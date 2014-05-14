@@ -58,23 +58,6 @@ public class ArticleReaderActivity extends ActionBarActivity {
   @SuppressLint("SetJavaScriptEnabled")
   public void init() {
     mActionbarTitle = (TextView) getSupportActionBar().getCustomView().findViewById( R.id.actionbar_title );
-    mActionbarTitle.setTextColor( getResources().getColor( R.color.gray_article_title ) );
-    mActionbarTitle.setShadowLayer( 1, 1, 0, getResources().getColor( android.R.color.white ) );
-    mActionbarTitle.setTypeface( FontHelper.getComfortaa( this, true ) );
-    mActionbarTitle.setText( getString( R.string.article ) );
-    mActionbarTitle.setOnClickListener( new OnClickListener() {
-      @Override
-      public void onClick( View v ) {
-        Intent i = new Intent( ArticleReaderActivity.this, CommentsActivity_.class );
-        i.putExtra( CommentsActivity.EXTRA_HNPOST, mPost );
-        if (getIntent().getStringExtra( EXTRA_HTMLPROVIDER_OVERRIDE ) != null) {
-          i.putExtra( EXTRA_HTMLPROVIDER_OVERRIDE, getIntent().getStringExtra( EXTRA_HTMLPROVIDER_OVERRIDE ) );
-        }
-        startActivity( i );
-        overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
-        finish();
-      }
-    } );
 
     mPost = (HNPost) getIntent().getSerializableExtra( EXTRA_HNPOST );
     if (mPost != null && mPost.getURL() != null) {
@@ -116,6 +99,22 @@ public class ArticleReaderActivity extends ActionBarActivity {
   @Override
   public void onResume() {
     super.onResume();
+
+    mActionbarTitle.setTypeface( FontHelper.getComfortaa( this, true ) );
+    mActionbarTitle.setText( getString( R.string.article ) );
+    mActionbarTitle.setOnClickListener( new OnClickListener() {
+      @Override
+      public void onClick( View v ) {
+        Intent i = new Intent( ArticleReaderActivity.this, CommentsActivity_.class );
+        i.putExtra( CommentsActivity.EXTRA_HNPOST, mPost );
+        if (getIntent().getStringExtra( EXTRA_HTMLPROVIDER_OVERRIDE ) != null) {
+          i.putExtra( EXTRA_HTMLPROVIDER_OVERRIDE, getIntent().getStringExtra( EXTRA_HTMLPROVIDER_OVERRIDE ) );
+        }
+        startActivity( i );
+        overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
+        finish();
+      }
+    } );
 
     if (!ViewedUtils.getActivityViewed( this )) {
       Handler handler = new Handler( Looper.getMainLooper() );
