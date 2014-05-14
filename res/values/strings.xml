@@ -36,8 +36,8 @@
     <string name="collapse_comment">Collapse Comment</string>
     <string name="no_comments">No Comments</string>
     <string name="login_success_reloading">Login successful: reloading the comments to get proper upvote links.</string>
-    <string name="click_on_comments">Click on comments to read the article</string>
-    <string name="click_on_article">Click on article to read the comments</string>
+    <string name="click_on_comments">Click on comments to read the related article</string>
+    <string name="click_on_article">Click on article to read the related comments</string>
     
     <!-- Error messages -->
     <string name="error_login_device_offline">Your device has no network connection at the moment.</string>

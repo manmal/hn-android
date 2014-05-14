@@ -66,10 +66,6 @@ public class SpotlightView extends View {
     mText = text;
   }
 
-  public void setCoords( float xStart, float yStart, float xEnd, float yEnd ) {
-
-  }
-
   @Override
   public void onDraw( Canvas canvas ) {
     canvas.drawBitmap( mBitmap, 0, 0, null );

@@ -105,14 +105,11 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
     mCommentLevelIndentPx = Math.min( DisplayHelper.getScreenHeight( this ), DisplayHelper.getScreenWidth( this ) ) / 30;
 
-    initCommentsHeader();
     mComments = new HNPostComments();
     mVotedComments = new HashSet<HNComment>();
     mCommentsListAdapter = new CommentsAdapter();
-    mCommentHeaderText.setVisibility( View.GONE );
     mEmptyView = getEmptyTextView( mRootView );
     mCommentsList.setEmptyView( mEmptyView );
-    mCommentsList.addHeaderView( mCommentHeader, null, false );
     mCommentsList.setAdapter( mCommentsListAdapter );
 
     getSupportActionBar().getCustomView().setOnClickListener( new OnClickListener() {
@@ -320,26 +317,6 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
     super.onSaveInstanceState( state );
     mListState = mCommentsList.onSaveInstanceState();
     state.putParcelable( LIST_STATE, mListState );
-  }
-
-  private void initCommentsHeader() {
-    // Don't worry about reallocating this stuff it has already been called
-    if (mCommentHeader == null) {
-      mCommentHeader = new LinearLayout( this );
-      mCommentHeader.setOrientation( LinearLayout.VERTICAL );
-      mCommentHeaderText = new TextView( this );
-
-      // Division by 2 just gave the right feel, I'm unsure how well it
-      // will work across platforms
-      mCommentHeaderText.setPadding( mCommentLevelIndentPx, mCommentLevelIndentPx / 2, mCommentLevelIndentPx / 2,
-          mCommentLevelIndentPx / 2 );
-      mCommentHeader.addView( mCommentHeaderText );
-      mCommentHeaderText.setTextColor( getResources().getColor( R.color.gray_comments_information ) );
-      View v = new View( this );
-      v.setBackgroundColor( getResources().getColor( R.color.gray_comments_divider ) );
-      v.setLayoutParams( new LayoutParams( LayoutParams.MATCH_PARENT, 1 ) );
-      mCommentHeader.addView( v );
-    }
   }
 
   private void updateEmptyView() {
