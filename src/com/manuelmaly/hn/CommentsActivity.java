@@ -18,6 +18,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -120,7 +121,6 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
       }
     } );
 
-    getSupportActionBar().setHomeButtonEnabled( false );
     mActionbarTitle = (TextView) getSupportActionBar().getCustomView().findViewById( R.id.actionbar_title );
     mActionbarTitle.setTypeface( FontHelper.getComfortaa( this, true ) );
     mActionbarTitle.setText( getString( R.string.comments ) );
@@ -194,13 +194,15 @@ public class CommentsActivity extends BaseListActivity implements ITaskFinishedH
 
   @Override
   public boolean onOptionsItemSelected( MenuItem item ) {
+    Log.e( "MALTZ", "do I get to the proper method??" );
     switch (item.getItemId()) {
     case R.id.menu_refresh:
       triggerShowRefresh();
       startFeedLoading();
       return true;
     case android.R.id.home:
-      onBackPressed();
+      Log.e( "MALTZ", "do I get into here?" );
+      finish();
       return true;
     case R.id.menu_share:
       Intent shareIntent = new Intent( Intent.ACTION_SEND );

@@ -32,6 +32,8 @@ import com.manuelmaly.hn.util.ViewedUtils;
 @EActivity(R.layout.article_activity)
 public class ArticleReaderActivity extends ActionBarActivity {
 
+  public static final int ACTIVITY_LOGIN = 137;
+
   private static final String WEB_VIEW_SAVED_STATE_KEY = "webViewSavedState";
   public static final String EXTRA_HNPOST = "HNPOST";
   public static final String EXTRA_HTMLPROVIDER_OVERRIDE = "HTMLPROVIDER_OVERRIDE";
@@ -105,14 +107,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
     mActionbarTitle.setOnClickListener( new OnClickListener() {
       @Override
       public void onClick( View v ) {
-        Intent i = new Intent( ArticleReaderActivity.this, CommentsActivity_.class );
-        i.putExtra( CommentsActivity.EXTRA_HNPOST, mPost );
-        if (getIntent().getStringExtra( EXTRA_HTMLPROVIDER_OVERRIDE ) != null) {
-          i.putExtra( EXTRA_HTMLPROVIDER_OVERRIDE, getIntent().getStringExtra( EXTRA_HTMLPROVIDER_OVERRIDE ) );
-        }
-        startActivity( i );
-        overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
-        finish();
+        launchCommentsActivity();
       }
     } );
 
@@ -126,7 +121,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
           mActionbarTitle.getLocationInWindow( posArray );
           Intent intent = SpotlightActivity.intentForSpotlightActivity( ArticleReaderActivity.this, posArray[0],
               mActionbarTitle.getWidth(), 0, getSupportActionBar().getHeight(), getString( R.string.click_on_article ) );
-          startActivity( intent );
+          startActivityForResult( intent, ACTIVITY_LOGIN );
           overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
         }
       }, 250 );
@@ -230,6 +225,27 @@ public class ArticleReaderActivity extends ActionBarActivity {
     // http://stackoverflow.com/questions/6201615/how-do-i-stop-flash-after-leaving-a-webview?rq=1
 
     super.onDestroy();
+  }
+
+  @Override
+  public void onActivityResult( int requestCode, int resultCode, Intent data ) {
+    switch (requestCode) {
+    case ACTIVITY_LOGIN:
+      if (resultCode == RESULT_OK) {
+        launchCommentsActivity();
+      }
+    }
+  }
+
+  private void launchCommentsActivity() {
+    Intent i = new Intent( ArticleReaderActivity.this, CommentsActivity_.class );
+    i.putExtra( CommentsActivity.EXTRA_HNPOST, mPost );
+    if (getIntent().getStringExtra( EXTRA_HTMLPROVIDER_OVERRIDE ) != null) {
+      i.putExtra( EXTRA_HTMLPROVIDER_OVERRIDE, getIntent().getStringExtra( EXTRA_HTMLPROVIDER_OVERRIDE ) );
+    }
+    startActivity( i );
+    overridePendingTransition( android.R.anim.fade_in, android.R.anim.fade_out );
+    finish();
   }
 
   private class HNReaderWebViewClient extends WebViewClient {
