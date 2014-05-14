@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ActionBar" parent="@style/Theme.AppCompat">
+        <item name="android:actionOverflowButtonStyle">@style/OverflowIconStyle</item>
+        <item name="actionOverflowButtonStyle">@style/OverflowIconStyle</item>
+        <item name="android:homeAsUpIndicator">@drawable/back</item>
+        <item name="android:actionBarItemBackground">@drawable/actionbar_button_bg</item>
+        <item name="actionBarItemBackground">@drawable/actionbar_button_bg</item>
+        <item name="homeAsUpIndicator">@drawable/back</item>
+        <item name="android:buttonStyle">@null</item>
+    </style>
+
+    <style name="ActionBar.Orange">
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+        <item name="actionBarStyle">@style/ActionBarStyle</item>
+    </style>
+
+    <style name="ActionBar.Orange.Back">
+        <item name="android:actionBarStyle">@style/ActionBarStyle.Back</item>
+        <item name="actionBarStyle">@style/ActionBarStyle.Back</item>
+    </style>
+
+    <style name="ActionBar.White">
+        <item name="android:actionBarStyle">@style/ActionBarStyle.Back.White</item>
+        <item name="actionBarStyle">@style/ActionBarStyle.Back.White</item>
+        <item name="android:actionBarItemBackground">@drawable/actionbar_button_bg_gray</item>
+        <item name="actionBarItemBackground">@drawable/actionbar_button_bg_gray</item>
+    </style>
+</resources>

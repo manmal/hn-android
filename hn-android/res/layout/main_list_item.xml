@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:baselineAligned="false"
+    android:minHeight="48dp" >
+
+    <LinearLayout
+        android:id="@+id/main_list_item_textcontainer"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@drawable/main_list_selector"
+        android:gravity="left|center_vertical"
+        android:orientation="vertical"
+        android:paddingBottom="8dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="8dp" >
+
+        <TextView
+            android:id="@+id/main_list_item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_topic"
+            android:textColor="@color/dark_gray_post_title"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="5dp" >
+
+            <TextView
+                android:id="@+id/main_list_item_points"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/points_roundedrect"
+                android:gravity="center"
+                android:minWidth="35dp"
+                android:textColor="#787067"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/main_list_item_url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:text="@string/no_url"
+                android:textColor="#787067"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/main_list_item_comments_container"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:background="#fbe9d8"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp" >
+
+        <Button
+            android:id="@+id/main_list_item_comments_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bubble"
+            android:minWidth="50dp"
+            android:gravity="center_horizontal"
+            android:text="0"
+            android:textColor="#716961"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</LinearLayout>

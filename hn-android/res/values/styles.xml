@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MenubarMenuButton">
+        <item name="android:textColor">@color/peach</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:background">@color/red_dark</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:gravity">left</item>
+    </style>
+
+    <style name="ActionBarStyle" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="android:background">@drawable/actionbar_bg_orange</item>
+        <item name="background">@drawable/actionbar_bg_orange</item>
+        <item name="android:displayOptions">showCustom</item>
+        <item name="displayOptions">showCustom</item>
+        <item name="android:customNavigationLayout">@layout/actionbar_center_title</item>
+        <item name="customNavigationLayout">@layout/actionbar_center_title</item>
+    </style>
+
+    <style name="ActionBarStyle.Back">
+        <item name="android:displayOptions">showCustom|showHome|homeAsUp</item>
+        <item name="displayOptions">showCustom|showHome|homeAsUp</item>
+        <item name="android:icon">@android:color/transparent</item>
+        <item name="icon">@android:color/transparent</item>
+    </style>
+
+    <style name="ActionBarStyle.Back.White">
+        <item name="android:background">@drawable/actionbar_bg_bright</item>
+        <item name="background">@drawable/actionbar_bg_bright</item>
+        <item name="android:customNavigationLayout">@layout/action_bar_center_title_gray</item>
+        <item name="customNavigationLayout">@layout/action_bar_center_title_gray</item>
+    </style>
+
+    <style name="OverflowIconStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:src">@drawable/more</item>
+    </style>
+</resources>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HN</string>
+    <string name="comments">Comments</string>
+    <string name="article">Article</string>
+    <string name="share_article_url">Share Article URL</string>
+    <string name="load_more">More</string>
+    <string name="external_browser">External Browser</string>
+    <string name="upvote">Upvote</string>
+    <string name="downvote">Downvote</string>
+    <string name="please_log_in">Please log in first via \'Settings\' -> \'User\'.</string>
+    <string name="already_upvoted">Upvoted by you</string>
+    <string name="already_voted_on">Already voted on</string>
+    <string name="credentials">Enter your HN credentials:</string>
+    <string name="check_and_save">Save</string>
+    <string name="checking">Checking&#8230;</string>
+    <string name="cancel">Cancel</string>
+    <string name="vote_success">Voted!</string>
+    <string name="vote_error">Voting failed - have you voted for this before?</string>
+    <string name="share_comments_url">Share Comments URL</string>
+    <string name="about">About</string>
+    <string name="someauthor">someauthor</string>
+    <string name="loading">Loading &#8230;</string>
+    <string name="settings">Settings</string>
+    <string name="no_topic">No Topic Defined</string>
+    <string name="no_url">No URL Defined</string>
+    <string name="about_by">by Creative Pragmatics</string>
+    <string name="settings_user">User</string>
+    <string name="settings_username">Username</string>
+    <string name="settings_password">Password</string>
+    <string name="refresh">Refresh</string>
+    <string name="back_to_main">Back To Main</string>
+    <string name="more">More</string>
+    <string name="deleted">[deleted]</string>
+    <string name="expand_comment">Expand Comment</string>
+    <string name="collapse_comment">Collapse Comment</string>
+    <string name="no_comments">No Comments</string>
+    <string name="login_success_reloading">Login successful: reloading the comments to get proper upvote links.</string>
+    <string name="click_on_comments">Click on comments to read the related article</string>
+    <string name="click_on_article">Click on article to read the related comments</string>
+    
+    <!-- Error messages -->
+    <string name="error_login_device_offline">Your device has no network connection at the moment.</string>
+    <string name="error_unknown_error">An unknown error occurred.</string>
+    <string name="error_login_failed">Could not login - please check username and password.</string>
+    <string name="error_login_to_vote">Sorry, you must login in order to vote.</string>
+    <string name="error_unable_to_retrieve_comments">We were unable to retrieve the latest comments for this post.</string>
+    <string name="error_unable_to_retrieve_feed">We were unable to update the posts feed</string>
+    <string name="error_unable_to_load_more">We were unable to load more articles</string>
+</resources>
