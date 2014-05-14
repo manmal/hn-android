@@ -118,14 +118,6 @@ public class CommentsActivity extends BaseListActivity implements
         mCommentsList.setEmptyView(mEmptyView);
         mCommentsList.setAdapter(mCommentsListAdapter);
 
-        getSupportActionBar().getCustomView().setOnClickListener(
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mCommentsList.smoothScrollToPosition(0);
-                    }
-                });
-
         mActionbarTitle = (TextView) getSupportActionBar().getCustomView()
                 .findViewById(R.id.actionbar_title);
         mActionbarTitle.setTypeface(FontHelper.getComfortaa(this, true));
