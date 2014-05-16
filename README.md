@@ -17,6 +17,7 @@ Setup
 1. Clone to a folder on your harddisk (```git clone git@github.com:manmal/hn-android.git```) - if you will use Eclipse, you can instead use EGit and skip step 3
 2. Make sure you have an SDK version of >= Android 2.2 (API Level 8) installed
 3. Import the project to Eclipse, and select an available Android SDK target if it complains that "Android 2.2" is not available on your system
+4. Import the appcompat project into Eclipse.
 
 If you use Eclipse, please setup the provided eclipse formatter and cleanup profile in order to maintain the code style.
 Here are a few instructions:
@@ -25,10 +26,10 @@ Here are a few instructions:
 3. Select Properties
 4. Select Java Code Style > Cleanup
 5. Check the 'Enable specific project settings' checkbox
-6. Import the provided cleanup profile from code_style/eclipse/hn_eclipse_cleanup_profile.xml
+6. Import the provided cleanup profile from hn-android/code_style/eclipse/hn_eclipse_cleanup_profile.xml
 7. Select Java Code Style > Formatter
 8. Check the 'Enable specific project settings' checkbox
-9. Import the provided cleanup profile from code_style/eclipse/hn_eclipse_formatter.xml
+9. Import the provided cleanup profile from hn-android/code_style/eclipse/hn_eclipse_formatter.xml
 
 Now you can automatically format and cleanup your code by selecting Source > Clean Up or Source > Format from the Menu Bar. 
 
