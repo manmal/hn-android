@@ -40,7 +40,6 @@ import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.EActivity;
 import com.googlecode.androidannotations.annotations.SystemService;
 import com.googlecode.androidannotations.annotations.ViewById;
-import com.manuelmaly.hn.login.LoginActivity_;
 import com.manuelmaly.hn.model.HNComment;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.model.HNPostComments;
@@ -51,12 +50,8 @@ import com.manuelmaly.hn.task.ITaskFinishedHandler;
 import com.manuelmaly.hn.util.DisplayHelper;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
-<<<<<<< HEAD:hn-android/src/com/manuelmaly/hn/CommentsActivity.java
 import com.manuelmaly.hn.util.SpotlightActivity;
 import com.manuelmaly.hn.util.ViewedUtils;
-=======
-import com.manuelmaly.hn.util.StringUtils;
->>>>>>> Fixed up a bug where newlines weren't getting properly inserted into comments:src/com/manuelmaly/hn/CommentsActivity.java
 
 @EActivity(R.layout.comments_activity)
 public class CommentsActivity extends BaseListActivity implements
@@ -622,8 +617,7 @@ public class CommentsActivity extends BaseListActivity implements
         public void setComment(HNComment comment, int commentLevelIndentPx,
                 Context c, int commentTextSize, int metadataTextSize) {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, commentTextSize);
-            textView.setText(StringUtils.trimTrailingWhitespace(Html.fromHtml(
-                    comment.getText())));
+            textView.setText(Html.fromHtml(comment.getText().toString().trim()));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
             authorView.setTextSize(TypedValue.COMPLEX_UNIT_DIP,
                     metadataTextSize);
