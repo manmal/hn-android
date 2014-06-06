@@ -111,11 +111,15 @@ public class CommentsActivity extends BaseListActivity implements
         mCommentLevelIndentPx = Math.min(DisplayHelper.getScreenHeight(this),
                 DisplayHelper.getScreenWidth(this)) / 30;
 
+        initCommentsHeader();
         mComments = new HNPostComments();
         mVotedComments = new HashSet<HNComment>();
         mCommentsListAdapter = new CommentsAdapter();
         mEmptyView = getEmptyTextView(mRootView);
         mCommentsList.setEmptyView(mEmptyView);
+        // Add the header for "Ask HN" text. If there is no text, this will just
+        // be empty
+        mCommentsList.addHeaderView(mCommentHeader, null, false);
         mCommentsList.setAdapter(mCommentsListAdapter);
 
         mActionbarTitle = (TextView) getSupportActionBar().getCustomView()
@@ -368,6 +372,32 @@ public class CommentsActivity extends BaseListActivity implements
         overridePendingTransition(android.R.anim.fade_in,
                 android.R.anim.fade_out);
         finish();
+    }
+
+    private void initCommentsHeader() {
+        // Don't worry about reallocating this stuff it has already been called
+        if (mCommentHeader == null) {
+            mCommentHeader = new LinearLayout(this);
+            mCommentHeader.setOrientation(LinearLayout.VERTICAL);
+            mCommentHeaderText = new TextView(this);
+            mCommentHeader.addView(mCommentHeaderText);
+            // Division by 2 just gave the right feel, I'm unsure how well it
+            // will work across platforms
+            mCommentHeaderText.setPadding(mCommentLevelIndentPx,
+                    mCommentLevelIndentPx / 2, mCommentLevelIndentPx / 2,
+                    mCommentLevelIndentPx / 2);
+
+            mCommentHeaderText.setTextColor(getResources().getColor(
+                    R.color.gray_comments_information));
+
+            // Make it look like the header is just another list item.
+            View v = new View(this);
+            v.setBackgroundColor(getResources().getColor(
+                    R.color.gray_comments_divider));
+            v.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 1));
+            mCommentHeader.addView(v);
+            mCommentHeaderText.setVisibility(View.GONE);
+        }
     }
 
     private class LongPressMenuListAdapter implements ListAdapter,
