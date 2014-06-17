@@ -18,7 +18,6 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -200,14 +199,12 @@ public class CommentsActivity extends BaseListActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.e("MALTZ", "do I get to the proper method??");
         switch (item.getItemId()) {
         case R.id.menu_refresh:
             triggerShowRefresh();
             startFeedLoading();
             return true;
         case android.R.id.home:
-            Log.e("MALTZ", "do I get into here?");
             finish();
             return true;
         case R.id.menu_share:
