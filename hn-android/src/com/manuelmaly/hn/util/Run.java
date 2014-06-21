@@ -1,10 +1,10 @@
 package com.manuelmaly.hn.util;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 import android.app.Activity;
 import android.os.Handler;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class Run {
 

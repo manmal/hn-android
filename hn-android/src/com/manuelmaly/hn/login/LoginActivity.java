@@ -1,19 +1,20 @@
 package com.manuelmaly.hn.login;
 
-import com.googlecode.androidannotations.annotations.Click;
-import com.googlecode.androidannotations.annotations.EActivity;
-import com.googlecode.androidannotations.annotations.ViewById;
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
 import com.manuelmaly.hn.App;
 import com.manuelmaly.hn.R;
 import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.task.HNLoginTask;
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
 
 @EActivity(R.layout.login_dialog)
 public class LoginActivity extends Activity implements ITaskFinishedHandler<Boolean>{

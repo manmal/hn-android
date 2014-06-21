@@ -1,7 +1,9 @@
 package com.manuelmaly.hn.server;
 
-import java.io.Serializable;
-import java.util.HashMap;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.support.v4.content.LocalBroadcastManager;
 
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
@@ -18,10 +20,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.support.v4.content.LocalBroadcastManager;
+import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Generic base for HTTP calls via {@link HttpClient}, ideally to be started in

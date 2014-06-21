@@ -1,7 +1,5 @@
 package com.manuelmaly.hn.task;
 
-import java.util.HashMap;
-
 import android.app.Activity;
 import android.util.Log;
 
@@ -15,6 +13,8 @@ import com.manuelmaly.hn.server.IAPICommand.RequestType;
 import com.manuelmaly.hn.server.StringDownloadCommand;
 import com.manuelmaly.hn.util.Const;
 import com.manuelmaly.hn.util.ExceptionUtil;
+
+import java.util.HashMap;
 
 public class HNLoginTask extends BaseTask<Boolean> {
 

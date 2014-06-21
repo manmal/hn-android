@@ -1,8 +1,5 @@
 package com.manuelmaly.hn.task;
 
-import java.io.Serializable;
-import java.lang.ref.SoftReference;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,6 +13,9 @@ import com.manuelmaly.hn.reuse.CancelableRunnable;
 import com.manuelmaly.hn.server.IAPICommand;
 import com.manuelmaly.hn.task.ITaskFinishedHandler.TaskResultCode;
 import com.manuelmaly.hn.util.Run;
+
+import java.io.Serializable;
+import java.lang.ref.SoftReference;
 
 /**
  * Generic base for tasks performed asynchronously. Unlike {@link AsyncTask},
