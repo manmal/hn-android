@@ -1,30 +1,43 @@
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
 buildscript {
     repositories {
         mavenCentral()
+        mavenLocal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.0'
+        classpath 'com.android.tools.build:gradle:0.11.+'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.2+'
     }
 }
 apply plugin: 'android'
+apply plugin: 'android-apt'
+def AAVersion = '3.0+'
 
 configurations {
     apt
 }
 
 dependencies {
-    apt  files('androidannotations-2.5.jar')
+    apt "org.androidannotations:androidannotations:$AAVersion"
+    compile "org.androidannotations:androidannotations-api:$AAVersion"
     compile 'com.android.support:support-v4:18.0.+'
-    compile "com.android.support:appcompat-v7:18.0.+"
-    compile files('libs' + File.separator + 'androidannotations-2.5-api.jar',
-        'libs' + File.separator + 'jsoup-1.7.2.jar',
-        'libs' + File.separator + 'libGoogleAnalytics.jar')
+    compile 'com.android.support:appcompat-v7:18.0.+'
+}
+
+apt {
+    arguments {
+        androidManifestFile variant.processResources.manifestFile
+        resourcePackageName 'com.manuelmaly.hn'
+    }
 }
 
 android {
-    compileSdkVersion 17
-    buildToolsVersion "18.0.1"
-
+    compileSdkVersion 19
+    buildToolsVersion '19.1'
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -37,6 +50,11 @@ android {
         }
 
         instrumentTest.setRoot('tests')
+    }
+    defaultConfig {}
+    productFlavors {
+    }
+    buildTypes {
     }
 }
 
