@@ -275,7 +275,9 @@ public class CommentsActivity extends BaseListActivity implements
                     && result.getUserAcquiredFor() != null
                     && (!result.getUserAcquiredFor().equals(
                             Settings.getUserName(CommentsActivity.this)));
-            if (registeredUserChanged) {
+            // Only show comments if we last fetched them for the current user
+            // and we have comments
+            if (!registeredUserChanged && result != null) {
                 showComments(result);
             } else {
                 updateEmptyView();
