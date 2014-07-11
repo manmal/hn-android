@@ -1,15 +1,15 @@
 package com.manuelmaly.hn.parser;
 
-import java.util.ArrayList;
-
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import com.manuelmaly.hn.App;
 import com.manuelmaly.hn.Settings;
 import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.util.HNHelper;
+
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.util.ArrayList;
 
 public class HNFeedParser extends BaseHTMLParser<HNFeed> {
 

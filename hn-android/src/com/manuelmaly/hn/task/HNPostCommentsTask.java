@@ -1,7 +1,5 @@
 package com.manuelmaly.hn.task;
 
-import java.util.HashMap;
-
 import android.app.Activity;
 import android.util.Log;
 
@@ -17,6 +15,8 @@ import com.manuelmaly.hn.util.Const;
 import com.manuelmaly.hn.util.ExceptionUtil;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.Run;
+
+import java.util.HashMap;
 
 public class HNPostCommentsTask extends BaseTask<HNPostComments> {
 

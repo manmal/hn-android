@@ -1,10 +1,10 @@
 package com.manuelmaly.hn.server;
 
-import java.util.HashMap;
+import android.content.Context;
 
 import org.apache.http.client.CookieStore;
 
-import android.content.Context;
+import java.util.HashMap;
 
 public class HNVoteCommand extends NoResponseCommand {
 

@@ -3,8 +3,9 @@ package com.manuelmaly.hn;
 import android.app.Application;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
-import com.googlecode.androidannotations.annotations.EApplication;
 import com.manuelmaly.hn.util.Const;
+
+import org.androidannotations.annotations.EApplication;
 
 @EApplication
 public class App extends Application {

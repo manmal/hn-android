@@ -1,7 +1,5 @@
 package com.manuelmaly.hn;
 
-import java.net.URLEncoder;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -20,14 +18,17 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
 
-import com.googlecode.androidannotations.annotations.AfterViews;
-import com.googlecode.androidannotations.annotations.EActivity;
-import com.googlecode.androidannotations.annotations.SystemService;
-import com.googlecode.androidannotations.annotations.ViewById;
 import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.SpotlightActivity;
 import com.manuelmaly.hn.util.ViewedUtils;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.SystemService;
+import org.androidannotations.annotations.ViewById;
+
+import java.net.URLEncoder;
 
 @EActivity(R.layout.article_activity)
 public class ArticleReaderActivity extends ActionBarActivity {

@@ -1,12 +1,12 @@
 package com.manuelmaly.hn.server;
 
-import org.apache.http.client.CookieStore;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.cookie.BasicClientCookie;
-
 import android.content.Context;
 
 import com.manuelmaly.hn.Settings;
+
+import org.apache.http.client.CookieStore;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.cookie.BasicClientCookie;
 
 public class HNCredentials {
     

@@ -1,18 +1,18 @@
 package com.manuelmaly.hn.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.manuelmaly.hn.App;
 import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.model.HNPostComments;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class FileUtil {
 

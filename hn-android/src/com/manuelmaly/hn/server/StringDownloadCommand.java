@@ -1,13 +1,13 @@
 package com.manuelmaly.hn.server;
 
-import java.util.HashMap;
+import android.content.Context;
 
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 
-import android.content.Context;
+import java.util.HashMap;
 
 public class StringDownloadCommand extends BaseHTTPCommand<String> {
 
