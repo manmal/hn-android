@@ -1,13 +1,13 @@
 package com.manuelmaly.hn.server;
 
-import java.io.IOException;
-
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
+
+import java.io.IOException;
 
 /**
  * Handles HTML response of a request to login to HN and retrieving its user token.

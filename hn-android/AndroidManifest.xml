@@ -63,7 +63,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:host="news.ycombinator.com"
-                    android:scheme="http" >
+                    android:scheme="https" >
                 </data>
             </intent-filter>
         </activity>

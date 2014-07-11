@@ -1,14 +1,14 @@
 package com.manuelmaly.hn.parser;
 
-import java.net.URI;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.w3c.dom.Node;
+
+import java.net.URI;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 
 public abstract class BaseHTMLParser<T> {
     

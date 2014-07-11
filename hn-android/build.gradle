@@ -3,28 +3,23 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.0'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.2'
     }
 }
-apply plugin: 'android'
 
-configurations {
-    apt
-}
+apply plugin: 'android'
+apply plugin: 'android-apt'
 
 dependencies {
-    apt  files('androidannotations-2.5.jar')
-    compile 'com.android.support:support-v4:18.0.+'
-    compile "com.android.support:appcompat-v7:18.0.+"
-    compile files('libs' + File.separator + 'androidannotations-2.5-api.jar',
-        'libs' + File.separator + 'jsoup-1.7.2.jar',
-        'libs' + File.separator + 'libGoogleAnalytics.jar')
+    apt "org.androidannotations:androidannotations:3.0+"
+    compile "org.androidannotations:androidannotations-api:3.0+"
+    compile 'com.android.support:appcompat-v7:18.0.+'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 android {
-    compileSdkVersion 17
-    buildToolsVersion "18.0.1"
-
+    compileSdkVersion 19
+    buildToolsVersion '19.1.0'
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -38,23 +33,24 @@ android {
 
         instrumentTest.setRoot('tests')
     }
+    defaultConfig {
+
+    }
+    productFlavors {
+    }
+    buildTypes {
+    }
 }
 
-android.applicationVariants.all { variant ->
-        aptOutput = file("${project.buildDir}/source/apt_generated/${variant.dirName}")
-        println "****************************"
-        println "variant: ${variant.name}"
-        println "manifest:  ${variant.processResources.manifestFile}"
-        println "aptOutput:  ${aptOutput}"
-        println "****************************"
 
-        variant.javaCompile.doFirst {
-            println "*** compile doFirst ${variant.name}"
-            aptOutput.mkdirs()
-            variant.javaCompile.options.compilerArgs += [
-                    '-processorpath', configurations.apt.getAsPath(),
-                    '-AandroidManifestFile=' + variant.processResources.manifestFile,
-                    '-s', aptOutput
-            ]
-        }
+
+apt {
+    arguments {
+        resourcePackageName 'com.manuelmaly.hn'
+        androidManifestFile variant.processResources.manifestFile
+    }
+}
+
+configurations {
+    apt
 }
