@@ -51,6 +51,7 @@ import com.manuelmaly.hn.util.DisplayHelper;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.SpotlightActivity;
+import com.manuelmaly.hn.util.StringUtils;
 import com.manuelmaly.hn.util.ViewedUtils;
 
 @EActivity(R.layout.comments_activity)
@@ -256,7 +257,7 @@ public class CommentsActivity extends BaseListActivity implements
             // Linkify.ALL does some highlighting where we don't want it
             // (i.e if you just put certain tlds in) so we use this custom
             // regex.
-            Linkify.addLinks(mCommentHeaderText, Linkify.WEB_URLS); //
+            Linkify.addLinks(mCommentHeaderText, Linkify.WEB_URLS);
         }
 
         mComments = comments;
@@ -645,7 +646,10 @@ public class CommentsActivity extends BaseListActivity implements
         public void setComment(HNComment comment, int commentLevelIndentPx,
                 Context c, int commentTextSize, int metadataTextSize) {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, commentTextSize);
-            textView.setText(Html.fromHtml(comment.getText()));
+            // Trailing whitespace at the beginning of a string causes us to
+            // lose newlines
+            textView.setText(StringUtils.trimTrailingWhitespace(Html
+                    .fromHtml(comment.getText().toString())));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
             authorView.setTextSize(TypedValue.COMPLEX_UNIT_DIP,
                     metadataTextSize);
