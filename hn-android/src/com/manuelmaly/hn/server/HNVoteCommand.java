@@ -16,7 +16,7 @@ public class HNVoteCommand extends NoResponseCommand {
 
     @Override
     boolean validateResponseContent(String content) {
-        if (content.equals(""))
+        if (!content.contains("You have to be logged in to vote."))
             return true;
         return false;
     }
