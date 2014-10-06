@@ -47,7 +47,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".SettingsActivity"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >
+            android:theme="@android:style/Theme.Light.NoTitleBar"
+            android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>
         <activity android:name=".AboutActivity_"
             android:theme="@style/ActionBar.Orange.Back">

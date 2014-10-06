@@ -1,9 +1,12 @@
 package com.manuelmaly.hn;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
@@ -57,9 +60,15 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         mUserPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(SettingsActivity.this, LoginActivity_.class);
-                startActivityForResult(intent, REQUEST_LOGIN);
-                return false;
+              String userName = Settings.getUserName(SettingsActivity.this);
+
+              if (userName == null || userName.equals("")) {
+                onLoginClick();
+              } else {
+                onLogoutClik();
+              }
+
+              return false;
             }
         });
 
@@ -95,6 +104,25 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             mUserPref.setSummary(userName);
         else
             mUserPref.setSummary(" ");
+    }
+
+    private void onLoginClick() {
+      Intent intent = new Intent(SettingsActivity.this, LoginActivity_.class);
+      startActivityForResult(intent, REQUEST_LOGIN);
+    }
+
+    private void onLogoutClik() {
+      AlertDialog logoutDialog = new AlertDialog.Builder(SettingsActivity.this).create();
+      logoutDialog.setTitle(R.string.logout_question_lbl);
+      logoutDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok), new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+          Settings.clearUserData(SettingsActivity.this);
+        }
+      });
+
+      logoutDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (Message) null);
+      logoutDialog.show();
     }
 
     @Override
