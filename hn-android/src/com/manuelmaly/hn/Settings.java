@@ -54,4 +54,9 @@ public class Settings {
         sharedPref.edit().putString(PREF_USER, userName + USER_DATA_SEPARATOR + userToken).commit();
     }
 
+    public static void clearUserData(Context c) {
+      SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(c);
+      sharedPref.edit().remove(PREF_USER).commit();
+    }
+
 }

@@ -18,8 +18,8 @@ import java.util.HashMap;
 
 public class HNLoginTask extends BaseTask<Boolean> {
 
-    private static final String NEWSLOGIN_URL = "https://news.ycombinator.com/newslogin";
-    private static final String GET_USERTOKEN_URL = "https://news.ycombinator.com/y";
+    private static final String NEWSLOGIN_URL = "https://news.ycombinator.com/login";
+    private static final String GET_USERTOKEN_URL = "https://news.ycombinator.com/login";
     public static final String BROADCAST_INTENT_ID = "HNLoginTask";
 
     private static HNLoginTask instance;
@@ -104,9 +104,8 @@ public class HNLoginTask extends BaseTask<Boolean> {
 
         private String getUserToken() {
             HashMap<String, String> queryParams = new HashMap<String, String>();
-            queryParams.put("fnid", mFNID);
-            queryParams.put("u", mUsername);
-            queryParams.put("p", mPassword);
+            queryParams.put("acct", mUsername);
+            queryParams.put("pw", mPassword);
             getUserTokenCommand = new GetHNUserTokenHTTPCommand(GET_USERTOKEN_URL, queryParams, RequestType.POST, false, null, App.getInstance());
             getUserTokenCommand.run();
 
