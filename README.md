@@ -21,6 +21,7 @@ Setup
 
 If you use Eclipse, please setup the provided eclipse formatter and cleanup profile in order to maintain the code style.
 Here are a few instructions:
+
 1. Select the project in the package explorer
 2. Right Click on the project
 3. Select Properties
