@@ -582,7 +582,8 @@ public class MainActivity extends BaseListActivity implements
                     getString(R.string.pref_htmlprovider_viewtext),
                     getString(R.string.pref_htmlprovider_google),
                     getString(R.string.pref_htmlprovider_instapaper),
-                    getString(R.string.external_browser)));
+                    getString(R.string.external_browser),
+                    getString(R.string.share_article_url)));
         }
 
         @Override
@@ -678,6 +679,9 @@ public class MainActivity extends BaseListActivity implements
                 openURLInBrowser(getArticleViewURL(mPost), MainActivity.this);
                 markAsRead(mPost);
                 break;
+            case 6:
+                shareUrl(mPost, MainActivity.this);
+                break;
             default:
                 break;
             }
@@ -704,6 +708,14 @@ public class MainActivity extends BaseListActivity implements
                     overrideHtmlProvider);
         }
         a.startActivity(i);
+    }
+
+    public static void shareUrl(HNPost post, Activity a){
+      Intent shareIntent = new Intent(Intent.ACTION_SEND);
+      shareIntent.setType("text/plain");
+      shareIntent.putExtra(Intent.EXTRA_SUBJECT, post.getTitle());
+      shareIntent.putExtra(Intent.EXTRA_TEXT, post.getURL());
+      a.startActivity(Intent.createChooser(shareIntent, a.getString(R.string.share_article_url)));
     }
 
     static class PostViewHolder {
