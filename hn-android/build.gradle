@@ -47,7 +47,7 @@ android {
 apt {
     arguments {
         resourcePackageName 'com.manuelmaly.hn'
-        androidManifestFile variant.processResources.manifestFile
+        androidManifestFile variant.outputs[0].processResources.manifestFile
     }
 }
 
