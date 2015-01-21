@@ -376,6 +376,7 @@ public class MainActivity extends BaseListActivity implements
 
         private static final int VIEWTYPE_POST = 0;
         private static final int VIEWTYPE_LOADMORE = 1;
+        private static final String HACKERNEWS_URLDOMAIN = "news.ycombinator.com";
 
         @Override
         public int getCount() {
@@ -478,8 +479,7 @@ public class MainActivity extends BaseListActivity implements
                     @Override
                     public void onClick(View v) {
                         markAsRead(item);
-                        Log.d("ITEMURLDOMAIN","domain = " + getItem(position).getURLDomain());
-                        if(getItem(position).getURLDomain().equals("news.ycombinator.com")){
+                        if(getItem(position).getURLDomain().equals(HACKERNEWS_URLDOMAIN)){
                             startCommentActivity(position);
                         }
                         else  if (Settings.getHtmlViewer(MainActivity.this).equals(
