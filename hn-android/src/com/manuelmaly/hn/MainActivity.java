@@ -471,19 +471,18 @@ public class MainActivity extends BaseListActivity implements
                 holder.commentsButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent i = new Intent(MainActivity.this,
-                                CommentsActivity_.class);
-                        i.putExtra(CommentsActivity.EXTRA_HNPOST,
-                                getItem(position));
-                        startActivity(i);
+                        startCommentActivity(position);
                     }
                 });
                 holder.textContainer.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         markAsRead(item);
-
-                        if (Settings.getHtmlViewer(MainActivity.this).equals(
+                        Log.d("ITEMURLDOMAIN","domain = " + getItem(position).getURLDomain());
+                        if(getItem(position).getURLDomain().equals("news.ycombinator.com")){
+                            startCommentActivity(position);
+                        }
+                        else  if (Settings.getHtmlViewer(MainActivity.this).equals(
                                 getString(R.string.pref_htmlviewer_browser))) {
                             openURLInBrowser(
                                     getArticleViewURL(getItem(position)),
@@ -552,6 +551,14 @@ public class MainActivity extends BaseListActivity implements
 
         private boolean isRead(HNPost post) {
             return mAlreadyRead.contains(post.getTitle().hashCode());
+        }
+
+        private void startCommentActivity(int position){
+            Intent i = new Intent(MainActivity.this,
+                    CommentsActivity_.class);
+            i.putExtra(CommentsActivity.EXTRA_HNPOST,
+                    getItem(position));
+            startActivity(i);
         }
     }
 
