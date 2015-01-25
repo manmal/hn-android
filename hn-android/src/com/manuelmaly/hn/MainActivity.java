@@ -376,6 +376,7 @@ public class MainActivity extends BaseListActivity implements
 
         private static final int VIEWTYPE_POST = 0;
         private static final int VIEWTYPE_LOADMORE = 1;
+        private static final String HACKERNEWS_URLDOMAIN = "news.ycombinator.com";
 
         @Override
         public int getCount() {
@@ -471,19 +472,17 @@ public class MainActivity extends BaseListActivity implements
                 holder.commentsButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent i = new Intent(MainActivity.this,
-                                CommentsActivity_.class);
-                        i.putExtra(CommentsActivity.EXTRA_HNPOST,
-                                getItem(position));
-                        startActivity(i);
+                        startCommentActivity(position);
                     }
                 });
                 holder.textContainer.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         markAsRead(item);
-
-                        if (Settings.getHtmlViewer(MainActivity.this).equals(
+                        if(getItem(position).getURLDomain().equals(HACKERNEWS_URLDOMAIN)){
+                            startCommentActivity(position);
+                        }
+                        else  if (Settings.getHtmlViewer(MainActivity.this).equals(
                                 getString(R.string.pref_htmlviewer_browser))) {
                             openURLInBrowser(
                                     getArticleViewURL(getItem(position)),
@@ -552,6 +551,14 @@ public class MainActivity extends BaseListActivity implements
 
         private boolean isRead(HNPost post) {
             return mAlreadyRead.contains(post.getTitle().hashCode());
+        }
+
+        private void startCommentActivity(int position){
+            Intent i = new Intent(MainActivity.this,
+                    CommentsActivity_.class);
+            i.putExtra(CommentsActivity.EXTRA_HNPOST,
+                    getItem(position));
+            startActivity(i);
         }
     }
 
