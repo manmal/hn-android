@@ -170,7 +170,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
       Intent shareIntent = new Intent( Intent.ACTION_SEND );
       shareIntent.setType( "text/plain" );
       shareIntent.putExtra( Intent.EXTRA_SUBJECT, mPost.getTitle() );
-      shareIntent.putExtra( Intent.EXTRA_TEXT, mPost.getURL() );
+      shareIntent.putExtra( Intent.EXTRA_TEXT, mWebView.getUrl() );
       startActivity( Intent.createChooser( shareIntent, getString( R.string.share_article_url ) ) );
       return true;
     default:
