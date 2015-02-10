@@ -67,7 +67,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                     Element e4 = rowElement.select("tr > td:eq(1) a").first();
                     if (e4 != null) {
                         upvoteURL = e4.attr("href");
-                        if (!upvoteURL.contains(currentUser))
+                        if (!upvoteURL.contains("auth=")) // HN changed authentication
                             upvoteURL = null;
                         else
                             upvoteURL = HNHelper.resolveRelativeHNURL(upvoteURL);
@@ -76,7 +76,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                 case 1:
                     points = getIntValueFollowedBySuffix(rowElement.select("tr > td:eq(1) > span").text(), " p");
                     author = rowElement.select("tr > td:eq(1) > a[href*=user]").text();
-                    Element e2 = rowElement.select("tr > td:eq(1) > a[href*=item]").first();
+                    Element e2 = rowElement.select("tr > td:eq(1) > a[href*=item]").last(); // assuming the the last link is the comments link
                     if (e2 != null) {
                         commentsCount = getIntValueFollowedBySuffix(e2.text(), " c");
                         if (commentsCount == BaseHTMLParser.UNDEFINED && e2.text().contains("discuss"))

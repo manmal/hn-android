@@ -48,9 +48,9 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
 
             Element comHeadElement = mainRowElement.select("span.comhead").first();
             author = comHeadElement.select("a[href*=user]").text();
-            String timeAgoRaw = getFirstTextValueInElementChildren(comHeadElement);
-            if (timeAgoRaw.length() > 0)
-                timeAgo = timeAgoRaw.substring(0, timeAgoRaw.indexOf("|"));
+            timeAgo = comHeadElement.select("a[href*=item").text();//getFirstTextValueInElementChildren(comHeadElement);
+//            if (timeAgoRaw.length() > 0)
+//                timeAgo = timeAgoRaw.substring(0, timeAgoRaw.indexOf("|"));
             Element urlElement = comHeadElement.select("a[href*=item]").first();
             if (urlElement != null)
                 url = urlElement.attr("href");
