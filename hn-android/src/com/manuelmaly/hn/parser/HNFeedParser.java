@@ -67,7 +67,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                     Element e4 = rowElement.select("tr > td:eq(1) a").first();
                     if (e4 != null) {
                         upvoteURL = e4.attr("href");
-                        if (!upvoteURL.contains(currentUser))
+                        if (!upvoteURL.contains("auth=")) // HN changed authentication
                             upvoteURL = null;
                         else
                             upvoteURL = HNHelper.resolveRelativeHNURL(upvoteURL);
