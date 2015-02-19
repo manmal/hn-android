@@ -13,7 +13,8 @@ public class StringDownloadCommand extends BaseHTTPCommand<String> {
 
     public StringDownloadCommand(String url, HashMap<String, String> queryParams, RequestType type, boolean notifyFinishedBroadcast,
         String notificationBroadcastIntentID, Context applicationContext, CookieStore cookieStore) {
-        super(url, queryParams, type, notifyFinishedBroadcast, notificationBroadcastIntentID, applicationContext, 60000, 60000);
+        super(url, queryParams, type, notifyFinishedBroadcast, notificationBroadcastIntentID, applicationContext, 60000, 60000,
+            null);
         setCookieStore(cookieStore);
     }
 
