@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 
+import org.apache.http.Header;
+import org.apache.http.HeaderIterator;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -22,6 +24,7 @@ import org.apache.http.params.HttpParams;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Generic base for HTTP calls via {@link HttpClient}, ideally to be started in
@@ -37,7 +40,9 @@ import java.util.HashMap;
  */
 public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICommand<T> {
 
-    private String mNotificationBroadcastIntentID;
+  private final Map<String, String> mBody;
+
+  private String mNotificationBroadcastIntentID;
     private String mUrl;
     private String mURLQueryParams;
     private RequestType mType;
@@ -54,8 +59,9 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
 
     public BaseHTTPCommand(final String url, final HashMap<String, String> params, RequestType type,
         boolean notifyFinishedBroadcast, String notificationBroadcastIntentID, Context applicationContext,
-        int socketTimeoutMS, int httpTimeoutMS) {
+        int socketTimeoutMS, int httpTimeoutMS, Map<String, String> body) {
         mUrl = url;
+        mBody = body;
 
         if (params != null) {
             StringBuilder sb = new StringBuilder();
@@ -101,6 +107,7 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
             httpclient.setCookieStore(mCookieStore);
             modifyHttpClient(httpclient);
             mRequest = createRequest();
+
             httpclient.execute(setRequestData(mRequest), getResponseHandler(httpclient));
         } catch (Exception e) {
             setErrorCode(ERROR_GENERIC_COMMUNICATION_ERROR);
@@ -190,6 +197,10 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
 
     protected void setErrorCode(int errorCode) {
         mErrorCode = errorCode;
+    }
+
+    public Map<String, String> getBody() {
+      return mBody;
     }
 
     @Override

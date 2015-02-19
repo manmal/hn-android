@@ -2,6 +2,7 @@ package com.manuelmaly.hn.server;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
+import org.apache.http.HeaderIterator;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -26,8 +27,8 @@ public class GetHNUserTokenResponseHandler implements ResponseHandler<String> {
             throws ClientProtocolException, IOException {
     	String responseString = null;
     	String redirectToLocation = null;
-    	
-    	Header[] headers = response.getHeaders("Location");
+
+      Header[] headers = response.getHeaders("Location");
         if (headers.length > 0) {
             HeaderElement[] headerElements = headers[0].getElements();
             if (headerElements.length > 0) {
@@ -35,7 +36,7 @@ public class GetHNUserTokenResponseHandler implements ResponseHandler<String> {
             }
         }
     	
-        if (redirectToLocation != null && redirectToLocation.equals("/")) {
+        if (redirectToLocation != null && redirectToLocation.equals("news")) {
         	responseString = getUserID(response);
         }
         

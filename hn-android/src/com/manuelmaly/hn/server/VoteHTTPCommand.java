@@ -14,7 +14,8 @@ public class VoteHTTPCommand extends BaseHTTPCommand<String> {
 
     public VoteHTTPCommand(String url, HashMap<String, String> queryParams, RequestType type, boolean notifyFinishedBroadcast,
         String notificationBroadcastIntentID, Context applicationContext) {
-        super(url, queryParams, type, notifyFinishedBroadcast, notificationBroadcastIntentID, applicationContext, 60000, 60000);
+        super(url, queryParams, type, notifyFinishedBroadcast, notificationBroadcastIntentID, applicationContext, 60000, 60000,
+            null);
     }
 
     @Override

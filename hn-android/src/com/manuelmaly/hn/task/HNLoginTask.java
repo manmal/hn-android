@@ -67,9 +67,9 @@ public class HNLoginTask extends BaseTask<Boolean> {
 
         @Override
         public void run() {
-            mFNID = getFNID();
-            if (mFNID == null)
-                return;
+//            mFNID = getFNID();
+//            if (mFNID == null)
+//                return;
 
             String userToken = getUserToken();
             if (userToken != null && !userToken.equals("")) {
@@ -104,9 +104,13 @@ public class HNLoginTask extends BaseTask<Boolean> {
 
         private String getUserToken() {
             HashMap<String, String> queryParams = new HashMap<String, String>();
-            queryParams.put("acct", mUsername);
-            queryParams.put("pw", mPassword);
-            getUserTokenCommand = new GetHNUserTokenHTTPCommand(GET_USERTOKEN_URL, queryParams, RequestType.POST, false, null, App.getInstance());
+            queryParams.put("goto", "news");
+            HashMap<String, String> body = new HashMap<String, String>();
+            body.put("goto", "news");
+            body.put("acct", mUsername);
+            body.put("pw", mPassword);
+
+            getUserTokenCommand = new GetHNUserTokenHTTPCommand(GET_USERTOKEN_URL, queryParams, RequestType.POST, false, null, App.getInstance(), body);
             getUserTokenCommand.run();
 
             if (mCancelled)
