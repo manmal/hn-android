@@ -60,12 +60,12 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
                 level = Integer.parseInt(levelSpacerWidth) / 40;
 
             Elements voteElements = tableRows.get(row).select("td:eq(1) a");
-            upvoteUrl = getVoteUrl(voteElements.first(), currentUser);
+            upvoteUrl = getVoteUrl(voteElements.first());
 
             // We want to test for size because unlike first() calling .get(1)
             // Will throw an error if there are not two elements
             if (voteElements.size() > 1)
-               downvoteUrl = getVoteUrl(voteElements.get(1), currentUser);
+               downvoteUrl = getVoteUrl(voteElements.get(1));
 
             comments.add(new HNComment(timeAgo, author, url, text, level, isDownvoted, upvoteUrl, downvoteUrl));
 
@@ -92,12 +92,11 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
     /**
      * Parses out the url for voting from a given element
      * @param voteElement The element from which to parse out the voting url
-     * @param currentUser The currently logged in user
      * @return The relative url to vote in the given direction for that comment
      */
-    private String getVoteUrl(Element voteElement, String currentUser) {
+    private String getVoteUrl(Element voteElement) {
         if (voteElement != null) {
-            return voteElement.attr("href").contains(currentUser) ?
+            return voteElement.attr("href").contains("auth=") ?
                 HNHelper.resolveRelativeHNURL(voteElement.attr("href")) : null;
         }
 
