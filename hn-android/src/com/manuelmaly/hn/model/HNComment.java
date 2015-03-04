@@ -53,13 +53,13 @@ public class HNComment implements Serializable {
     }
     
     public String getUpvoteUrl(String currentUserName) {
-        if (mUpvoteUrl == null || !mUpvoteUrl.contains(currentUserName))
+      if (mUpvoteUrl == null || !mUpvoteUrl.contains("auth=")) // HN changed authentication
             return null;
         return mUpvoteUrl;
     }
 
     public String getDownvoteUrl(String currentUserName) {
-        if (mDownvoteUrl == null || !mDownvoteUrl.contains(currentUserName))
+        if (mDownvoteUrl == null || !mDownvoteUrl.contains("auth=")) // HN changed authentication
             return null;
         return mDownvoteUrl;
     }
