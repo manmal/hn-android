@@ -46,8 +46,7 @@ public class HNFeed implements Serializable {
     public void appendLoadMoreFeed(HNFeed feed) {
         if (feed == null || feed.getPosts() == null)
             return;
-        
-        mLoadedMore = true;
+
         for (HNPost candidate : feed.getPosts())
             if (!mPosts.contains(candidate))
                 mPosts.add(candidate);
@@ -56,6 +55,10 @@ public class HNFeed implements Serializable {
     
     public boolean isLoadedMore() {
         return mLoadedMore;
+    }
+
+    public void setLoadedMore(boolean loadedMore) {
+      mLoadedMore = loadedMore;
     }
     
     public String getUserAcquiredFor() {
