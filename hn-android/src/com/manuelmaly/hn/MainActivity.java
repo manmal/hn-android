@@ -216,10 +216,11 @@ public class MainActivity extends BaseListActivity implements
             supportInvalidateOptionsMenu();
         } else
             if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
-                if (!code.equals(TaskResultCode.Success)) {
+                if (!code.equals(TaskResultCode.Success) || result == null || result.getPosts() == null || result.getPosts().size() == 0) {
                     Toast.makeText(this,
                             getString(R.string.error_unable_to_load_more),
                             Toast.LENGTH_SHORT).show();
+                  mFeed.setLoadedMore(true); // reached the end.
                 }
 
                 mFeed.appendLoadMoreFeed(result);

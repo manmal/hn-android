@@ -175,7 +175,7 @@ public abstract class BaseHTTPCommand<T extends Serializable> implements IAPICom
     }
 
     protected String getUrlWithParams() {
-        return mUrl + (mURLQueryParams != null ? "?" + mURLQueryParams : "");
+        return mUrl + (mURLQueryParams != null && !mURLQueryParams.equals("") ? "?" + mURLQueryParams : "");
     }
 
     public void responseHandlingFinished(T parsedResponse, int responseHttpStatus) {
