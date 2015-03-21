@@ -34,6 +34,7 @@
     <string name="deleted">[deleted]</string>
     <string name="expand_comment">Expand Comment</string>
     <string name="collapse_comment">Collapse Comment</string>
+    <string name="collapse_thread">Collapse Thread</string>
     <string name="no_comments">No Comments</string>
     <string name="login_success_reloading">Login successful: reloading the comments to get proper upvote links.</string>
     <string name="click_on_comments">Click on comments to read the related article</string>

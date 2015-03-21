@@ -34,6 +34,21 @@ public class HNCommentTreeNode implements Serializable {
         return mParent;
     }
 
+    public HNCommentTreeNode getRootNode() {
+        HNCommentTreeNode mRootNode;
+        if (mParent == null) {
+            mRootNode = this;
+        } else {
+            HNCommentTreeNode mCandidateRootNode = this;
+            while (mCandidateRootNode.getParent() != null) {
+                mCandidateRootNode = mCandidateRootNode.getParent();
+            }
+            mRootNode = mCandidateRootNode;
+        }
+
+        return mRootNode;
+    }
+
     public ArrayList<HNCommentTreeNode> getChildren() {
         return mChildren;
     }
