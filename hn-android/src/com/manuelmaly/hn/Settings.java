@@ -10,6 +10,7 @@ public class Settings {
     public static final String PREF_HTMLPROVIDER = "pref_htmlprovider";
     public static final String PREF_HTMLVIEWER = "pref_htmlviewer";
     public static final String PREF_USER = "pref_user";
+    public static final String PREF_REPORTING = "pref_crashlytics";
     
     public static final String USER_DATA_SEPARATOR = ":";
     
@@ -57,6 +58,10 @@ public class Settings {
     public static void clearUserData(Context c) {
       SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(c);
       sharedPref.edit().remove(PREF_USER).commit();
+    }
+
+    public static boolean isReportingAllowed(Context c) {
+      return PreferenceManager.getDefaultSharedPreferences(c).getBoolean(PREF_REPORTING, false);
     }
 
 }

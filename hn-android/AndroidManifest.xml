@@ -9,6 +9,11 @@
         android:name=".App_"
         android:icon="@drawable/ic_launcher"
         android:allowBackup="true" >
+
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="fc512b8aebabe741a520c6b02606b4e20a8416b5" />
+
         <activity
             android:name=".MainActivity_"
             android:configChanges="keyboardHidden|orientation|screenSize"

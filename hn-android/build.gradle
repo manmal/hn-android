@@ -1,19 +1,28 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url 'http://download.crashlytics.com/maven' }
     }
     dependencies {
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.2'
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
     }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
+apply plugin: 'crashlytics'
+
+repositories {
+    maven { url 'http://download.crashlytics.com/maven' }
+}
 
 dependencies {
     apt "org.androidannotations:androidannotations:3.2"
     compile "org.androidannotations:androidannotations-api:3.2"
     compile 'com.android.support:appcompat-v7:18.0.+'
+    compile 'com.crashlytics.android:crashlytics:1.+'
+
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
