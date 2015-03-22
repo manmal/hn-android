@@ -4,15 +4,18 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.manuelmaly.hn.App;
+import com.manuelmaly.hn.model.HNCommentTreeNode;
 import com.manuelmaly.hn.model.HNFeed;
 import com.manuelmaly.hn.model.HNPostComments;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
 
 public class FileUtil {
 
@@ -116,8 +119,12 @@ public class FileUtil {
             public void run() {
                 ObjectOutputStream os = null;
                 try {
-                    os = new ObjectOutputStream(new FileOutputStream(getLastHNPostCommentsPath(postID)));
-                    os.writeObject(comments);
+                  int nodesCount = countNodes(comments.getTreeNodes());
+                  if (nodesCount > 150) {
+                    return;
+                  }
+                  os = new ObjectOutputStream(new FileOutputStream(getLastHNPostCommentsPath(postID)));
+                  os.writeObject(comments);
                 } catch (Exception e) {
                     Log.e(TAG, "Could not save last HNPostComments to file :(", e);
                 } finally {
@@ -137,5 +144,19 @@ public class FileUtil {
         File dataDir = App.getInstance().getFilesDir();
         return dataDir.getAbsolutePath() + "/" + LAST_HNPOSTCOMMENTS_FILENAME_PREFIX + "_" + postID;
     }
+
+  private static int countNodes(List<HNCommentTreeNode> nodes) {
+    int sum = 0;
+
+    if (nodes != null) {
+      sum += nodes.size();
+
+      for (HNCommentTreeNode n : nodes) {
+        sum += countNodes(n.getChildren());
+      }
+    }
+
+    return sum;
+  }
 
 }
