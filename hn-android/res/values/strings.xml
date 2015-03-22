@@ -50,4 +50,7 @@
     <string name="error_unable_to_load_more">We were unable to load more articles</string>
     <string name="logout_question_lbl">Are you sure you want to logout from HN?</string>
     <string name="ok">Ok</string>
+    <string name="crashlytics_pref">Share Anonymous Reports</string>
+    <string name="crashlytics_off">No anonymous usage statistics and reports are shared</string>
+    <string name="crashlytics_on">You are sharing anonymous usage statistics and crash reports. Thank You!</string>
 </resources>
