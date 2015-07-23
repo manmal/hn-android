@@ -60,8 +60,4 @@ public class Settings {
       sharedPref.edit().remove(PREF_USER).commit();
     }
 
-    public static boolean isReportingAllowed(Context c) {
-      return PreferenceManager.getDefaultSharedPreferences(c).getBoolean(PREF_REPORTING, false);
-    }
-
 }

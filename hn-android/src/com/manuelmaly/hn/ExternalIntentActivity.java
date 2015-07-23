@@ -1,6 +1,5 @@
 package com.manuelmaly.hn;
 
-import com.crashlytics.android.Crashlytics;
 import com.manuelmaly.hn.model.HNPost;
 
 import android.app.Activity;
@@ -29,10 +28,6 @@ public class ExternalIntentActivity extends Activity {
     }
 
     if (i != null) {
-
-      if (!BuildConfig.DEBUG && Settings.isReportingAllowed(this)) {
-        Crashlytics.start(this);
-      }
 
       startActivity(i);
 

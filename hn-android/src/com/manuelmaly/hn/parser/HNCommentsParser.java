@@ -44,7 +44,13 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             // from the text.  As far as I can tell that is the only place
             // where size=1 is used.  If that turns out to not be the case then
             // searching for u tags is also a pretty decent option - @jmaltz
-            text = mainRowElement.select("span.comment > *:not(:has(font[size=1]))").html();
+            Element mainCommentSpan = mainRowElement.select("span.comment > span").first();
+            if (mainCommentSpan == null)
+                continue;
+
+            mainCommentSpan.select("div.reply").remove();
+
+            text = mainCommentSpan.html().replace("<span> </span>", "");
 
             Element comHeadElement = mainRowElement.select("span.comhead").first();
             author = comHeadElement.select("a[href*=user]").text();

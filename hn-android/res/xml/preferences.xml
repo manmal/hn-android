@@ -28,11 +28,4 @@
       android:layout="@layout/user_settings" 
       />
 
-    <CheckBoxPreference
-        android:key="pref_crashlytics"
-        android:title="@string/crashlytics_pref"
-        android:disableDependentsState="false"
-        android:summaryOff="@string/crashlytics_off"
-        android:summaryOn="@string/crashlytics_on"
-        />
 </PreferenceScreen>
