@@ -50,7 +50,12 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
 
             mainCommentSpan.select("div.reply").remove();
 
-            text = mainCommentSpan.html().replace("<span> </span>", "");
+            // In order to eliminate whitespace at the end of multi-line comments,
+            // <p> tags are replaced with double <br/> tags.
+            text = mainCommentSpan.html()
+                     .replace("<span> </span>", "")
+                     .replace("<p>", "<br/><br/>")
+                     .replace("</p>", "");
 
             Element comHeadElement = mainRowElement.select("span.comhead").first();
             author = comHeadElement.select("a[href*=user]").text();
