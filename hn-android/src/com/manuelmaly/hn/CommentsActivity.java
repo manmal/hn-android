@@ -177,17 +177,26 @@ public class CommentsActivity extends BaseListActivity implements
             }, 250);
         }
 
+        // User may have enabled / disabled pull-down refresh, so
+        // reload the options menu.
+        supportInvalidateOptionsMenu();
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_share_refresh, menu);
+
+        enableDisableMenuRefresh(menu.findItem(R.id.menu_refresh));
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
+
+        enableDisableMenuRefresh(refreshItem);
 
         if (mShouldShowRefreshing) {
             View refreshView = mInflater.inflate(R.layout.refresh_icon, null);
@@ -229,6 +238,11 @@ public class CommentsActivity extends BaseListActivity implements
     private void triggerShowRefresh() {
         mShouldShowRefreshing = true;
         supportInvalidateOptionsMenu();
+    }
+
+    private void enableDisableMenuRefresh(MenuItem refreshItem) {
+        boolean isNormalRefresh = !Settings.isPullDownRefresh(CommentsActivity.this);
+        refreshItem.setEnabled(isNormalRefresh).setVisible(isNormalRefresh);
     }
 
     @Override

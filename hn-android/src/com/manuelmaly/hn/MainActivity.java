@@ -159,17 +159,26 @@ public class MainActivity extends BaseListActivity implements
             mPostsList.onRestoreInstanceState(mListState);
         }
         mListState = null;
+
+        // User may have enabled / disabled pull-down refresh, so
+        // reload the options menu.
+        supportInvalidateOptionsMenu();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+
+        enableDisableMenuRefresh(menu.findItem(R.id.menu_refresh));
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.menu_refresh);
+
+        enableDisableMenuRefresh(item);
 
         if (!mShouldShowRefreshing) {
             MenuItemCompat.setActionView(item, null);
@@ -196,6 +205,11 @@ public class MainActivity extends BaseListActivity implements
         default:
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void enableDisableMenuRefresh(MenuItem refreshItem) {
+        boolean isNormalRefresh = !Settings.isPullDownRefresh(MainActivity.this);
+        refreshItem.setEnabled(isNormalRefresh).setVisible(isNormalRefresh);
     }
 
     @Override
