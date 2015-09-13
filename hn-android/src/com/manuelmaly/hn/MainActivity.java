@@ -243,11 +243,6 @@ public class MainActivity extends BaseListActivity implements
                             getString(R.string.error_unable_to_retrieve_feed),
                             Toast.LENGTH_SHORT).show();
                 }
-
-            mShouldShowRefreshing = false;
-            mSwipeRefreshLayout.setRefreshing(false);
-
-            supportInvalidateOptionsMenu();
         } else
             if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
                 if (!code.equals(TaskResultCode.Success) || result == null || result.getPosts() == null || result.getPosts().size() == 0) {
@@ -259,10 +254,9 @@ public class MainActivity extends BaseListActivity implements
 
                 mFeed.appendLoadMoreFeed(result);
                 mPostsListAdapter.notifyDataSetChanged();
-                mShouldShowRefreshing = false;
-                supportInvalidateOptionsMenu();
             }
 
+        setShowRefreshing(false);
     }
 
     @Background
@@ -341,9 +335,8 @@ public class MainActivity extends BaseListActivity implements
     }
 
     private void startFeedLoading() {
-        mShouldShowRefreshing = true;
+        setShowRefreshing(true);
         HNFeedTaskMainFeed.startOrReattach(this, this, TASKCODE_LOAD_FEED);
-        supportInvalidateOptionsMenu();
     }
 
     private boolean refreshFontSizes() {
@@ -572,8 +565,7 @@ public class MainActivity extends BaseListActivity implements
                         HNFeedTaskLoadMore.start(MainActivity.this,
                                 MainActivity.this, mFeed,
                                 TASKCODE_LOAD_MORE_POSTS);
-                        mShouldShowRefreshing = true;
-                        supportInvalidateOptionsMenu();
+                        setShowRefreshing(true);
                     }
                 });
                 break;
@@ -758,6 +750,15 @@ public class MainActivity extends BaseListActivity implements
       shareIntent.putExtra(Intent.EXTRA_SUBJECT, post.getTitle());
       shareIntent.putExtra(Intent.EXTRA_TEXT, post.getURL());
       a.startActivity(Intent.createChooser(shareIntent, a.getString(R.string.share_article_url)));
+    }
+
+    private void setShowRefreshing(boolean showRefreshing) {
+        mShouldShowRefreshing = showRefreshing;
+        supportInvalidateOptionsMenu();
+
+        if (!mSwipeRefreshLayout.isRefreshing() || !showRefreshing) {
+            mSwipeRefreshLayout.setRefreshing(showRefreshing);
+        }
     }
 
     static class PostViewHolder {
