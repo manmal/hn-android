@@ -160,7 +160,7 @@ public class MainActivity extends BaseListActivity implements
         }
         mListState = null;
 
-        // User may have enabled / disabled pull-down refresh, so
+        // User may have toggled pull-down refresh, so
         // reload the options menu.
         supportInvalidateOptionsMenu();
     }
@@ -169,7 +169,7 @@ public class MainActivity extends BaseListActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
 
-        enableDisableMenuRefresh(menu.findItem(R.id.menu_refresh));
+        toggleRefreshMenuItem(menu.findItem(R.id.menu_refresh));
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -178,7 +178,7 @@ public class MainActivity extends BaseListActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.menu_refresh);
 
-        enableDisableMenuRefresh(item);
+        toggleRefreshMenuItem(item);
 
         if (!mShouldShowRefreshing) {
             MenuItemCompat.setActionView(item, null);
@@ -207,7 +207,7 @@ public class MainActivity extends BaseListActivity implements
         }
     }
 
-    private void enableDisableMenuRefresh(MenuItem refreshItem) {
+    private void toggleRefreshMenuItem(MenuItem refreshItem) {
         boolean isNormalRefresh = !Settings.isPullDownRefresh(MainActivity.this);
         refreshItem.setEnabled(isNormalRefresh).setVisible(isNormalRefresh);
     }
