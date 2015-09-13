@@ -187,7 +187,7 @@ public class CommentsActivity extends BaseListActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_share_refresh, menu);
 
-        enableDisableMenuRefresh(menu.findItem(R.id.menu_refresh));
+        toggleRefreshMenuItem(menu.findItem(R.id.menu_refresh));
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -196,7 +196,7 @@ public class CommentsActivity extends BaseListActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
 
-        enableDisableMenuRefresh(refreshItem);
+        toggleRefreshMenuItem(refreshItem);
 
         if (mShouldShowRefreshing) {
             View refreshView = mInflater.inflate(R.layout.refresh_icon, null);
@@ -240,7 +240,7 @@ public class CommentsActivity extends BaseListActivity implements
         supportInvalidateOptionsMenu();
     }
 
-    private void enableDisableMenuRefresh(MenuItem refreshItem) {
+    private void toggleRefreshMenuItem(MenuItem refreshItem) {
         boolean isNormalRefresh = !Settings.isPullDownRefresh(CommentsActivity.this);
         refreshItem.setEnabled(isNormalRefresh).setVisible(isNormalRefresh);
     }

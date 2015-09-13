@@ -136,7 +136,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
   public boolean onCreateOptionsMenu( Menu menu ) {
     getMenuInflater().inflate( R.menu.menu_share_refresh, menu );
 
-    enableDisableMenuRefresh(menu.findItem(R.id.menu_refresh));
+    toggleRefreshMenuIcon(menu.findItem(R.id.menu_refresh));
 
     return super.onCreateOptionsMenu( menu );
   }
@@ -145,7 +145,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
   public boolean onPrepareOptionsMenu( Menu menu ) {
     MenuItem refreshItem = menu.findItem( R.id.menu_refresh );
 
-    enableDisableMenuRefresh(refreshItem);
+    toggleRefreshMenuIcon(refreshItem);
 
     if (!mShouldShowRefreshing) {
       MenuItemCompat.setActionView( refreshItem, null );
@@ -185,7 +185,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
     }
   }
 
-  private void enableDisableMenuRefresh(MenuItem refreshItem) {
+  private void toggleRefreshMenuIcon(MenuItem refreshItem) {
     boolean isNormalRefresh = !Settings.isPullDownRefresh(ArticleReaderActivity.this);
     refreshItem.setEnabled(isNormalRefresh).setVisible(isNormalRefresh);
   }
