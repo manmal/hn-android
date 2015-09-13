@@ -38,6 +38,6 @@
     </string-array>
 
     <string name="pref_title_pulldownrefresh">Pull Down to Refresh</string>
-    <bool name="pref_default_pulldownrefresh">true</bool>
+    <bool name="pref_default_pulldownrefresh">false</bool>
 
 </resources>

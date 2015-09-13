@@ -32,7 +32,7 @@ public class Settings {
 
     public static boolean isPullDownRefresh(Context c) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(c);
-        return sharedPref.getBoolean(PREF_PULLDOWNREFRESH, true);
+        return sharedPref.getBoolean(PREF_PULLDOWNREFRESH, false);
     }
 
     public static boolean isUserLoggedIn(Context c) {
