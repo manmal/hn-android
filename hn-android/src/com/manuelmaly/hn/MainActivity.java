@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -66,6 +67,9 @@ public class MainActivity extends BaseListActivity implements
 
     @ViewById(R.id.main_root)
     LinearLayout mRootView;
+
+    @ViewById(R.id.main_swiperefreshlayout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     @SystemService
     LayoutInflater mInflater;
@@ -130,6 +134,15 @@ public class MainActivity extends BaseListActivity implements
         mTitleColor = getResources().getColor(R.color.dark_gray_post_title);
         mTitleReadColor = getResources().getColor(R.color.gray_post_title_read);
 
+        toggleSwipeRefreshLayout();
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                startFeedLoading();
+            }
+        });
+
         loadAlreadyReadCache();
         loadIntermediateFeedFromStore();
         startFeedLoading();
@@ -160,9 +173,10 @@ public class MainActivity extends BaseListActivity implements
         }
         mListState = null;
 
-        // User may have toggled pull-down refresh, so
-        // reload the options menu.
+        // User may have toggled pull-down refresh, so reload the options menu
+        // and toggle the SwipeRefreshLayout.
         supportInvalidateOptionsMenu();
+        toggleSwipeRefreshLayout();
     }
 
     @Override
@@ -212,6 +226,10 @@ public class MainActivity extends BaseListActivity implements
         refreshItem.setEnabled(isNormalRefresh).setVisible(isNormalRefresh);
     }
 
+    private void toggleSwipeRefreshLayout() {
+        mSwipeRefreshLayout.setEnabled(Settings.isPullDownRefresh(MainActivity.this));
+    }
+
     @Override
     public void onTaskFinished(int taskCode, TaskResultCode code,
             HNFeed result, Object tag) {
@@ -227,6 +245,8 @@ public class MainActivity extends BaseListActivity implements
                 }
 
             mShouldShowRefreshing = false;
+            mSwipeRefreshLayout.setRefreshing(false);
+
             supportInvalidateOptionsMenu();
         } else
             if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
