@@ -58,7 +58,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
   HNPost mPost;
   String mHtmlProvider;
 
-  boolean mShouldShowRefreshing;
+  boolean mShouldShowRefreshing = false;
   private Bundle mWebViewSavedState;
 
   @AfterViews
@@ -268,8 +268,10 @@ public class ArticleReaderActivity extends ActionBarActivity {
   }
 
   private void setShowRefreshing(boolean showRefreshing) {
-    mShouldShowRefreshing = showRefreshing;
-    supportInvalidateOptionsMenu();
+    if (!Settings.isPullDownRefresh(ArticleReaderActivity.this)) {
+      mShouldShowRefreshing = showRefreshing;
+      supportInvalidateOptionsMenu();
+    }
 
     if (!mSwipeRefreshLayout.isRefreshing() || !showRefreshing) {
       mSwipeRefreshLayout.setRefreshing(showRefreshing);

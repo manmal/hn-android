@@ -94,7 +94,7 @@ public class MainActivity extends BaseListActivity implements
     private static final String ALREADY_READ_ARTICLES_KEY = "HN_ALREADY_READ";
     private Parcelable mListState = null;
 
-    boolean mShouldShowRefreshing = true;
+    boolean mShouldShowRefreshing = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -741,8 +741,10 @@ public class MainActivity extends BaseListActivity implements
     }
 
     private void setShowRefreshing(boolean showRefreshing) {
-        mShouldShowRefreshing = showRefreshing;
-        supportInvalidateOptionsMenu();
+        if (!Settings.isPullDownRefresh(MainActivity.this)) {
+            mShouldShowRefreshing = showRefreshing;
+            supportInvalidateOptionsMenu();
+        }
 
         if (!mSwipeRefreshLayout.isRefreshing() || !showRefreshing) {
             mSwipeRefreshLayout.setRefreshing(showRefreshing);

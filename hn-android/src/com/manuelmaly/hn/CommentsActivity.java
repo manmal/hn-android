@@ -410,8 +410,10 @@ public class CommentsActivity extends BaseListActivity implements
     }
 
     private void setShowRefreshing(boolean showRefreshing) {
-        mShouldShowRefreshing = showRefreshing;
-        supportInvalidateOptionsMenu();
+        if (!Settings.isPullDownRefresh(CommentsActivity.this)) {
+            mShouldShowRefreshing = showRefreshing;
+            supportInvalidateOptionsMenu();
+        }
 
         if (!mSwipeRefreshLayout.isRefreshing() || !showRefreshing) {
             mSwipeRefreshLayout.setRefreshing(showRefreshing);
