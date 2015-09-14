@@ -128,24 +128,17 @@ public class ArticleReaderActivity extends ActionBarActivity {
       }, 250 );
       ViewedUtils.setActivityViewed( this );
     }
-
-    supportInvalidateOptionsMenu();
   }
 
   @Override
   public boolean onCreateOptionsMenu( Menu menu ) {
     getMenuInflater().inflate( R.menu.menu_share_refresh, menu );
-
-    toggleRefreshMenuIcon(menu.findItem(R.id.menu_refresh));
-
     return super.onCreateOptionsMenu( menu );
   }
 
   @Override
   public boolean onPrepareOptionsMenu( Menu menu ) {
     MenuItem refreshItem = menu.findItem( R.id.menu_refresh );
-
-    toggleRefreshMenuIcon(refreshItem);
 
     if (!mShouldShowRefreshing) {
       MenuItemCompat.setActionView( refreshItem, null );
@@ -183,11 +176,6 @@ public class ArticleReaderActivity extends ActionBarActivity {
     default:
       return super.onOptionsItemSelected( item );
     }
-  }
-
-  private void toggleRefreshMenuIcon(MenuItem refreshItem) {
-    boolean isNormalRefresh = !Settings.isPullDownRefresh(ArticleReaderActivity.this);
-    refreshItem.setEnabled(isNormalRefresh).setVisible(isNormalRefresh);
   }
 
   @SuppressWarnings("deprecation")

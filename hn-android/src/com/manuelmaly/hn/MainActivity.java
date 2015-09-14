@@ -173,26 +173,19 @@ public class MainActivity extends BaseListActivity implements
         }
         mListState = null;
 
-        // User may have toggled pull-down refresh, so reload the options menu
-        // and toggle the SwipeRefreshLayout.
-        supportInvalidateOptionsMenu();
+        // User may have toggled pull-down refresh, so toggle the SwipeRefreshLayout.
         toggleSwipeRefreshLayout();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-
-        toggleRefreshMenuItem(menu.findItem(R.id.menu_refresh));
-
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.menu_refresh);
-
-        toggleRefreshMenuItem(item);
 
         if (!mShouldShowRefreshing) {
             MenuItemCompat.setActionView(item, null);
@@ -219,11 +212,6 @@ public class MainActivity extends BaseListActivity implements
         default:
             return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void toggleRefreshMenuItem(MenuItem refreshItem) {
-        boolean isNormalRefresh = !Settings.isPullDownRefresh(MainActivity.this);
-        refreshItem.setEnabled(isNormalRefresh).setVisible(isNormalRefresh);
     }
 
     private void toggleSwipeRefreshLayout() {
