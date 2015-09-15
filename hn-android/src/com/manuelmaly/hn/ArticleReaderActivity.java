@@ -3,6 +3,7 @@ package com.manuelmaly.hn;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -61,6 +62,8 @@ public class ArticleReaderActivity extends ActionBarActivity {
   boolean mShouldShowRefreshing = false;
   private Bundle mWebViewSavedState;
 
+  boolean mWebViewIsLoading = false;
+
   @AfterViews
   @SuppressLint("SetJavaScriptEnabled")
   public void init() {
@@ -82,18 +85,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
     mWebView.getSettings().setUseWideViewPort( true );
     mWebView.getSettings().setJavaScriptEnabled( true );
     mWebView.setWebViewClient( new HNReaderWebViewClient() );
-    mWebView.setWebChromeClient( new WebChromeClient() {
-      @Override
-      public void onProgressChanged( WebView view, int progress ) {
-        if (progress == 100 && mShouldShowRefreshing) {
-          setShowRefreshing(false);
-        } else if (!mShouldShowRefreshing) {
-          // Most probably, user tapped on a link in the webview -
-          // let's spin the refresh icon:
-          setShowRefreshing(true);
-        }
-      }
-    } );
+
     if (mWebViewSavedState != null) {
       mWebView.restoreState( mWebViewSavedState );
     }
@@ -106,8 +98,6 @@ public class ArticleReaderActivity extends ActionBarActivity {
         mWebView.loadUrl(getArticleViewURL(mPost, mHtmlProvider, ArticleReaderActivity.this));
       }
     });
-
-    setShowRefreshing(true);
   }
 
   @Override
@@ -156,7 +146,6 @@ public class ArticleReaderActivity extends ActionBarActivity {
 
     if (!mShouldShowRefreshing) {
       MenuItemCompat.setActionView( refreshItem, null );
-      mWebView.stopLoading();
     } else {
       View refreshView = mInflater.inflate( R.layout.refresh_icon, null );
       MenuItemCompat.setActionView( refreshItem, refreshView );
@@ -172,13 +161,11 @@ public class ArticleReaderActivity extends ActionBarActivity {
       finish();
       return true;
     case R.id.menu_refresh:
-      if (mShouldShowRefreshing) {
-        setShowRefreshing(false);
+      if (mWebViewIsLoading) {
+        mWebView.stopLoading();
       } else {
-        setShowRefreshing(true);
         mWebView.loadUrl( getArticleViewURL( mPost, mHtmlProvider, ArticleReaderActivity.this ) );
       }
-      supportInvalidateOptionsMenu();
       return true;
     case R.id.menu_share:
       Intent shareIntent = new Intent( Intent.ACTION_SEND );
@@ -280,8 +267,18 @@ public class ArticleReaderActivity extends ActionBarActivity {
 
   private class HNReaderWebViewClient extends WebViewClient {
     @Override
+    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+      setShowRefreshing(true);
+      mWebViewIsLoading = true;
+
+      super.onPageStarted(view, url, favicon);
+    }
+
+    @Override
     public void onPageFinished(WebView view, String url) {
-      mSwipeRefreshLayout.setRefreshing(false);
+      setShowRefreshing(false);
+      mWebViewIsLoading = false;
+
       super.onPageFinished(view, url);
     }
 
