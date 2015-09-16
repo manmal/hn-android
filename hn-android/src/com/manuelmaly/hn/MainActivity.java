@@ -746,7 +746,7 @@ public class MainActivity extends BaseListActivity implements
             supportInvalidateOptionsMenu();
         }
 
-        if (!mSwipeRefreshLayout.isRefreshing() || !showRefreshing) {
+        if (mSwipeRefreshLayout.isEnabled() && (!mSwipeRefreshLayout.isRefreshing() || !showRefreshing)) {
             mSwipeRefreshLayout.setRefreshing(showRefreshing);
         }
     }

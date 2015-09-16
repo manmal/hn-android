@@ -260,7 +260,7 @@ public class ArticleReaderActivity extends ActionBarActivity {
       supportInvalidateOptionsMenu();
     }
 
-    if (!mSwipeRefreshLayout.isRefreshing() || !showRefreshing) {
+    if (mSwipeRefreshLayout.isEnabled() && (!mSwipeRefreshLayout.isRefreshing() || !showRefreshing)) {
       mSwipeRefreshLayout.setRefreshing(showRefreshing);
     }
   }
