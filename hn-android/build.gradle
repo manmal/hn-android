@@ -19,6 +19,9 @@ dependencies {
 }
 
 android {
+    compileOptions {
+        encoding "UTF-8"
+    }
     compileSdkVersion 19
     buildToolsVersion '19.1.0'
     sourceSets {
