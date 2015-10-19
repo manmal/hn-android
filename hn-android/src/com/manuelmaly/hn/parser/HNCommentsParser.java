@@ -1,5 +1,7 @@
 package com.manuelmaly.hn.parser;
 
+import android.graphics.Color;
+
 import com.manuelmaly.hn.App;
 import com.manuelmaly.hn.Settings;
 import com.manuelmaly.hn.model.HNComment;
@@ -50,12 +52,18 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
 
             mainCommentSpan.select("div.reply").remove();
 
+            // Parse the class attribute to get the comment color
+            int commentColor = Color.rgb(0, 0, 0);
+            if (mainCommentSpan.attributes().hasKey("class")) {
+                commentColor = getCommentColor(mainCommentSpan.attributes().get("class"));
+            }
+
             // In order to eliminate whitespace at the end of multi-line comments,
             // <p> tags are replaced with double <br/> tags.
             text = mainCommentSpan.html()
-                     .replace("<span> </span>", "")
-                     .replace("<p>", "<br/><br/>")
-                     .replace("</p>", "");
+                    .replace("<span> </span>", "")
+                    .replace("<p>", "<br/><br/>")
+                    .replace("</p>", "");
 
             Element comHeadElement = mainRowElement.select("span.comhead").first();
             author = comHeadElement.select("a[href*=user]").text();
@@ -76,9 +84,9 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             // We want to test for size because unlike first() calling .get(1)
             // Will throw an error if there are not two elements
             if (voteElements.size() > 1)
-               downvoteUrl = getVoteUrl(voteElements.get(1));
+                downvoteUrl = getVoteUrl(voteElements.get(1));
 
-            comments.add(new HNComment(timeAgo, author, url, text, level, isDownvoted, upvoteUrl, downvoteUrl));
+            comments.add(new HNComment(timeAgo, author, url, text, commentColor, level, isDownvoted, upvoteUrl, downvoteUrl));
 
             if (endParsing)
                 break;
@@ -92,10 +100,11 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
         // Five table rows is what it takes for the title, post information
         // And other boilerplate stuff.  More than five means we have something
         // Special
-        if(header.select("tr").size() > 5) {
+        if (header.select("tr").size() > 5) {
             HeaderParser headerParser = new HeaderParser();
             headerHtml = headerParser.parseDocument(header);
         }
+
 
         return new HNPostComments(comments, headerHtml, currentUser);
     }
@@ -114,4 +123,27 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
         return null;
     }
 
+    private int getCommentColor(String className) {
+        if ("c5a".equals(className)) {
+            return Color.rgb(0x5A, 0x5A, 0x5A);
+        } else if ("c73".equals(className)) {
+            return Color.rgb(0x73, 0x73, 0x73);
+        } else if ("c82".equals(className)) {
+            return Color.rgb(0x82, 0x82, 0x82);
+        } else if ("c88".equals(className)) {
+            return Color.rgb(0x88, 0x88, 0x88);
+        } else if ("c9c".equals(className)) {
+            return Color.rgb(0x9C, 0x9C, 0x9C);
+        } else if ("cae".equals(className)) {
+            return Color.rgb(0xAE, 0xAE, 0xAE);
+        } else if ("cbe".equals(className)) {
+            return Color.rgb(0xBE, 0xBE, 0xBE);
+        } else if ("cce".equals(className)) {
+            return Color.rgb(0xCE, 0xCE, 0xCE);
+        } else if ("cdd".equals(className)) {
+            return Color.rgb(0xDD, 0xDD, 0xDD);
+        } else {
+            return Color.rgb(0, 0, 0);
+        }
+    }
 }

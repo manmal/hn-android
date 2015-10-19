@@ -9,19 +9,21 @@ public class HNComment implements Serializable {
     private String mAuthor;
     private String mCommentLink;
     private String mText;
+    private int mColor;
     private String mUpvoteUrl;
     private String mDownvoteUrl;
     private int mCommentLevel;
     private boolean mDownvoted;
     private HNCommentTreeNode mTreeNode;
 
-    public HNComment(String timeAgo, String author, String commentLink, String text, int commentLevel, boolean downvoted, String upvoteUrl,
+    public HNComment(String timeAgo, String author, String commentLink, String text, int color, int commentLevel, boolean downvoted, String upvoteUrl,
                 String downvoteUrl) {
         super();
         mTimeAgo = timeAgo;
         mAuthor = author;
         mCommentLink = commentLink;
         mText = text;
+        mColor = color;
         mCommentLevel = commentLevel;
         mDownvoted = downvoted;
         mUpvoteUrl = upvoteUrl;
@@ -42,6 +44,10 @@ public class HNComment implements Serializable {
 
     public String getText() {
         return mText;
+    }
+
+    public int getColor() {
+        return mColor;
     }
 
     public boolean isDownvoted() {
