@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -70,6 +71,9 @@ public class CommentsActivity extends BaseListActivity implements
 
     @ViewById(R.id.comments_root)
     LinearLayout mRootView;
+
+    @ViewById(R.id.comments_swiperefreshlayout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     @SystemService
     LayoutInflater mInflater;
@@ -145,6 +149,15 @@ public class CommentsActivity extends BaseListActivity implements
             }
         });
 
+        toggleSwipeRefreshLayout();
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                startFeedLoading();
+            }
+        });
+
         loadIntermediateCommentsFromStore();
         startFeedLoading();
     }
@@ -177,6 +190,9 @@ public class CommentsActivity extends BaseListActivity implements
             }, 250);
         }
 
+        // User may have toggled pull-down refresh, so toggle the SwipeRefreshLayout.
+        toggleSwipeRefreshLayout();
+
     }
 
     @Override
@@ -203,7 +219,6 @@ public class CommentsActivity extends BaseListActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.menu_refresh:
-            triggerShowRefresh();
             startFeedLoading();
             return true;
         case android.R.id.home:
@@ -226,9 +241,8 @@ public class CommentsActivity extends BaseListActivity implements
         }
     }
 
-    private void triggerShowRefresh() {
-        mShouldShowRefreshing = true;
-        supportInvalidateOptionsMenu();
+    private void toggleSwipeRefreshLayout() {
+        mSwipeRefreshLayout.setEnabled(Settings.isPullDownRefresh(CommentsActivity.this));
     }
 
     @Override
@@ -243,7 +257,7 @@ public class CommentsActivity extends BaseListActivity implements
                         Toast.LENGTH_SHORT).show();
             }
         updateEmptyView();
-        updateStatusIndicatorOnLoadingFinished(code);
+        setShowRefreshing(false);
     }
 
     private void showComments(HNPostComments comments) {
@@ -287,16 +301,10 @@ public class CommentsActivity extends BaseListActivity implements
         }
     }
 
-    private void updateStatusIndicatorOnLoadingFinished(TaskResultCode code) {
-        mShouldShowRefreshing = false;
-        supportInvalidateOptionsMenu();
-    }
-
     private void startFeedLoading() {
         mHaveLoadedPosts = false;
-        mShouldShowRefreshing = true;
+        setShowRefreshing(true);
         HNPostCommentsTask.startOrReattach(this, this, mPost.getPostID(), 0);
-        triggerShowRefresh();
     }
 
     private boolean refreshFontSizes() {
@@ -398,6 +406,17 @@ public class CommentsActivity extends BaseListActivity implements
             v.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 1));
             mCommentHeader.addView(v);
             mCommentHeaderText.setVisibility(View.GONE);
+        }
+    }
+
+    private void setShowRefreshing(boolean showRefreshing) {
+        if (!Settings.isPullDownRefresh(CommentsActivity.this)) {
+            mShouldShowRefreshing = showRefreshing;
+            supportInvalidateOptionsMenu();
+        }
+
+        if (mSwipeRefreshLayout.isEnabled() && (!mSwipeRefreshLayout.isRefreshing() || !showRefreshing)) {
+            mSwipeRefreshLayout.setRefreshing(showRefreshing);
         }
     }
 

@@ -6,15 +6,22 @@
     android:contentDescription="@string/more"
     android:orientation="vertical" >
 
-    <ListView
-        android:id="@+id/main_list"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/main_swiperefreshlayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/peach"
-        android:cacheColorHint="@color/peach"
-        android:divider="#f0dfce"
-        android:dividerHeight="1dp"
-        android:fadingEdge="none" />
+        android:layout_height="match_parent" >
+
+        <ListView
+            android:id="@+id/main_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/peach"
+            android:cacheColorHint="@color/peach"
+            android:divider="#f0dfce"
+            android:dividerHeight="1dp"
+            android:fadingEdge="none" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <TextView
         android:id="@+id/main_empty_view"

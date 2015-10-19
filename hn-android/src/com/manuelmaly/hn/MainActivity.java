@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -67,6 +68,9 @@ public class MainActivity extends BaseListActivity implements
     @ViewById(R.id.main_root)
     LinearLayout mRootView;
 
+    @ViewById(R.id.main_swiperefreshlayout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
     @SystemService
     LayoutInflater mInflater;
 
@@ -90,7 +94,7 @@ public class MainActivity extends BaseListActivity implements
     private static final String ALREADY_READ_ARTICLES_KEY = "HN_ALREADY_READ";
     private Parcelable mListState = null;
 
-    boolean mShouldShowRefreshing = true;
+    boolean mShouldShowRefreshing = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -130,6 +134,15 @@ public class MainActivity extends BaseListActivity implements
         mTitleColor = getResources().getColor(R.color.dark_gray_post_title);
         mTitleReadColor = getResources().getColor(R.color.gray_post_title_read);
 
+        toggleSwipeRefreshLayout();
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                startFeedLoading();
+            }
+        });
+
         loadAlreadyReadCache();
         loadIntermediateFeedFromStore();
         startFeedLoading();
@@ -159,6 +172,9 @@ public class MainActivity extends BaseListActivity implements
             mPostsList.onRestoreInstanceState(mListState);
         }
         mListState = null;
+
+        // User may have toggled pull-down refresh, so toggle the SwipeRefreshLayout.
+        toggleSwipeRefreshLayout();
     }
 
     @Override
@@ -198,6 +214,10 @@ public class MainActivity extends BaseListActivity implements
         }
     }
 
+    private void toggleSwipeRefreshLayout() {
+        mSwipeRefreshLayout.setEnabled(Settings.isPullDownRefresh(MainActivity.this));
+    }
+
     @Override
     public void onTaskFinished(int taskCode, TaskResultCode code,
             HNFeed result, Object tag) {
@@ -211,9 +231,6 @@ public class MainActivity extends BaseListActivity implements
                             getString(R.string.error_unable_to_retrieve_feed),
                             Toast.LENGTH_SHORT).show();
                 }
-
-            mShouldShowRefreshing = false;
-            supportInvalidateOptionsMenu();
         } else
             if (taskCode == TASKCODE_LOAD_MORE_POSTS) {
                 if (!code.equals(TaskResultCode.Success) || result == null || result.getPosts() == null || result.getPosts().size() == 0) {
@@ -225,10 +242,9 @@ public class MainActivity extends BaseListActivity implements
 
                 mFeed.appendLoadMoreFeed(result);
                 mPostsListAdapter.notifyDataSetChanged();
-                mShouldShowRefreshing = false;
-                supportInvalidateOptionsMenu();
             }
 
+        setShowRefreshing(false);
     }
 
     @Background
@@ -307,9 +323,8 @@ public class MainActivity extends BaseListActivity implements
     }
 
     private void startFeedLoading() {
-        mShouldShowRefreshing = true;
+        setShowRefreshing(true);
         HNFeedTaskMainFeed.startOrReattach(this, this, TASKCODE_LOAD_FEED);
-        supportInvalidateOptionsMenu();
     }
 
     private boolean refreshFontSizes() {
@@ -538,8 +553,7 @@ public class MainActivity extends BaseListActivity implements
                         HNFeedTaskLoadMore.start(MainActivity.this,
                                 MainActivity.this, mFeed,
                                 TASKCODE_LOAD_MORE_POSTS);
-                        mShouldShowRefreshing = true;
-                        supportInvalidateOptionsMenu();
+                        setShowRefreshing(true);
                     }
                 });
                 break;
@@ -724,6 +738,17 @@ public class MainActivity extends BaseListActivity implements
       shareIntent.putExtra(Intent.EXTRA_SUBJECT, post.getTitle());
       shareIntent.putExtra(Intent.EXTRA_TEXT, post.getURL());
       a.startActivity(Intent.createChooser(shareIntent, a.getString(R.string.share_article_url)));
+    }
+
+    private void setShowRefreshing(boolean showRefreshing) {
+        if (!Settings.isPullDownRefresh(MainActivity.this)) {
+            mShouldShowRefreshing = showRefreshing;
+            supportInvalidateOptionsMenu();
+        }
+
+        if (mSwipeRefreshLayout.isEnabled() && (!mSwipeRefreshLayout.isRefreshing() || !showRefreshing)) {
+            mSwipeRefreshLayout.setRefreshing(showRefreshing);
+        }
     }
 
     static class PostViewHolder {

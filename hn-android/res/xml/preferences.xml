@@ -22,6 +22,11 @@
         android:entries="@array/pref_array_htmlviewer"
         android:entryValues="@array/pref_array_htmlviewer"
         android:defaultValue="@string/pref_default_htmlviewer" />
+
+    <CheckBoxPreference
+        android:key="pref_pulldownrefresh"
+        android:title="@string/pref_title_pulldownrefresh"
+        android:defaultValue="@bool/pref_default_pulldownrefresh" />
     
     <com.manuelmaly.hn.UserPreference 
       android:key="pref_user"
