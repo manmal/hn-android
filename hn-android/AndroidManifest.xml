@@ -34,20 +34,12 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
             android:theme="@style/ActionBar.White">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".CommentsActivity_"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
             android:theme="@style/ActionBar.Orange.Back">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
         </activity>
         <activity android:name=".SettingsActivity"
             android:theme="@android:style/Theme.Light.NoTitleBar"
