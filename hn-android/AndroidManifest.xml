@@ -57,6 +57,10 @@
                     android:host="news.ycombinator.com"
                     android:scheme="https" >
                 </data>
+                <data
+                    android:host="news.ycombinator.com"
+                    android:scheme="http" >
+                </data>
             </intent-filter>
         </activity>
         <activity android:name=".login.LoginActivity_" android:label="@string/credentials" android:theme="@android:style/Theme.Dialog" />
