@@ -18,18 +18,20 @@ public class ExternalIntentActivity extends Activity {
     String uriString = uri.toString().replaceAll("/$", "");
 
     Intent i = null;
-
-    // Should always be a comment link
-    if (uriString.contains("item")) {
+    if (uriString.endsWith("news.ycombinator.com")) { // Front page
+      i = new Intent(this, MainActivity_.class);
+    } else if (uriString.contains("item")) { // Comment
       String postId = uri.getQueryParameter("id");
       HNPost postToOpen = new HNPost(uriString, null, null, null, postId, 0, 0, null);
       i = new Intent(this, CommentsActivity_.class);
       i.putExtra(CommentsActivity.EXTRA_HNPOST, postToOpen);
+    }
+
+    if (i != null) {
+
       startActivity(i);
+
     } else {
-      // else load the front page
-      i = new Intent(this, MainActivity_.class);
-      startActivity(i);
       Toast.makeText(this, "This seems not to be a valid Hacker News item!", Toast.LENGTH_LONG).show();
     }
 
