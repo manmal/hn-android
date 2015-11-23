@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ArticleReaderActivity_"
+            android:name=".ArticleReaderActivity_"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
             android:theme="@style/ActionBar.White">
