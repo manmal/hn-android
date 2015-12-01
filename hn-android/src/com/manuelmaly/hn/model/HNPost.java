@@ -26,9 +26,23 @@ public class HNPost implements Serializable {
         mUpvoteURL = upvoteURL;
     }
 
+    public HNPost( String postID ) {
+        super();
+        mURL = null;
+        mTitle = null;
+        mURLDomain = null;
+        mAuthor = null;
+        mPostID = postID;
+        mCommentsCount = 0;
+        mPoints = 0;
+        mUpvoteURL = null;
+    }
+
     public String getURL() {
         return mURL;
     }
+
+    public void setURL( String url ) { mURL = url; }
 
     public String getTitle() {
         return mTitle;

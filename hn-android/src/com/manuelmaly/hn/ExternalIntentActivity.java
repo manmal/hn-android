@@ -39,7 +39,7 @@ public class ExternalIntentActivity extends Activity {
         i = new Intent(this, MainActivity_.class);
       } else if (uriString.contains("item")) { // Comment
         String postId = uri.getQueryParameter("id");
-        HNPost postToOpen = new HNPost(uriString, null, null, null, postId, 0, 0, null);
+        HNPost postToOpen = new HNPost( postId );
         i = new Intent(this, CommentsActivity_.class);
         i.putExtra(CommentsActivity.EXTRA_HNPOST, postToOpen);
       }

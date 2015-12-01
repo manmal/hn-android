@@ -12,16 +12,17 @@ public class HNPostComments implements Serializable {
     private boolean mIsTreeDirty;
     private String mHeaderHtml;
     private String mUserAcquiredFor;
+    private String mArticleUrl;
 
     public HNPostComments() {
         mTreeNodes = new ArrayList<HNCommentTreeNode>();
     }
 
     public HNPostComments(List<HNComment> comments) {
-        this(comments, null, "");
+        this(comments, null, "", null);
     }
 
-    public HNPostComments(List<HNComment> comments, String headerHtml, String userAcquiredFor) {
+    public HNPostComments(List<HNComment> comments, String headerHtml, String userAcquiredFor, String articleUrl) {
         mTreeNodes = new ArrayList<HNCommentTreeNode>();
         for (HNComment comment : comments) {
             if (comment.getCommentLevel() == 0)
@@ -29,6 +30,7 @@ public class HNPostComments implements Serializable {
         }
         mHeaderHtml = headerHtml;
         mUserAcquiredFor = userAcquiredFor;
+        mArticleUrl = articleUrl;
     }
 
     public List<HNCommentTreeNode> getTreeNodes() {
@@ -52,6 +54,8 @@ public class HNPostComments implements Serializable {
     public String getHeaderHtml() {
         return mHeaderHtml;
     }
+
+    public String getArticleUrl() { return mArticleUrl; }
 
     public String getUserAcquiredFor() {
         return mUserAcquiredFor;
