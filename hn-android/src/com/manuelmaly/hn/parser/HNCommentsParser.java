@@ -34,9 +34,17 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
         Boolean isDownvoted = false;
         String upvoteUrl = null;
         String downvoteUrl = null;
+        String articleUrl = null;
+
+        // Get the article URL
+        // Used when loading the comments page from an external intent
+        // URL is normally set when parsing the main page but not when
+        //  comments is loaded from external intent.
+        articleUrl = doc.select(".title a[href]").first().attr("href");
 
         boolean endParsing = false;
         for (int row = 0; row < tableRows.size(); row++) {
+
             Element mainRowElement = tableRows.get(row).select("td:eq(2)").first();
             Element rowLevelElement = tableRows.get(row).select("td:eq(0)").first();
             if (mainRowElement == null)
@@ -105,8 +113,7 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             headerHtml = headerParser.parseDocument(header);
         }
 
-
-        return new HNPostComments(comments, headerHtml, currentUser);
+        return new HNPostComments(comments, headerHtml, currentUser, articleUrl);
     }
 
     /**

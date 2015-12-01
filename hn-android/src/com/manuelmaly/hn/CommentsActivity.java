@@ -249,6 +249,14 @@ public class CommentsActivity extends BaseListActivity implements
     public void onTaskFinished(int taskCode, TaskResultCode code,
             HNPostComments result, Object tag) {
         if (code.equals(TaskResultCode.Success) && mCommentsListAdapter != null) {
+
+            //If there isn't an article URL, use the one pulled out during comments page parsing
+            //This is used if the comments page was loaded externally (article URI is normally
+            // set when parsing the main page otherwise).
+            if(result.getArticleUrl() != null && mPost.getURL() == null ) {
+                mPost.setURL( result.getArticleUrl());
+            }
+
             showComments(result);
         } else
             if (!code.equals(TaskResultCode.Success)) {

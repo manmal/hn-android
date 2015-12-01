@@ -23,31 +23,18 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ArticleReaderActivity_"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
             android:theme="@style/ActionBar.White">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".CommentsActivity_"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
             android:theme="@style/ActionBar.Orange.Back">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
         </activity>
         <activity android:name=".SettingsActivity"
             android:theme="@android:style/Theme.Light.NoTitleBar"
@@ -70,6 +57,15 @@
                     android:host="news.ycombinator.com"
                     android:scheme="https" >
                 </data>
+                <data
+                    android:host="news.ycombinator.com"
+                    android:scheme="http" >
+                </data>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
         <activity android:name=".login.LoginActivity_" android:label="@string/credentials" android:theme="@android:style/Theme.Dialog" />
