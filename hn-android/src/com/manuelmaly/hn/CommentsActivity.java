@@ -1,6 +1,7 @@
 package com.manuelmaly.hn;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -653,7 +654,10 @@ public class CommentsActivity extends BaseListActivity implements
                             CommentsActivity.this);
                     LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(
                             comment);
-                    builder.setAdapter(adapter, adapter).show();
+                    builder.setAdapter(adapter, adapter);
+                    Dialog dialog = builder.create();
+                    dialog.setCanceledOnTouchOutside(true);
+                    dialog.show();
                     return true;
                 }
             });
