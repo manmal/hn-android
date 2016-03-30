@@ -521,8 +521,6 @@ public class MainActivity extends BaseListActivity implements
                                 LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(
                                         post);
                                 builder.setAdapter(adapter, adapter);
-
-
                                 Dialog dialog = builder.create();
                                 dialog.setCanceledOnTouchOutside(true);
                                 dialog.show();
