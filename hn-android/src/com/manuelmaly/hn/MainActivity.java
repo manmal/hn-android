@@ -19,6 +19,7 @@ import org.androidannotations.annotations.ViewById;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -519,7 +520,10 @@ public class MainActivity extends BaseListActivity implements
                                         MainActivity.this);
                                 LongPressMenuListAdapter adapter = new LongPressMenuListAdapter(
                                         post);
-                                builder.setAdapter(adapter, adapter).show();
+                                builder.setAdapter(adapter, adapter);
+                                Dialog dialog = builder.create();
+                                dialog.setCanceledOnTouchOutside(true);
+                                dialog.show();
                                 return true;
                             }
                         });
