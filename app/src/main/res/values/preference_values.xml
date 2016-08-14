@@ -29,11 +29,13 @@
 
     <string name="pref_title_htmlviewer">View Articles within &#8230;</string>
     <string name="pref_default_htmlviewer">The App</string>
+    <string name="pref_htmlviewer_chromecustomtabs">Chrome Custom Tab</string>
     <string name="pref_htmlviewer_app">The App</string>
     <string name="pref_htmlviewer_browser">The System Browser</string>
 
     <string-array name="pref_array_htmlviewer">
         <item>@string/pref_htmlviewer_app</item>
+        <item>@string/pref_htmlviewer_chromecustomtabs</item>
         <item>@string/pref_htmlviewer_browser</item>
     </string-array>
 

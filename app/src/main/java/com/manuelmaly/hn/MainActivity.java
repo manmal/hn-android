@@ -10,6 +10,7 @@ import com.manuelmaly.hn.task.HNVoteTask;
 import com.manuelmaly.hn.task.ITaskFinishedHandler;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.FontHelper;
+import com.manuelmaly.hn.util.CustomTabActivityHelper;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -19,6 +20,7 @@ import org.androidannotations.annotations.ViewById;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,9 +28,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -503,6 +508,9 @@ public class MainActivity extends BaseListActivity implements
                             openURLInBrowser(
                                     getArticleViewURL(getItem(position)),
                                     MainActivity.this);
+                        } else if (Settings.getHtmlViewer(MainActivity.this).equals(
+                                getString(R.string.pref_htmlviewer_chromecustomtabs))) {
+                            openURLInChromeCustomTabs(getItem(position), null, MainActivity.this);
                         } else {
                             openPostInApp(getItem(position), null,
                                     MainActivity.this);
@@ -719,6 +727,22 @@ public class MainActivity extends BaseListActivity implements
     public static void openURLInBrowser(String url, Activity a) {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         a.startActivity(browserIntent);
+    }
+
+    public static void openURLInChromeCustomTabs(HNPost post, String overrideHtmlProvider, Activity a) {
+        Intent commentsIntent = new Intent(a, CommentsActivity_.class);
+        commentsIntent.putExtra(CommentsActivity.EXTRA_HNPOST, post);
+        PendingIntent pendingIntent = PendingIntent.getActivity(a, 1, commentsIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        Bitmap icon = BitmapFactory.decodeResource(a.getResources(),
+                R.drawable.ic_launcher);
+
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.setActionButton(icon, a.getString(R.string.comments), pendingIntent);
+        CustomTabsIntent customTabsIntent = builder.build();
+        CustomTabActivityHelper.openCustomTab(
+                a, customTabsIntent, post, overrideHtmlProvider, new ArticleReaderActivity());
     }
 
     public static void openPostInApp(HNPost post, String overrideHtmlProvider,

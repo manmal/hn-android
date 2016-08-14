@@ -1,6 +1,7 @@
 package com.manuelmaly.hn;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -24,6 +25,7 @@ import com.manuelmaly.hn.model.HNPost;
 import com.manuelmaly.hn.util.FontHelper;
 import com.manuelmaly.hn.util.SpotlightActivity;
 import com.manuelmaly.hn.util.ViewedUtils;
+import com.manuelmaly.hn.util.CustomTabActivityHelper;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -33,7 +35,7 @@ import org.androidannotations.annotations.ViewById;
 import java.net.URLEncoder;
 
 @EActivity(R.layout.article_activity)
-public class ArticleReaderActivity extends ActionBarActivity {
+public class ArticleReaderActivity extends ActionBarActivity implements CustomTabActivityHelper.CustomTabFallback {
 
   public static final int ACTIVITY_LOGIN = 137;
 
@@ -263,6 +265,17 @@ public class ArticleReaderActivity extends ActionBarActivity {
     if (mSwipeRefreshLayout.isEnabled() && (!mSwipeRefreshLayout.isRefreshing() || !showRefreshing)) {
       mSwipeRefreshLayout.setRefreshing(showRefreshing);
     }
+  }
+
+  @Override
+  public void openUri(Activity activity, HNPost post, String overrideHtmlProvider) {
+    Intent i = new Intent(activity, ArticleReaderActivity_.class);
+    i.putExtra(ArticleReaderActivity.EXTRA_HNPOST, post);
+    if (overrideHtmlProvider != null) {
+      i.putExtra(ArticleReaderActivity.EXTRA_HTMLPROVIDER_OVERRIDE,
+              overrideHtmlProvider);
+    }
+    activity.startActivity(i);
   }
 
   private class HNReaderWebViewClient extends WebViewClient {
