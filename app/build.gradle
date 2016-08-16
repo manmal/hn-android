@@ -30,8 +30,8 @@ android {
         applicationId "com.manuelmaly.hn"
         minSdkVersion 8
         targetSdkVersion 19
-        versionCode 23
-        versionName "1.9.13"
+        versionCode 24
+        versionName "1.9.14"
     }
 
     signingConfigs {
