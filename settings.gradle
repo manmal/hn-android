@@ -1,1 +1,1 @@
-include ':hn-android'
+include ':app'

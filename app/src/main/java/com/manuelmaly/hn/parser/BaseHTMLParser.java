@@ -56,7 +56,7 @@ public abstract class BaseHTMLParser<T> {
 
         int suffixWordIdx = value.indexOf(suffix);
         if (suffixWordIdx >= 0) {
-            String extractedValue = value.substring(0, suffixWordIdx);
+            String extractedValue = value.substring(0, suffixWordIdx).replaceAll("\\u00A0", "").trim();
             try {
                 return Integer.parseInt(extractedValue);
             } catch (NumberFormatException e) {
