@@ -46,7 +46,7 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             // from the text.  As far as I can tell that is the only place
             // where size=1 is used.  If that turns out to not be the case then
             // searching for u tags is also a pretty decent option - @jmaltz
-            Element mainCommentSpan = mainRowElement.select("span.comment > span").first();
+            Element mainCommentSpan = mainRowElement.select("div.comment > span").first();
             if (mainCommentSpan == null)
                 continue;
 
