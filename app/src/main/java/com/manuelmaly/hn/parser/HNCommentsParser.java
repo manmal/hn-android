@@ -46,21 +46,21 @@ public class HNCommentsParser extends BaseHTMLParser<HNPostComments> {
             // from the text.  As far as I can tell that is the only place
             // where size=1 is used.  If that turns out to not be the case then
             // searching for u tags is also a pretty decent option - @jmaltz
-            Element mainCommentSpan = mainRowElement.select("span.comment > span").first();
-            if (mainCommentSpan == null)
+            Element mainCommentDiv = mainRowElement.select("div.comment > span").first();
+            if (mainCommentDiv == null)
                 continue;
 
-            mainCommentSpan.select("div.reply").remove();
+            mainCommentDiv.select("div.reply").remove();
 
             // Parse the class attribute to get the comment color
             int commentColor = Color.rgb(0, 0, 0);
-            if (mainCommentSpan.attributes().hasKey("class")) {
-                commentColor = getCommentColor(mainCommentSpan.attributes().get("class"));
+            if (mainCommentDiv.attributes().hasKey("class")) {
+                commentColor = getCommentColor(mainCommentDiv.attributes().get("class"));
             }
 
             // In order to eliminate whitespace at the end of multi-line comments,
             // <p> tags are replaced with double <br/> tags.
-            text = mainCommentSpan.html()
+            text = mainCommentDiv.html()
                     .replace("<span> </span>", "")
                     .replace("<p>", "<br/><br/>")
                     .replace("</p>", "");
