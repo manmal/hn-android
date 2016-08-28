@@ -12,10 +12,10 @@ apply plugin: 'android-apt'
 
 dependencies {
     apt "org.androidannotations:androidannotations:3.2"
-    compile "org.androidannotations:androidannotations-api:3.2"
-    compile 'com.android.support:appcompat-v7:18.0.+'
-    compile 'com.android.support:support-v4:21.0.+'
-
+    compile 'org.androidannotations:androidannotations-api:3.2'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.android.support:support-v4:23.3.0'
+    compile 'com.android.support:customtabs:23.3.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
@@ -23,13 +23,14 @@ android {
     compileOptions {
         encoding "UTF-8"
     }
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 23
+    buildToolsVersion '23.0.2'
+    useLibrary  'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "com.manuelmaly.hn"
-        minSdkVersion 8
-        targetSdkVersion 19
+        minSdkVersion 15
+        targetSdkVersion 23
         versionCode 25
         versionName "1.9.15"
     }

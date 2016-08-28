@@ -19,3 +19,4 @@ build/
 .idea
 release.properties
 crashlytics.properties
+*.iml
