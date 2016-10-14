@@ -11,6 +11,9 @@ Note about Pull Requests: If you commit your additions into feature branches (ht
 the master branch, you will have no problems later on when you pull in updates from my repo. If you do that, you always have a clean
 master branch at all times (meaning it does not contain anything other than my repo's master branch commits).
 
+![screenshot1](https://lh4.ggpht.com/6kn8S8fLp-airMoug2NmTlfzu6LdrpaSk61O71_E0zxlUr4Tr6iebMPGdNM9vMIEpA=h900-rw)
+![screenshot2](https://lh5.ggpht.com/6C_wqC9BIsph22_Luw16kgZKeF-RjOdk5SL2cO4WwdGSP2B5tYg4JShgLFSsFI6CkR8=h900-rw)
+
 Setup
 -----
 
