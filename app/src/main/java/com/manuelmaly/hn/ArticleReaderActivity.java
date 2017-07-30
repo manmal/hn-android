@@ -30,7 +30,10 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.ViewById;
 
+import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.HashSet;
 
 @EActivity(R.layout.article_activity)
 public class ArticleReaderActivity extends ActionBarActivity {
@@ -44,6 +47,8 @@ public class ArticleReaderActivity extends ActionBarActivity {
   private static final String HTMLPROVIDER_PREFIX_VIEWTEXT = "http://viewtext.org/article?url=";
   private static final String HTMLPROVIDER_PREFIX_GOOGLE = "http://www.google.com/gwt/x?u=";
   private static final String HTMLPROVIDER_PREFIX_INSTAPAPER = "http://www.instapaper.com/text?u=";
+
+  public static final String[] UNSUPPORTED_PROTOCOLS = new String[] { "nielsenwebid://", "intent://nuid/999" };
 
   @ViewById(R.id.article_webview)
   WebView mWebView;
@@ -284,7 +289,19 @@ public class ArticleReaderActivity extends ActionBarActivity {
 
     @Override
     public boolean shouldOverrideUrlLoading( WebView view, String url ) {
-      view.loadUrl( url );
+      boolean isSupportedProtocol = getIsSupportedProtocol(url);
+
+      if (isSupportedProtocol) {
+        view.loadUrl(url);
+      }
+      return true;
+    }
+
+    private boolean getIsSupportedProtocol(String url) {
+      for (String unsupportedProtocol : UNSUPPORTED_PROTOCOLS) {
+        if (url.startsWith(unsupportedProtocol))
+          return false;
+      }
       return true;
     }
   }
