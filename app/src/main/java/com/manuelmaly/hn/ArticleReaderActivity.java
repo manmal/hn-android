@@ -30,10 +30,7 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.ViewById;
 
-import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.HashSet;
 
 @EActivity(R.layout.article_activity)
 public class ArticleReaderActivity extends ActionBarActivity {
