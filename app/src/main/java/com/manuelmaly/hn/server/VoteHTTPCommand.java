@@ -2,11 +2,11 @@ package com.manuelmaly.hn.server;
 
 import android.content.Context;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.params.HttpClientParams;
-import org.apache.http.impl.client.DefaultHttpClient;
+import cz.msebera.android.httpclient.client.HttpClient;
+import cz.msebera.android.httpclient.client.ResponseHandler;
+import cz.msebera.android.httpclient.client.methods.HttpUriRequest;
+import cz.msebera.android.httpclient.client.params.HttpClientParams;
+import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 
 import java.util.HashMap;
 
@@ -33,5 +33,7 @@ public class VoteHTTPCommand extends BaseHTTPCommand<String> {
     protected ResponseHandler<String> getResponseHandler(HttpClient client) {
         return new GetHNUserTokenResponseHandler(this, client);
     }
+
+
 
 }

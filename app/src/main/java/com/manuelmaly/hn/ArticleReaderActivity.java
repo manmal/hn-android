@@ -7,15 +7,16 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
@@ -33,7 +34,7 @@ import org.androidannotations.annotations.ViewById;
 import java.net.URLEncoder;
 
 @EActivity(R.layout.article_activity)
-public class ArticleReaderActivity extends ActionBarActivity {
+public class ArticleReaderActivity extends AppCompatActivity {
 
   public static final int ACTIVITY_LOGIN = 137;
 

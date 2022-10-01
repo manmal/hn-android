@@ -2,34 +2,35 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
-    }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
 
 dependencies {
-    apt "org.androidannotations:androidannotations:3.2"
-    compile "org.androidannotations:androidannotations-api:3.2"
-    compile 'com.android.support:appcompat-v7:18.0.+'
-    compile 'com.android.support:support-v4:21.0.+'
+    implementation 'com.google.dagger:dagger:2.28.3'
+    annotationProcessor "org.androidannotations:androidannotations:4.8.0"
 
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.androidannotations:androidannotations-api:4.8.0"
+    implementation 'androidx.core:core:1.0.0'
+    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+
+    implementation group: 'cz.msebera.android' , name: 'httpclient', version: '4.5.3'
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 android {
     compileOptions {
         encoding "UTF-8"
     }
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 32
 
     defaultConfig {
         applicationId "com.manuelmaly.hn"
-        minSdkVersion 8
-        targetSdkVersion 19
+        minSdkVersion 14
+        targetSdkVersion 32
         versionCode 25
         versionName "1.9.15"
     }
@@ -53,11 +54,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
             applicationVariants.all { variant ->
                 variant.outputs.each { output ->
-                    def outputFile = output.outputFile
-                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                        def fileName = outputFile.name.replace('.apk', "-v${versionName}-b${versionCode}.apk")
-                        output.outputFile = new File(outputFile.parent, fileName)
-                    }
+//                    def outputFile = output.outputFile
+//                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+//                        def fileName = outputFile.name.replace('.apk', "-v${versionName}-b${versionCode}.apk")
+//                        output.outputFile = new File(outputFile.parent, fileName)
+//                    }
                 }
             }
 
@@ -67,12 +68,13 @@ android {
 
         }
     }
+    namespace 'com.manuelmaly.hn'
 }
 
-apt {
-    arguments {
-        // you might have to change this if the app has different variants and flavours
-        androidManifestFile variant.outputs[0].processResources.manifestFile
-        resourcePackageName android.defaultConfig.applicationId
-    }
-}
+//apt {
+//    arguments {
+//        // you might have to change this if the app has different variants and flavours
+//        androidManifestFile variant.outputs[0].processResources.manifestFile
+//        resourcePackageName android.defaultConfig.applicationId
+//    }
+//}
