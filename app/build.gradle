@@ -7,11 +7,10 @@ buildscript {
 apply plugin: 'com.android.application'
 
 dependencies {
-    implementation 'com.google.dagger:dagger:2.28.3'
     annotationProcessor "org.androidannotations:androidannotations:4.8.0"
-
     implementation "org.androidannotations:androidannotations-api:4.8.0"
-    implementation 'androidx.core:core:1.0.0'
+
+    implementation 'androidx.core:core:1.9.0'
     implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
@@ -25,12 +24,12 @@ android {
     compileOptions {
         encoding "UTF-8"
     }
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "com.manuelmaly.hn"
         minSdkVersion 14
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 25
         versionName "1.9.15"
     }
@@ -52,16 +51,6 @@ android {
             minifyEnabled false
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-            applicationVariants.all { variant ->
-                variant.outputs.each { output ->
-//                    def outputFile = output.outputFile
-//                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
-//                        def fileName = outputFile.name.replace('.apk', "-v${versionName}-b${versionCode}.apk")
-//                        output.outputFile = new File(outputFile.parent, fileName)
-//                    }
-                }
-            }
-
         }
 
         debug {
@@ -70,11 +59,3 @@ android {
     }
     namespace 'com.manuelmaly.hn'
 }
-
-//apt {
-//    arguments {
-//        // you might have to change this if the app has different variants and flavours
-//        androidManifestFile variant.outputs[0].processResources.manifestFile
-//        resourcePackageName android.defaultConfig.applicationId
-//    }
-//}
