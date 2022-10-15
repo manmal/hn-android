@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="ActionBar" parent="@style/Theme.AppCompat">
+    <style name="ActionBar" parent="Theme.AppCompat">
         <item name="android:actionOverflowButtonStyle">@style/OverflowIconStyle</item>
         <item name="actionOverflowButtonStyle">@style/OverflowIconStyle</item>
         <item name="android:homeAsUpIndicator">@drawable/back</item>
@@ -10,17 +10,17 @@
         <item name="android:buttonStyle">@null</item>
     </style>
 
-    <style name="ActionBar.Orange">
+    <style name="ActionBar.Orange" parent="ActionBar">
         <item name="android:actionBarStyle">@style/ActionBarStyle</item>
         <item name="actionBarStyle">@style/ActionBarStyle</item>
     </style>
 
-    <style name="ActionBar.Orange.Back">
+    <style name="ActionBar.Orange.Back" parent="ActionBar.Orange">
         <item name="android:actionBarStyle">@style/ActionBarStyle.Back</item>
         <item name="actionBarStyle">@style/ActionBarStyle.Back</item>
     </style>
 
-    <style name="ActionBar.White">
+    <style name="ActionBar.White" parent="ActionBar">
         <item name="android:actionBarStyle">@style/ActionBarStyle.Back.White</item>
         <item name="actionBarStyle">@style/ActionBarStyle.Back.White</item>
         <item name="android:actionBarItemBackground">@drawable/actionbar_button_bg_gray</item>

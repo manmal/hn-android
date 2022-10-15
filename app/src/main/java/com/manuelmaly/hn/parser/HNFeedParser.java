@@ -54,7 +54,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
 
             switch (rowInPost) {
                 case 0:
-                    Element e1 = rowElement.select("tr > td:eq(2) > a").first();
+                    Element e1 = rowElement.select(".title > .titleline > a").first();
                     if (e1 == null) {
                         endParsing = true;
                         break;
@@ -64,7 +64,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                     url = HNHelper.resolveRelativeHNURL(e1.attr("href"));
                     urlDomain = getDomainName(url);
                     
-                    Element e4 = rowElement.select("tr > td:eq(1) a").first();
+                    Element e4 = rowElement.select(".votelinks a").first();
                     if (e4 != null) {
                         upvoteURL = e4.attr("href");
                         if (!upvoteURL.contains("auth=")) // HN changed authentication
@@ -74,9 +74,9 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                     }
                     break;
                 case 1:
-                    points = getIntValueFollowedBySuffix(rowElement.select("tr > td:eq(1) > span").text(), "p");
-                    author = rowElement.select("tr > td:eq(1) > a[href*=user]").text();
-                    Element e2 = rowElement.select("tr > td:eq(1) > a[href*=item]").last(); // assuming the the last link is the comments link
+                    points = getIntValueFollowedBySuffix(rowElement.select(".subline > span.score").text(), "p");
+                    author = rowElement.select(".subline > a[href*=user]").text();
+                    Element e2 = rowElement.select(".subline > a[href*=item]").last(); // assuming the the last link is the comments link
                     if (e2 != null) {
                         commentsCount = getIntValueFollowedBySuffix(e2.text(), "c");
                         if (commentsCount == BaseHTMLParser.UNDEFINED && e2.text().contains("discuss"))
@@ -96,8 +96,7 @@ public class HNFeedParser extends BaseHTMLParser<HNFeed> {
                 break;
         }
 
-        return new HNFeed(posts, nextPageURL, Settings
-                .getUserName(App.getInstance()));
+        return new HNFeed(posts, nextPageURL, currentUser);
     }
    
 

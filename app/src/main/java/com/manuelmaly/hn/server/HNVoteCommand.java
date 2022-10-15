@@ -2,7 +2,7 @@ package com.manuelmaly.hn.server;
 
 import android.content.Context;
 
-import org.apache.http.client.CookieStore;
+import cz.msebera.android.httpclient.client.CookieStore;
 
 import java.util.HashMap;
 
