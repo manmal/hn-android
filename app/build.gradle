@@ -39,7 +39,7 @@ android {
         props.load(new FileInputStream(rootProject.file("release.properties")))
 
         release {
-            storeFile new File(props.keyStore)
+            storeFile new File(props.keyStore.toString())
             storePassword props.keyStorePassword
             keyAlias props.keyAlias
             keyPassword props.keyAliasPassword
@@ -51,6 +51,17 @@ android {
             minifyEnabled false
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFileName
+                    if (outputFile != null && outputFile.endsWith('.apk')) {
+                        def fileName = outputFile.replace('.apk',
+                                "-v${versionName}-b${versionCode}.apk")
+                        output.outputFileName = fileName
+                    }
+                }
+            }
         }
 
         debug {
