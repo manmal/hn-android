@@ -16,7 +16,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
-            android:textSize="80sp" />
+            android:textSize="80sp"
+            android:textColor="@color/gray_article_title"/>
 
         <TextView
             android:id="@+id/about_by"
@@ -24,20 +25,25 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/about_by"
-            android:textSize="22sp" />
+            android:textSize="22sp"
+            android:textColor="@color/gray_article_title" />
 
         <TextView
             android:id="@+id/about_url"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textSize="22sp" />
+            android:textSize="22sp"
+            android:textColor="@color/gray_article_title"
+            android:textColorLink="@color/gray_article_title" />
 
         <TextView
             android:id="@+id/about_github"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@color/gray_article_title"
+            android:textColorLink="@color/gray_article_title" />
         </LinearLayout>
 </LinearLayout>
