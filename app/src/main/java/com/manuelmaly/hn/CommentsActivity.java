@@ -681,6 +681,7 @@ public class CommentsActivity extends BaseListActivity implements
                 Context c, int commentTextSize, int metadataTextSize) {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, commentTextSize);
             textView.setTextColor(comment.getColor());
+            textView.setLinkTextColor(comment.getColor());
             textView.setText(Html.fromHtml(comment.getText()));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
             authorView.setTextSize(TypedValue.COMPLEX_UNIT_DIP,

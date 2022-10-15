@@ -10,11 +10,9 @@
 
     <item android:id="@+id/menu_settings"
         android:title="@string/settings"
-        android:icon="@drawable/refresh"
         hn:showAsAction="never" />
 
     <item android:id="@+id/menu_about"
         android:title="@string/about"
-        android:icon="@drawable/refresh"
         hn:showAsAction="never" />
 </menu>
