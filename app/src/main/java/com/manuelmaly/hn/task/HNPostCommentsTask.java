@@ -11,8 +11,6 @@ import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.server.IAPICommand;
 import com.manuelmaly.hn.server.IAPICommand.RequestType;
 import com.manuelmaly.hn.server.StringDownloadCommand;
-import com.manuelmaly.hn.util.Const;
-import com.manuelmaly.hn.util.ExceptionUtil;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.Run;
 
@@ -35,7 +33,7 @@ public class HNPostCommentsTask extends BaseTask<HNPostComments> {
      * be to store the currently running HNPostCommentsTasks in the App object,
      * which I consider far worse. If you find a better solution, please tweet
      * me at @manuelmaly
-     * 
+     *
      * @return
      */
     private static HNPostCommentsTask getInstance(String postID, int taskCode) {
@@ -94,7 +92,6 @@ public class HNPostCommentsTask extends BaseTask<HNPostComments> {
                         }
                     });
                 } catch (Exception e) {
-                    ExceptionUtil.sendToGoogleAnalytics(e, Const.GAN_ACTION_PARSING);
                     Log.e("HNFeedTask", "Parse error!", e);
                 }
             }

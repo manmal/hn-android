@@ -10,8 +10,6 @@ import com.manuelmaly.hn.server.HNCredentials;
 import com.manuelmaly.hn.server.IAPICommand;
 import com.manuelmaly.hn.server.IAPICommand.RequestType;
 import com.manuelmaly.hn.server.StringDownloadCommand;
-import com.manuelmaly.hn.util.Const;
-import com.manuelmaly.hn.util.ExceptionUtil;
 import com.manuelmaly.hn.util.FileUtil;
 import com.manuelmaly.hn.util.Run;
 
@@ -27,7 +25,7 @@ public abstract class HNFeedTaskBase extends BaseTask<HNFeed> {
     public CancelableRunnable getTask() {
         return new HNFeedTaskRunnable();
     }
-    
+
     protected abstract String getFeedURL();
 
     class HNFeedTaskRunnable extends CancelableRunnable {
@@ -38,7 +36,7 @@ public abstract class HNFeedTaskBase extends BaseTask<HNFeed> {
         public void run() {
             mFeedDownload = new StringDownloadCommand(getFeedURL(), new HashMap<String, String>(), RequestType.GET, false, null,
                 App.getInstance(), HNCredentials.getCookieStore(App.getInstance()));
-            
+
             mFeedDownload.run();
 
             if (mCancelled)
@@ -57,7 +55,6 @@ public abstract class HNFeedTaskBase extends BaseTask<HNFeed> {
                     });
                 } catch (Exception e) {
                     mResult = null;
-                    ExceptionUtil.sendToGoogleAnalytics(e, Const.GAN_ACTION_PARSING);
                     Log.e("HNFeedTask", "HNFeed Parser Error :(", e);
                 }
             }

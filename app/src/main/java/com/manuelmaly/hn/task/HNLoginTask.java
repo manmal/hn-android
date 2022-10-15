@@ -11,8 +11,6 @@ import com.manuelmaly.hn.server.GetHNUserTokenHTTPCommand;
 import com.manuelmaly.hn.server.IAPICommand;
 import com.manuelmaly.hn.server.IAPICommand.RequestType;
 import com.manuelmaly.hn.server.StringDownloadCommand;
-import com.manuelmaly.hn.util.Const;
-import com.manuelmaly.hn.util.ExceptionUtil;
 
 import java.util.HashMap;
 
@@ -96,7 +94,6 @@ public class HNLoginTask extends BaseTask<Boolean> {
                     return loginParser.parse(newsLoginDownload.getResponseContent());
                 } catch (Exception e) {
                     Log.e("HNFeedTask", "Login Page Parser Error :(", e);
-                    ExceptionUtil.sendToGoogleAnalytics(e, Const.GAN_ACTION_PARSING);
                 }
             }
             return null;
