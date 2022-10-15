@@ -10,12 +10,12 @@ dependencies {
     annotationProcessor "org.androidannotations:androidannotations:4.8.0"
     implementation "org.androidannotations:androidannotations-api:4.8.0"
 
-    implementation 'androidx.core:core:1.9.0'
-    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation "androidx.core:core:1.9.0"
+    implementation "androidx.legacy:legacy-support-core-utils:1.0.0"
+    implementation "androidx.appcompat:appcompat:1.5.1"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
-    implementation group: 'cz.msebera.android' , name: 'httpclient', version: '4.5.3'
+    implementation "cz.msebera.android:httpclient:4.5.8"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
