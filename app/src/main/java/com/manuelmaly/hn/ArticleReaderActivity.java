@@ -42,9 +42,7 @@ public class ArticleReaderActivity extends AppCompatActivity {
   public static final String EXTRA_HNPOST = "HNPOST";
   public static final String EXTRA_HTMLPROVIDER_OVERRIDE = "HTMLPROVIDER_OVERRIDE";
 
-  private static final String HTMLPROVIDER_PREFIX_VIEWTEXT = "http://viewtext.org/article?url=";
-  private static final String HTMLPROVIDER_PREFIX_GOOGLE = "http://www.google.com/gwt/x?u=";
-  private static final String HTMLPROVIDER_PREFIX_INSTAPAPER = "http://www.instapaper.com/text?u=";
+  private static final String HTMLPROVIDER_PREFIX_INSTAPAPER = "https://www.instapaper.com/text?u=";
 
   @ViewById(R.id.article_webview)
   WebView mWebView;
@@ -187,11 +185,7 @@ public class ArticleReaderActivity extends AppCompatActivity {
   @SuppressWarnings("deprecation")
   public static String getArticleViewURL( HNPost post, String htmlProvider, Context c ) {
     String encodedURL = URLEncoder.encode( post.getURL() );
-    if (htmlProvider.equals( c.getString( R.string.pref_htmlprovider_viewtext ) )) {
-      return HTMLPROVIDER_PREFIX_VIEWTEXT + encodedURL;
-    } else if (htmlProvider.equals( c.getString( R.string.pref_htmlprovider_google ) )) {
-      return HTMLPROVIDER_PREFIX_GOOGLE + encodedURL;
-    } else if (htmlProvider.equals( c.getString( R.string.pref_htmlprovider_instapaper ) )) {
+    if (htmlProvider.equals( c.getString( R.string.pref_htmlprovider_instapaper ) )) {
       return HTMLPROVIDER_PREFIX_INSTAPAPER + encodedURL;
     } else {
       return post.getURL();
