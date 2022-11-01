@@ -604,8 +604,10 @@ public class MainActivity extends BaseListActivity implements
             mItems.addAll(Arrays.asList(
                     getString(R.string.pref_htmlprovider_original_url),
                     getString(R.string.pref_htmlprovider_instapaper),
+                    getString(R.string.pref_htmlprovider_textise),
                     getString(R.string.external_browser),
-                    getString(R.string.share_article_url)));
+                    getString(R.string.share_article_url)
+            ));
         }
 
         @Override

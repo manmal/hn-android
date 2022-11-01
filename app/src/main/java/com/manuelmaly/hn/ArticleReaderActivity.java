@@ -43,6 +43,7 @@ public class ArticleReaderActivity extends AppCompatActivity {
   public static final String EXTRA_HTMLPROVIDER_OVERRIDE = "HTMLPROVIDER_OVERRIDE";
 
   private static final String HTMLPROVIDER_PREFIX_INSTAPAPER = "https://www.instapaper.com/text?u=";
+  private static final String HTMLPROVIDER_PRFIX_TEXTISE = "https://www.textise.net/showText.aspx?strURL=";
 
   @ViewById(R.id.article_webview)
   WebView mWebView;
@@ -184,9 +185,11 @@ public class ArticleReaderActivity extends AppCompatActivity {
 
   @SuppressWarnings("deprecation")
   public static String getArticleViewURL( HNPost post, String htmlProvider, Context c ) {
-    String encodedURL = URLEncoder.encode( post.getURL() );
-    if (htmlProvider.equals( c.getString( R.string.pref_htmlprovider_instapaper ) )) {
+    String encodedURL = URLEncoder.encode(post.getURL());
+    if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_instapaper))) {
       return HTMLPROVIDER_PREFIX_INSTAPAPER + encodedURL;
+    } else if (htmlProvider.equals(c.getString(R.string.pref_htmlprovider_textise))){
+      return HTMLPROVIDER_PRFIX_TEXTISE + encodedURL;
     } else {
       return post.getURL();
     }
