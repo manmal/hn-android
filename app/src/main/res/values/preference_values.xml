@@ -16,15 +16,13 @@
     <string name="pref_title_htmlprovider">View Articles via &#8230;</string>
     <string name="pref_default_htmlprovider">Original Article URL</string>
     <string name="pref_htmlprovider_original_url">Original Article URL</string>
-    <string name="pref_htmlprovider_viewtext">ViewText.org</string>
-    <string name="pref_htmlprovider_google">Google for Mobile Devices</string>
     <string name="pref_htmlprovider_instapaper">Instapaper Text</string>
+    <string name="pref_htmlprovider_textise">Textise</string>
 
     <string-array name="pref_array_htmlprovider">
         <item>@string/pref_htmlprovider_original_url</item>
-        <item>@string/pref_htmlprovider_viewtext</item>
-        <item>@string/pref_htmlprovider_google</item>
         <item>@string/pref_htmlprovider_instapaper</item>
+        <item>@string/pref_htmlprovider_textise</item>
     </string-array>
 
     <string name="pref_title_htmlviewer">View Articles within &#8230;</string>
